@@ -1,0 +1,1 @@
+zk://{{ zookeeper }}:2181/mesos

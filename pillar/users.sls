@@ -1,0 +1,3 @@
+users:
+  dsb:
+    sudouser: true
