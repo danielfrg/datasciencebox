@@ -1,8 +1,0 @@
-ipython
-requests
-numpy
-scipy
-pandas
-scikit-learn
-matplotlib
-nltk
