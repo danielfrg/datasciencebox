@@ -179,10 +179,10 @@ def install_salt(ctx):
     salt_ssh_call(cluster, cluster.master.name, 'state.sls', 'salt.master')
     salt_ssh_call(cluster, cluster.master.name, 'state.sls', 'salt.minion')
     # https://github.com/saltstack/salt/pull/19804#issuecomment-73957251
-    # pillars = 'pillar="{salt: {master: {ip: %s}}, minion: {roles: [miniconda, mesos.master]}}"' % cluster.master.ip
+    # pillars = 'pillar="{salt: {master: {ip: %s}}, minion: {roles: [miniconda, mesos.master, namenode, ipython.notebook, spark]}}"' % cluster.master.ip
     # salt_ssh_call(cluster, cluster.master.name, 'state.sls', 'salt.minion', pillars)
 
-    pillars = 'pillar="{salt: {master: {ip: %s}}, minion: {roles: [miniconda, mesos.slave]}}"' % cluster.master.ip
+    pillars = 'pillar="{salt: {master: {ip: %s}}, minion: {roles: [miniconda, mesos.slave, datanode]}}"' % cluster.master.ip
     salt_ssh_call(cluster, '*minion*', 'state.sls', 'salt.minion')
     # salt_ssh_call(cluster, '*', 'state.sls', 'salt.minion', pillars)
 
