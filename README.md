@@ -83,6 +83,10 @@ Requires: miniconda
 
 `dsb install pip boto '*'` will install boto in all the minions
 
+### IPython notebook
+
+`dsb install notebook`
+
 ### spark + HDFS
 
 Note: Spark is supported via mesos

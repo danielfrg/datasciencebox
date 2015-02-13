@@ -194,6 +194,7 @@ def miniconda(ctx):
     salt_master(cluster, cluster.master.name, 'state.sls', 'spark')
     salt_master(cluster, cluster.master.name, 'state.sls', 'mesos.spark')
 
+
 @install.command(short_help='Install ipython notebook in the master')
 @click.pass_context
 def notebook(ctx):
