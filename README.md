@@ -16,8 +16,6 @@ Run `dsb` once to create the directories, all settings are located in `~/.datasc
 1. `~/.datasciencebox/profiles`: profiles have instance information
 1. `~/.datasciencebox/providers`: providers have login information on cloud providers
 
-## Example
-
 ### 1. Create provider
 
 `~/.datasciencebox/providers/aws.yaml`
@@ -55,28 +53,54 @@ small:
 New instances will be created and a `~/.datasciencebox/cluster/new_cluster` directory
 will be created will the cluster information and settings.
 
-## Configuration
-
-DataScienceBox is based on [salt](http://docs.saltstack.com/en/latest/)
-so in otder to change the settings of the instances you have to change the pillars located at
-`~/.datasciencebox/cluster/new_cluster/pillar`. Default values will be located there.
-
-After changing those values need to sync the pillars to the cluster: `dsb rsync --once`
-
 ## Packages
 
-### salt
-
-This step is needed for the other packages to work
+Before doing anything else we need to install salt in the instances
 
 `dsb install salt` will bootstrap salt-master and salt-minion using salt-ssh
 
+`dsb rsync --once` will sync salt formulas and pillar settings (see Configuration below)
+
+### miniconda
+
+`dsb install miniconda` will bootstrap (mini)conda in all the instances
+
+After its installed conda (and pypi) packages can be installed using `dsb install conda`
+
 ### conda
 
-`dsb install conda` will bootstrap (mini)conda in all the instances
+Requires: miniconda
 
-After its installed conda (and pypi) packages can be installed using `dsb salt`
+`dsb install conda requests` will install requests in all the instances (master + minion)
 
-Example: `dsb salt '*' conda.install requests` will install requests in all the instances
+`dsb install conda numpy '*minion*'` will install numpy in all the minions
 
-### spark on mesos
+### pip
+
+Requires: miniconda
+
+`dsb install pip boto` will install boto in all the instances
+
+`dsb install pip boto '*'` will install boto in all the minions
+
+### spark + HDFS
+
+Note: Spark is supported via mesos
+
+1. Install hdfs and mesos: `dsb install hdfs` and `dsb install mesos`
+2. Install spark: `dsb install spark`
+
+## Configuration
+
+DataScienceBox is based on [salt](http://docs.saltstack.com/en/latest/)
+so in order to change the settings of the instances you have to change the pillars located at
+`~/.datasciencebox/cluster/{{ CLUSTER_NAME }}/pillar`. Default values will be located there.
+
+After changing those values need to sync the pillars to the cluster: `dsb rsync --once`
+
+## This is hard, it sucks!
+
+This was started as a toy project and is my personal playground.
+If you want a more complete product with MapReduce, Hive, Impala and more
+with better support check out the spiritual succesor:
+[conda-cluster](http://continuum.io/anaconda-cluster).

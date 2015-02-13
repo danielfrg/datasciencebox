@@ -11,7 +11,7 @@ spark-hdfs:
     - name: |
         cp -r /usr/lib/spark /tmp/{{ version }};
         tar czf /tmp/{{ version }}.tgz /tmp/{{ version }};
-        hadoop fs -put /tmp/{{ version }}.tgz /tmp;
+        hadoop fs -put /tmp/{{ version }}.tgz /tmp/{{ version }}.tgz;
     - user: hdfs
     - unless: hadoop fs -test -e /tmp/{{ version }}.tgz
     - require:
@@ -26,6 +26,6 @@ spark-hdfs:
     - context:
       namenode: {{ namenode_fqdn }}
       hdfs_spark_path: /tmp/{{ version }}.tgz
-      zookeeper: {{ mesos['zk'] }}
+      zookeepers: {{ mesos['connection_string'] }}
     - require:
       - sls: spark

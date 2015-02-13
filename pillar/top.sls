@@ -10,9 +10,10 @@ def run():
 
   matches = []
   for pillar_file in os.listdir(pillar_dir):
-    pillar, ext = os.path.splitext(pillar_file)
-    if ext == '.sls' or ext == '':
-      matches.append(pillar)
+    if not pillar_file.startswith('.'):
+      pillar, ext = os.path.splitext(pillar_file)
+      if ext == '.sls' or ext == '':
+        matches.append(pillar)
   return {'base': {'*': matches}}
 
 def is_available(pillar_path, pillar_name):

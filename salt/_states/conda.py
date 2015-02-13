@@ -15,7 +15,7 @@ def __virtual__():
 def managed(name, packages=None, requirements=None, saltenv='base', user=None):
     """
     Create and install python requirements in a conda enviroment
-    pip is isntalled by default in the new enviroment
+    pip is installed by default in the new enviroment
 
     name : path to the enviroment to be created
     packages : None
@@ -60,7 +60,7 @@ def managed(name, packages=None, requirements=None, saltenv='base', user=None):
     return ret
 
 
-def installed(name, env, saltenv='base', user=None):
+def installed(name, env=None, saltenv='base', user=None):
     """
     Installs a single package, list of packages (comma separated) or packages in a requirements.txt
 
@@ -99,7 +99,7 @@ def installed(name, env, saltenv='base', user=None):
     else:
         packages = [pkg.strip() for pkg in name.split(',')]
 
-    conda_list = __salt__['conda.list'](env, user=user)
+    conda_list = __salt__['conda.list'](env=env, user=user)
 
     def extract_info(pkgname):
         pkgname, pkgversion = package, ''

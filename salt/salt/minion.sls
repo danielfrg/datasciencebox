@@ -3,6 +3,14 @@
 include:
   - salt.pkgrepo
 
+{% if pillar['salt']['minion']['roles'] is defined %}
+/etc/salt/grains:
+  file.managed:
+    - makedirs: true
+    - template: jinja
+    - source: salt://salt/templates/grains
+{% endif %}
+
 salt-minion:
   pkg.installed:
     - name: {{ pkgs['salt-minion'] }}
@@ -16,3 +24,7 @@ salt-minion:
     - watch:
       - pkg: salt-minion
       - file: salt-minion
+      {% if pillar['salt']['minion']['roles'] is defined %}
+      - file: /etc/salt/grains
+      {% endif %}
+

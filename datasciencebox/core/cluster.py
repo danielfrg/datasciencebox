@@ -137,7 +137,6 @@ class Cluster(object):
         safe_create_dir(var_salt_dir)
 
         srv_pillar_dir = self.get_pillar_path()
-        print config.SALT_PILLAR_DIR, srv_pillar_dir
         if os.path.exists(srv_pillar_dir):
             shutil.rmtree(srv_pillar_dir)
         shutil.copytree(config.SALT_PILLAR_DIR, srv_pillar_dir)
@@ -149,8 +148,6 @@ class Cluster(object):
         salt_master_file = os.path.join(etc_salt_dir, 'master')
         with open(salt_master_file, 'w') as f:
             f.write(salt_master_config)
-
-
 
     def get_salt_config_dir(self):
         return os.path.join(self.get_directory(), 'etc', 'salt')

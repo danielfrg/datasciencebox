@@ -1,2 +1,2 @@
 id: {{ grains['id'] }}
-master: 50.16.154.177
+master: {{ pillar['salt']['master']['ip'] }}

@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+
+{% set namenodes = [] %}
+{% for dir in namenode_dirs %}
+{% do namenodes.append("file://" + dir) %}
+{% endfor %}
+
+{% set datanodes = [] %}
+{% for dir in datanode_dirs %}
+{% do datanodes.append("file://" + dir) %}
+{% endfor %}
+
+<configuration>
+    <property>
+      <name>dfs.namenode.name.dir</name>
+      <value>{{ namenodes | join(',') }}</value>
+    </property>
+    <property>
+      <name>dfs.datanode.data.dir</name>
+      <value>{{ datanodes | join(',') }}</value>
+    </property>
+</configuration>

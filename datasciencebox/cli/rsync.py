@@ -42,7 +42,7 @@ class RsyncHandler(FileSystemEventHandler):
             key_filename = self.cluster.master.profile.keypair
             with settings(host_string=host_string, key_filename=key_filename):
                 # print src + ' -> ' + dst
-                rsync_project(dst, src, delete=True, extra_opts='--rsync-path="sudo rsync"', default_opts='-pthrz')
+                rsync_project(dst, src, delete=True, extra_opts='--rsync-path="sudo rsync"', exclude='.DS_Store', default_opts='-pthrz')
 
     def sync_all(self):
         self.rsync(self.base_salt_src, self.base_srv_dst)
@@ -65,7 +65,7 @@ def loop(cluster, handler):
     observer.join()
 
 if __name__ == '__main__':
-    from dsb.cli import cli
+    from datasciencebox.cli import cli
     cluster = cli.get_cluster()
     handler = RsyncHandler()
     handler.cluster = cluster
