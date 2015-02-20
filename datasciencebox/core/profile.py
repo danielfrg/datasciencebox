@@ -44,28 +44,31 @@ class BaseProfile(object):
         return "Profile({0})".format(self.name)
 
     @classmethod
-    def from_filepath(cls, filepath):
+    def from_filepath(cls, filepath, providers=None):
         with open(filepath, 'r') as f:
-            attrs = yaml.load(f)
+            content = f.read()
+        return BaseProfile.from_text(content, providers=providers)
 
-            assert len(attrs) == 1, 'There should only be one root in the profile yaml file'
-            root = attrs.keys()[0]
+    @classmethod
+    def from_text(cls, text, providers=None):
+        attrs = yaml.load(text)
 
-            assert 'provider' in attrs[root], '"provider" field not found in profile yaml'
-            provider_name = attrs[root]['provider']
-            del attrs[root]['provider']
+        assert len(attrs) == 1, 'There should only be one root'
+        root = attrs.keys()[0]
 
-            providers = load_providers()
-            provider = providers.get(provider_name)
-            assert provider, 'Provider "%s" not found' % provider_name
+        assert 'provider' in attrs[root], 'Missing "provider" field in profile "%s"' % root
+        provider_name = attrs[root]['provider']
+        del attrs[root]['provider']
+        providers = providers if providers else load_providers()
+        provider = providers.get(provider_name)
+        assert provider, 'Provider "%s" not found' % provider_name
 
-            if provider.cloud == 'aws':
-                cls = AWSProfile
+        if provider.cloud == 'aws':
+            profile_cls = AWSProfile
 
-        profile = cls(root)
+        profile = profile_cls(root)
         profile.provider = provider
         profile.fill_attrs(attrs[root])
-        profile.validate()
         return profile
 
     def fill_attrs(self, attributes):
@@ -87,16 +90,13 @@ class BaseProfile(object):
     def required_fields(self):
         raise NotImplementedError()
 
-
     def new_cluster(self, id='new'):
         cluster = Cluster(id, self)
         cluster.add_master()
-
         if 'minions' in self.attributes:
             n_minions = self.attributes['minions']['n']
             for i in range(n_minions):
                 cluster.add_minion()
-
         return cluster
 
 
