@@ -8,6 +8,7 @@ from libcloud.compute.types import Provider
 from libcloud.compute.providers import get_driver
 
 from datasciencebox.core import config
+from datasciencebox.core.exception import ProviderError
 
 
 def load_providers():
@@ -57,23 +58,27 @@ class BaseProvider(object):
     @classmethod
     def from_filepath(cls, filepath):
         with open(filepath, 'r') as f:
-            attrs = yaml.load(f)
+            content = f.read()
+        return BaseProvider.from_text(content)
 
-            assert len(attrs) == 1, 'There should only be one root in the provider yaml file'
-            root = attrs.keys()[0]
+    @classmethod
+    def from_text(cls, text):
+        attrs = yaml.load(text)
 
-            assert 'cloud' in attrs[root], '"cloud" field not found in provider yaml'
-            cloud = attrs[root]['cloud']
-            del attrs[root]['cloud']
+        assert len(attrs) == 1, 'There should only be one root'
+        root = attrs.keys()[0]
 
-            if cloud == 'aws':
-                cls = AWSProvider
-            else:
-                Exception('Cloud(%s) not yet supported' % cloud)
+        assert 'cloud' in attrs[root], 'Missing "cloud" field in provider "%s"' % root
+        cloud = attrs[root]['cloud']
+        del attrs[root]['cloud']
+
+        if cloud == 'aws':
+            cls = AWSProvider
+        else:
+            raise ProviderError('Cloud(%s) not yet supported' % cloud)
 
         provider = cls(root)
         provider.fill_attrs(attrs[root])
-        provider.validate()
         return provider
 
     def fill_attrs(self, attributes):
@@ -86,6 +91,7 @@ class BaseProvider(object):
 
     def validate(self):
         self.validate_fields()
+        return True
 
     def validate_fields(self):
         for field in self.required_fields():
@@ -134,4 +140,3 @@ if __name__ == '__main__':
 
     p0 = providers.get()
     print p0.get_driver()
-
