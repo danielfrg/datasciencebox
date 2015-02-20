@@ -24,7 +24,7 @@ def get_cluster(cluster_name=None):
         return clusters[0]
 
 
-def salt_master(cluster, target, module, args=None, args2=None, user=None):
+def salt_master_call(cluster, target, module, args=None, args2=None, user=None):
     host_string = cluster.master.profile.user + '@' + cluster.master.ip
     key_filename = cluster.master.profile.keypair
     with settings(host_string=host_string, key_filename=key_filename):
@@ -120,7 +120,7 @@ def conda(ctx, pkg, target):
     cluster = ctx.obj['cluster']
     if not target:
         target = '*'
-    salt_master(cluster, target, 'conda.install', pkg, user='dsb')
+    salt_master_call(cluster, target, 'conda.install', pkg, user='dsb')
 
 
 @install.command(short_help='Install a package using system package manager')
@@ -131,7 +131,7 @@ def pkg(ctx, pkg, target):
     cluster = ctx.obj['cluster']
     if not target:
         target = '*'
-    salt_master(cluster, target, 'pkg.install', pkg)
+    salt_master_call(cluster, target, 'pkg.install', pkg)
 
 
 @install.command(short_help='Install a pypi package')
@@ -142,23 +142,23 @@ def pip(ctx, pkg, target):
     cluster = ctx.obj['cluster']
     if not target:
         target = '*'
-    salt_master(cluster, target, 'conda.install', pkg, user='dsb')
+    salt_master_call(cluster, target, 'conda.install', pkg, user='dsb')
 
 
 @install.command(short_help='Install hdfs in the cluster')
 @click.pass_context
 def hdfs(ctx):
     cluster = ctx.obj['cluster']
-    salt_master(cluster, cluster.master.name, 'state.sls', 'cdh5.hdfs.namenode')
-    salt_master(cluster, '*minion*', 'state.sls', 'cdh5.hdfs.datanode')
+    salt_master_call(cluster, cluster.master.name, 'state.sls', 'cdh5.hdfs.namenode')
+    salt_master_call(cluster, '*minion*', 'state.sls', 'cdh5.hdfs.datanode')
 
 
 @install.command(short_help='Install mesos in the cluster')
 @click.pass_context
 def mesos(ctx):
     cluster = ctx.obj['cluster']
-    salt_master(cluster, cluster.master.name, 'state.sls', 'mesos.master')
-    salt_master(cluster, '*minion*', 'state.sls', 'mesos.slave')
+    salt_master_call(cluster, cluster.master.name, 'state.sls', 'mesos.master')
+    salt_master_call(cluster, '*minion*', 'state.sls', 'mesos.slave')
 
 
 @install.command(short_help='Install miniconda in the instances')
@@ -168,38 +168,55 @@ def miniconda(ctx, target):
     cluster = ctx.obj['cluster']
     if not target:
         target = '*'
-    salt_master(cluster, target, 'state.sls', 'miniconda')
-    salt_master(cluster, target, 'saltutil.sync_all')
+    salt_master_call(cluster, target, 'state.sls', 'miniconda')
+    salt_master_call(cluster, target, 'saltutil.sync_all')
 
 
 @install.command('salt', short_help='Install salt master and minion(s) via salt-ssh')
 @click.pass_context
 def install_salt(ctx):
     cluster = ctx.obj['cluster']
-    salt_ssh_call(cluster, cluster.master.name, 'state.sls', 'salt.master')
-    salt_ssh_call(cluster, cluster.master.name, 'state.sls', 'salt.minion')
+    # salt_ssh_call(cluster, cluster.master.name, 'state.sls', 'salt.master')
+    # salt_ssh_call(cluster, cluster.master.name, 'state.sls', 'salt.minion')
+    temp_roles_fix(cluster, cluster.master.ip, ['miniconda', 'ipython.notebook', 'spark', 'namenode', 'mesos.master'])
     # https://github.com/saltstack/salt/pull/19804#issuecomment-73957251
     # pillars = 'pillar="{salt: {master: {ip: %s}}, minion: {roles: [miniconda, mesos.master, namenode, ipython.notebook, spark]}}"' % cluster.master.ip
     # salt_ssh_call(cluster, cluster.master.name, 'state.sls', 'salt.minion', pillars)
 
-    pillars = 'pillar="{salt: {master: {ip: %s}}, minion: {roles: [miniconda, mesos.slave, datanode]}}"' % cluster.master.ip
-    salt_ssh_call(cluster, '*minion*', 'state.sls', 'salt.minion')
+    # salt_ssh_call(cluster, '*minion*', 'state.sls', 'salt.minion')
+    for minion in cluster.minions:
+        temp_roles_fix(cluster, minion.ip, ['miniconda', 'datanode', 'mesos.slave'])
+    # pillars = 'pillar="{salt: {master: {ip: %s}}, minion: {roles: [miniconda, mesos.slave, datanode]}}"' % cluster.master.ip
     # salt_ssh_call(cluster, '*', 'state.sls', 'salt.minion', pillars)
+
+    salt_master_call(cluster, '*', 'saltutil.sync_all')
+
+
+def temp_roles_fix(cluster, host, roles):
+    # For bug: https://github.com/saltstack/salt/pull/19804#issuecomment-73957251
+    from fabric.api import settings
+    host_string = '{0}@{1}'.format(cluster.profile.user, host)
+    key_filename = cluster.profile.keypair
+    with settings(host_string=host_string, key_filename=key_filename):
+        text = 'roles:\n'
+        for role in roles:
+            text += '  - %s\n' % role
+        sudo('echo "%s" > /etc/salt/grains' % text)
 
 
 @install.command(short_help='Install spark in the master')
 @click.pass_context
 def miniconda(ctx):
     cluster = ctx.obj['cluster']
-    salt_master(cluster, cluster.master.name, 'state.sls', 'spark')
-    salt_master(cluster, cluster.master.name, 'state.sls', 'mesos.spark')
+    salt_master_call(cluster, cluster.master.name, 'state.sls', 'spark')
+    salt_master_call(cluster, cluster.master.name, 'state.sls', 'mesos.spark')
 
 
 @install.command(short_help='Install ipython notebook in the master')
 @click.pass_context
 def notebook(ctx):
     cluster = ctx.obj['cluster']
-    salt_master(cluster, cluster.master.name, 'state.sls', 'ipython.notebook')
+    salt_master_call(cluster, cluster.master.name, 'state.sls', 'ipython.notebook')
 
 # --------------------------------------------------------------------------------------------------
 
@@ -234,7 +251,7 @@ def rsync(cluster_name, once):
 @click.option('--cluster-name', '-c', required=False, help='Cluster name')
 def salt(target, module, args, args2, cluster_name):
     cluster = get_cluster(cluster_name)
-    salt_master(cluster, target, module, args, args2)
+    salt_master_call(cluster, target, module, args, args2)
 
 
 @main.command('salt-ssh', short_help='Execute commands using salt-ssh')

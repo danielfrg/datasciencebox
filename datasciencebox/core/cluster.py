@@ -140,6 +140,7 @@ class Cluster(object):
         if os.path.exists(srv_pillar_dir):
             shutil.rmtree(srv_pillar_dir)
         shutil.copytree(config.SALT_PILLAR_DIR, srv_pillar_dir)
+        self.render_pillar('salt.sls', {'master': self.master.ip })
 
         salt_master_config = MASTER_CONFIG_TEMPLATE.format(cachedir=var_salt_dir,
                              file_roots=config.SALT_STATES_DIR,
@@ -148,6 +149,15 @@ class Cluster(object):
         salt_master_file = os.path.join(etc_salt_dir, 'master')
         with open(salt_master_file, 'w') as f:
             f.write(salt_master_config)
+
+    def render_pillar(self, path, dict_):
+        from jinja2 import Environment, FileSystemLoader
+        pillar_loader = FileSystemLoader(searchpath=self.get_pillar_path())
+        pillar_env = Environment(loader=pillar_loader)
+        pillar_template = pillar_env.get_template(path)
+        rendered = pillar_template.render(**dict_)
+        with open(os.path.join(self.get_pillar_path(), path), 'w') as f:
+            f.write(rendered)
 
     def get_salt_config_dir(self):
         return os.path.join(self.get_directory(), 'etc', 'salt')
