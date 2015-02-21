@@ -51,6 +51,7 @@ small:
   minions:
     n: 11
     size: t1.micro
+    keypair: ~/.ssh/my_aws_minion.pem
 '''
 
 def get_providers():
@@ -88,6 +89,7 @@ def test_profile_aws_valid_no_minions():
     with pytest.raises(AttributeError) as excinfo:
         profile.minions
 
+    assert profile.minions_profile() is None
 
 def test_profile_aws_valid_minions():
     profile = BaseProfile.from_text(profile_aws_valid_minions, providers=get_providers())
@@ -95,3 +97,13 @@ def test_profile_aws_valid_minions():
 
     assert profile.minions['n'] == 11
     assert profile.minions['size'] == 't1.micro'
+
+    minions_profile = profile.minions_profile()
+    assert minions_profile is not None
+    assert minions_profile.provider is not None
+    assert minions_profile.provider == profile.provider
+    assert minions_profile.user == 'ubuntu'
+    assert minions_profile.size == 't1.micro'
+    assert minions_profile.image == 'ami-eeb2ff86'
+    assert minions_profile.keyname == 'drodriguez'
+    assert minions_profile.keypair == '~/.ssh/my_aws_minion.pem'

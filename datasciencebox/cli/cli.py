@@ -17,7 +17,7 @@ from datasciencebox.core import cluster as cluster_module
 def get_cluster(cluster_name=None):
     clusters = cluster_module.load_clusters()
     if cluster_name:
-        return cluster.get(cluster_name)
+        return clusters.get(cluster_name)
     else:
         if len(clusters) == 0:
             raise Exception('No clusters found')
@@ -270,7 +270,7 @@ def salt_ssh(target, module, args, args2, cluster_name):
 def ssh(cluster_name):
     cluster = get_cluster(cluster_name)
     cmd = ['ssh', cluster.master.profile.user + '@' + cluster.master.ip]
-    cmd = cmd + ['-i', cluster.master.profile.keypair]
+    cmd = cmd + ['-i', os.path.expanduser(cluster.master.profile.keypair)]
     cmd = cmd + ['-oStrictHostKeyChecking=no']
     subprocess.call(cmd)
 

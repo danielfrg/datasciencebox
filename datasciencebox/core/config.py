@@ -10,14 +10,14 @@ this_file_path = os.path.realpath(__file__)
 SALT_STATES_DIR = os.path.realpath(os.path.join(this_file_path, '..', '..', '..', 'salt'))
 SALT_PILLAR_DIR = os.path.realpath(os.path.join(this_file_path, '..', '..', '..', 'pillar'))
 
-def create_dir(path):
+def safe_create_dir(path):
     if not os.path.exists(path):
         os.makedirs(path)
 
 
 def create_dirs():
-    create_dir(CLUSTERS_DIR)
-    create_dir(PROFILES_DIR)
-    create_dir(PROVIDERS_DIR)
+    safe_create_dir(CLUSTERS_DIR)
+    safe_create_dir(PROFILES_DIR)
+    safe_create_dir(PROVIDERS_DIR)
 
 create_dirs()

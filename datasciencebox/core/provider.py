@@ -95,8 +95,8 @@ class BaseProvider(object):
 
     def validate_fields(self):
         for field in self.required_fields():
-            assert field in self.attributes, 'Required field "%s" not in provider yaml file' % field
-            assert getattr(self, field), 'Required field "%s" not in provider  yaml file' % field
+            assert field in self.attributes, 'Required field "%s" not found' % field
+            assert getattr(self, field), 'Required field "%s" not found' % field
 
     def required_fields(self):
         raise NotImplementedError()

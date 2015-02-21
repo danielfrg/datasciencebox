@@ -84,8 +84,8 @@ class BaseProfile(object):
 
     def validate_fields(self):
         for field in self.required_fields():
-            assert field in self.attributes, 'Required field "%s" not in profile yaml file' % field
-            assert getattr(self, field), 'Required field "%s" not in profile yaml file' % field
+            assert field in self.attributes, 'Required field "%s" not found' % field
+            assert getattr(self, field), 'Required field "%s" not found' % field
 
     def required_fields(self):
         raise NotImplementedError()
@@ -98,6 +98,17 @@ class BaseProfile(object):
             for i in range(n_minions):
                 cluster.add_minion()
         return cluster
+
+    def minions_profile(self):
+        if 'minions' in self.attributes:
+            cls = type(self)
+            base_attrs = self.attributes
+            minion_attrs = copy.copy(self.attributes['minions'])
+            minions_profile = cls(self.name)
+            minions_profile.provider = self.provider
+            minions_profile.fill_attrs(base_attrs)
+            minions_profile.fill_attrs(minion_attrs)
+            return minions_profile
 
 
 class AWSProfile(BaseProfile):

@@ -3,3 +3,5 @@ Fabric>=1.10.1
 apache-libcloud>=0.16.0
 salt-ssh>=2014.7.1
 watchdog>=0.8.3
+
+py.test>=2.6.4

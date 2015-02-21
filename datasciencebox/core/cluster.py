@@ -9,6 +9,7 @@ from libcloud.compute.base import NodeImage
 from libcloud.compute.providers import get_driver
 
 from datasciencebox.core import config
+from datasciencebox.core.config import safe_create_dir
 
 this_dir = os.path.dirname(os.path.realpath(__file__))
 f = open(os.path.join(this_dir, 'templates/master.conf'), 'r')
@@ -16,14 +17,10 @@ MASTER_CONFIG_TEMPLATE = f.read()
 f.close()
 
 
-def safe_create_dir(path):
-    if not os.path.exists(path):
-        os.makedirs(path)
-
-
 def load_clusters():
     cluster_names = [file_ for file_ in os.listdir(config.CLUSTERS_DIR) if
-                     os.path.isdir(os.path.join(config.CLUSTERS_DIR, file_))]
+                     os.path.isdir(os.path.join(config.CLUSTERS_DIR, file_))
+                     and not file_.startswith('__')]
 
     clusters = Clusters()
     for cluster_name in cluster_names:
@@ -59,37 +56,47 @@ class Cluster(object):
         return 'Cluster({0})'.format(self.name)
 
     @classmethod
-    def from_directory(cls, cluster_name):
+    def from_directory(cls, dirname, profiles=None):
+        filepath = os.path.join(config.CLUSTERS_DIR, dirname, 'info.yaml')
+        return Cluster.from_filepath(filepath, profiles=profiles)
+
+    @classmethod
+    def from_filepath(cls, filepath, profiles=None):
+        with open(filepath, 'r') as f:
+            content = f.read()
+        return Cluster.from_text(content, profiles=profiles)
+
+    @classmethod
+    def from_text(cls, text, profiles=None):
         from datasciencebox.core.profile import load_profiles
 
-        filepath = os.path.join(config.CLUSTERS_DIR, cluster_name, 'info.yaml')
-        with open(filepath, 'r') as f:
-            info = yaml.load(f)
-            assert len(info.keys()) == 1, 'Should be only one root in cluster yaml file'
+        info = yaml.load(text)
+        assert len(info.keys()) == 1, 'Should be only one root'
+        name = info.keys()[0]
 
-            name = info.keys()[0]
-            profile = load_profiles().get(info[name]['profile'])
-            self = cls(name, profile)
+        profiles = profiles if profiles else load_profiles()
+        profile = profiles.get(info[name]['profile'])
+        self = cls(name, profile)
 
-            self.add_master(info[name]['master']['name'], info[name]['master'])
-            if 'minions' in info[name]:
-                for minion_dict in info[name]['minions']:
-                    minion_name = minion_dict.keys()[0]
-                    self.add_minion(minion_name, minion_dict[minion_name])
+        self.add_master(info[name]['master']['name'], info[name]['master'])
+        if 'minions' in info[name]:
+            for minion_dict in info[name]['minions']:
+                minion_name = minion_dict.keys()[0]
+                self.add_minion(minion_name, minion_dict[minion_name])
 
         return self
 
-    def get_directory(self):
+    def get_cluster_dir(self):
         return os.path.join(config.CLUSTERS_DIR, self.name)
 
+    def get_info_path(self):
+        return os.path.join(self.get_cluster_dir(), 'info.yaml')
+
     def save_info(self):
-        safe_create_dir(self.get_directory())
+        safe_create_dir(self.get_cluster_dir())
         filepath = self.get_info_path()
         with open(filepath, 'w') as f:
             yaml.safe_dump(self.to_dict(), f, default_flow_style=False)
-
-    def get_info_path(self):
-        return os.path.join(config.CLUSTERS_DIR, self.name, 'info.yaml')
 
     def to_dict(self):
         ret = {}
@@ -105,8 +112,15 @@ class Cluster(object):
         self.create_salt_ssh_files()
 
     def save_roster(self):
-        safe_create_dir(self.get_directory())
+        safe_create_dir(self.get_cluster_dir())
+        filepath = self.get_roster_path()
+        with open(filepath, 'w') as f:
+            yaml.safe_dump(ret, f, default_flow_style=False)
 
+    def get_roster_path(self):
+        return os.path.join(self.get_cluster_dir(), 'roster.yaml')
+
+    def generate_roster(self):
         def roster_items(instance):
             ret = {}
             ret['host'] = instance.ip
@@ -119,21 +133,18 @@ class Cluster(object):
         ret[self.master.name] = roster_items(self.master)
         for minion in self.minions:
             ret[minion.name] = roster_items(minion)
-
-        filepath = self.get_roster_path()
-        with open(filepath, 'w') as f:
-            yaml.safe_dump(ret, f, default_flow_style=False)
-
-    def get_roster_path(self):
-        return os.path.join(self.get_directory(), 'roster.yaml')
+        return ret
 
     def get_pillar_path(self):
-        return os.path.join(self.get_directory(), 'pillar')
+        return os.path.join(self.get_cluster_dir(), 'pillar')
+
+    def get_salt_config_dir(self):
+        return os.path.join(self.get_cluster_dir(), 'etc', 'salt')
 
     def create_salt_ssh_files(self):
         etc_salt_dir = self.get_salt_config_dir()
         safe_create_dir(etc_salt_dir)
-        var_salt_dir = os.path.join(self.get_directory(), 'var', 'cache', 'salt')
+        var_salt_dir = os.path.join(self.get_cluster_dir(), 'var', 'cache', 'salt')
         safe_create_dir(var_salt_dir)
 
         srv_pillar_dir = self.get_pillar_path()
@@ -159,9 +170,6 @@ class Cluster(object):
         with open(os.path.join(self.get_pillar_path(), path), 'w') as f:
             f.write(rendered)
 
-    def get_salt_config_dir(self):
-        return os.path.join(self.get_directory(), 'etc', 'salt')
-
     def add_master(self, name=None, info=None):
         if not name:
             name = self.name + '-master'
@@ -173,7 +181,7 @@ class Cluster(object):
         if not name:
             i = len(self.minions) + 1
             name = self.name + '-minion-%i' % i
-        minion = self.instance_type()(name, self.profile)
+        minion = self.instance_type()(name, self.profile.minions_profile())
         if info:
             minion.from_dict(info)
         self.minions.append(minion)
@@ -252,7 +260,7 @@ class AWSInstance(Instance):
         self._private_dns = None
 
     def __repr__(self):
-        return 'EC2Instance(%s)' % self.name
+        return 'AWSInstance(%s)' % self.name
 
     def from_dict(self, info):
         self.id = info['id']
@@ -287,6 +295,8 @@ class AWSInstance(Instance):
     private_dns = property(get_private_dns, set_private_dns, None)
 
     def get_node(self):
+        if not self._node:
+            self.node_ = self.fetch_node()
         return self._node
 
     def set_node(self, value):
@@ -309,9 +319,6 @@ class AWSInstance(Instance):
         return node
 
     def destroy(self):
-        if not self.node:
-            self.fetch_node()
-
         self.node.destroy()
 
     def fetch_node(self):
