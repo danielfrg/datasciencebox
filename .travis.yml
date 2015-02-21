@@ -4,6 +4,6 @@ python:
 
 install:
   - pip install -r requirements.txt
-  - python setup.py install
+  - pip install -e .
 
 script: py.test --basetemp=tests
