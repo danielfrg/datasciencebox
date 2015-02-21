@@ -52,7 +52,7 @@ def get_providers():
 
 def get_profiles():
     profiles = Profiles()
-    profile_ = BaseProfile.from_text(profile)
+    profile_ = BaseProfile.from_text(profile, providers=get_providers())
     profiles.append(profile_)
     return profiles
 
