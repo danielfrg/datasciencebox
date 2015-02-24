@@ -1,3 +1,6 @@
+include:
+  - java
+
 cdh5-repository_1.0_all.deb:
   file.managed:
     - name: /tmp/cdh5-repository_1.0_all.deb
@@ -13,23 +16,21 @@ cdh5_gpg:
       - file: cdh5-repository_1.0_all.deb
 
 cdh5_refresh_db:
-  module.run:
+  module.wait:
     - name: pkg.refresh_db
-    - require:
+    - watch:
       - cmd: cdh5_gpg
 
-# This is used on ubuntu so that services don't start
-add_policy_file:
-  file.managed:
-    - name: /usr/sbin/policy-rc.d
-    - contents: exit 101
-    - user: root
-    - group: root
-    - mode: 755
-    - makedirs: True
+# # This is used on ubuntu so that services don't start
+# add_policy_file:
+#   file.managed:
+#     - name: /usr/sbin/policy-rc.d
+#     - contents: exit 101
+#     - makedirs: true
+#     - unless: test -e /usr/sbin/policy-rc.d
 
-remove_policy_file:
-  file.absent:
-    - name: /usr/sbin/policy-rc.d
-    - require:
-      - file: add_policy_file
+# remove_policy_file:
+#   file.absent:
+#     - name: /usr/sbin/policy-rc.d
+#     - require:
+#       - file: add_policy_file

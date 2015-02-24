@@ -4,18 +4,33 @@
 
 include:
   - spark
-  - mesos.conf
+  - cdh5.hdfs.namenode
 
-spark-hdfs:
+spark-hdfs-1:
   cmd.run:
-    - name: |
-        cp -r /usr/lib/spark /tmp/{{ version }};
-        tar czf /tmp/{{ version }}.tgz /tmp/{{ version }};
-        hadoop fs -put /tmp/{{ version }}.tgz /tmp/{{ version }}.tgz;
+    - name: cp -r /usr/lib/spark /tmp/{{ version }};
     - user: hdfs
     - unless: hadoop fs -test -e /tmp/{{ version }}.tgz
     - require:
       - sls: spark
+      - sls: cdh5.hdfs.namenode
+
+spark-hdfs-2:
+  cmd.run:
+    - name: tar czf /tmp/{{ version }}.tgz /tmp/{{ version }};
+    - user: hdfs
+    - unless: hadoop fs -test -e /tmp/{{ version }}.tgz || test -e /tmp/{{ version }}.tgz
+    - require:
+      - cmd: spark-hdfs-1
+
+spark-hdfs-3:
+  cmd.run:
+    - name: hadoop fs -put /tmp/{{ version }}.tgz /tmp;
+    - user: hdfs
+    - unless: hadoop fs -test -e /tmp/{{ version }}.tgz
+    - require:
+      - cmd: spark-hdfs-2
+
 
 /usr/lib/spark/conf/spark-env.sh:
   file.managed:
@@ -29,3 +44,4 @@ spark-hdfs:
       zookeepers: {{ mesos['connection_string'] }}
     - require:
       - sls: spark
+      - sls: cdh5.hdfs.namenode

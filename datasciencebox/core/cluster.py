@@ -115,7 +115,7 @@ class Cluster(object):
         safe_create_dir(self.get_cluster_dir())
         filepath = self.get_roster_path()
         with open(filepath, 'w') as f:
-            yaml.safe_dump(ret, f, default_flow_style=False)
+            yaml.safe_dump(self.generate_roster(), f, default_flow_style=False)
 
     def get_roster_path(self):
         return os.path.join(self.get_cluster_dir(), 'roster.yaml')

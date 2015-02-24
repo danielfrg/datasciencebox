@@ -22,9 +22,9 @@ start-hadoop-hdfs-datanode:
   service.running:
     - name: hadoop-hdfs-datanode
     - enable: true
-    - require:
-      - pkg: hadoop-hdfs-datanode
+    - watch:
       - sls: cdh5.hdfs.conf
+      - pkg: hadoop-hdfs-datanode
       {% for dir in datanode_dirs %}
       - file: {{ dir }}
       {% endfor %}

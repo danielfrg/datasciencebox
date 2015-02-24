@@ -48,7 +48,7 @@ small:
 
 ### 3. Create instances
 
-`dsb create new_cluster`
+`dsb create new_cluster -p {{ PROFILE_NAME }}`
 
 New instances will be created and a `~/.datasciencebox/cluster/new_cluster` directory
 will be created will the cluster information and settings.
@@ -65,9 +65,7 @@ Before doing anything else we need to install salt in the instances
 
 `dsb install miniconda` will bootstrap (mini)conda in all the instances
 
-After its installed conda (and pypi) packages can be installed using `dsb install conda`
-
-### conda
+### conda/pip pkg
 
 Requires: miniconda
 
@@ -75,15 +73,13 @@ Requires: miniconda
 
 `dsb install conda numpy '*minion*'` will install numpy in all the minions
 
-### pip
-
-Requires: miniconda
-
 `dsb install pip boto` will install boto in all the instances
 
-`dsb install pip boto '*'` will install boto in all the minions
+`dsb install pip boto '*minion*'` will install boto in all the minions
 
 ### IPython notebook
+
+Requires: miniconda
 
 `dsb install notebook`
 
@@ -93,6 +89,10 @@ Note: Spark is supported via mesos
 
 1. Install hdfs and mesos: `dsb install hdfs` and `dsb install mesos`
 2. Install spark: `dsb install spark`
+
+## Fuck it, i want everything
+
+`dsb install highstate`
 
 ## Configuration
 

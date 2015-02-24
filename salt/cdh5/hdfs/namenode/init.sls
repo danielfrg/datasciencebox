@@ -1,7 +1,6 @@
 {%- from 'cdh5/settings.sls' import namenode_dirs with context %}
 
 include:
-  - java
   - cdh5
   - cdh5.hdfs.conf
 
@@ -34,12 +33,24 @@ start-hadoop-hdfs-namenode:
   service.running:
     - name: hadoop-hdfs-namenode
     - enable: true
-    - require:
+    - watch:
       - cmd: format-hdfs
+      - sls: cdh5.hdfs.conf
+      {% for dir in namenode_dirs %}
+      - file: {{ dir }}
+      {% endfor %}
 
-hdfs-tmp:
-  cmd.wait:
+hdfs-tmp-create:
+  cmd.run:
     - name: hadoop fs -mkdir /tmp
     - user: hdfs
+    - unless: hadoop fs -ls /tmp
+    - require:
+        - service: start-hadoop-hdfs-namenode
+
+hdfs-tmp-permission:
+  cmd.wait:
+    - name: hadoop fs -chmod -R 1777 /tmp
+    - user: hdfs
     - watch:
-      - service: start-hadoop-hdfs-namenode
+        - cmd: hdfs-tmp-create

@@ -5,7 +5,7 @@
 
 {%- set default_version_name = 'jdk1.7.0_55' %}
 {%- set default_prefix       = '/usr/java' %}
-{%- set default_source_url   = 'https://s3.amazonaws.com/o360-transfers/jdk-7u55-linux-x64.tar.gz' %}
+{%- set default_source_url   = 'http://download.oracle.com/otn-pub/java/jdk/7u75-b13/jdk-7u75-linux-x64.tar.gz' %}
 {%- set default_dl_opts      = '-b oraclelicense=accept-securebackup-cookie -L' %}
 
 {%- set version_name   = g.get('version_name', p.get('version_name', default_version_name)) %}

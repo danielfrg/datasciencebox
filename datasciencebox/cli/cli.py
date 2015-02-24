@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 import os
 import shutil
 import subprocess
+import webbrowser
 
 import click
 from fabric.api import settings, run, sudo
@@ -35,7 +36,7 @@ def salt_master_call(cluster, target, module, args=None, args2=None, user=None):
             cmd += ' ' + args2
         if user:
             cmd += ' user=' + user
-        cmd += ' -t 60 --state-output=mixed'
+        cmd += ' -t 300 --state-output=mixed'
         print cmd
         sudo(cmd)
 
@@ -50,8 +51,9 @@ def salt_ssh_call(cluster, target, module, args=None, args2=None):
         cmd = cmd + [args2]
 
     cmd = cmd + ['--state-output=mixed']
-    print ' '.join(cmd)
-    subprocess.call(cmd)
+    cmd = ' '.join(cmd)
+    print cmd
+    subprocess.call(cmd, shell=True)
 
 
 CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
@@ -176,37 +178,26 @@ def miniconda(ctx, target):
 @click.pass_context
 def install_salt(ctx):
     cluster = ctx.obj['cluster']
-    # salt_ssh_call(cluster, cluster.master.name, 'state.sls', 'salt.master')
-    # salt_ssh_call(cluster, cluster.master.name, 'state.sls', 'salt.minion')
-    temp_roles_fix(cluster, cluster.master.ip, ['miniconda', 'ipython.notebook', 'spark', 'namenode', 'mesos.master'])
-    # https://github.com/saltstack/salt/pull/19804#issuecomment-73957251
-    # pillars = 'pillar="{salt: {master: {ip: %s}}, minion: {roles: [miniconda, mesos.master, namenode, ipython.notebook, spark]}}"' % cluster.master.ip
-    # salt_ssh_call(cluster, cluster.master.name, 'state.sls', 'salt.minion', pillars)
+    pillar_template = '''pillar='{"salt": {"master": {"ip": "%s"}, "minion": {"roles": %s } } }' '''
 
-    # salt_ssh_call(cluster, '*minion*', 'state.sls', 'salt.minion')
-    for minion in cluster.minions:
-        temp_roles_fix(cluster, minion.ip, ['miniconda', 'datanode', 'mesos.slave'])
-    # pillars = 'pillar="{salt: {master: {ip: %s}}, minion: {roles: [miniconda, mesos.slave, datanode]}}"' % cluster.master.ip
-    # salt_ssh_call(cluster, '*', 'state.sls', 'salt.minion', pillars)
+    # Master
+    salt_ssh_call(cluster, cluster.master.name, 'state.sls', 'salt.master')
+    roles = '''["miniconda", "mesos.master", "namenode", "ipython.notebook", "spark"]'''
+    roles = '''["miniconda", "mesos.master"]'''
+    pillars = pillar_template % (cluster.master.ip, roles)
+    salt_ssh_call(cluster, cluster.master.name, 'state.sls', 'salt.minion', pillars)
+
+    # Minions
+    roles = '''["miniconda", "mesos.slave"]'''
+    pillars = pillar_template % (cluster.master.ip, roles)
+    salt_ssh_call(cluster, '*minion*', 'state.sls', 'salt.minion', pillars)
 
     salt_master_call(cluster, '*', 'saltutil.sync_all')
 
 
-def temp_roles_fix(cluster, host, roles):
-    # For bug: https://github.com/saltstack/salt/pull/19804#issuecomment-73957251
-    from fabric.api import settings
-    host_string = '{0}@{1}'.format(cluster.profile.user, host)
-    key_filename = cluster.profile.keypair
-    with settings(host_string=host_string, key_filename=key_filename):
-        text = 'roles:\n'
-        for role in roles:
-            text += '  - %s\n' % role
-        sudo('echo "%s" > /etc/salt/grains' % text)
-
-
 @install.command(short_help='Install spark in the master')
 @click.pass_context
-def miniconda(ctx):
+def spark(ctx):
     cluster = ctx.obj['cluster']
     salt_master_call(cluster, cluster.master.name, 'state.sls', 'spark')
     salt_master_call(cluster, cluster.master.name, 'state.sls', 'mesos.spark')
@@ -229,6 +220,33 @@ def list():
         else:
             print cluster.name
 
+# --------------------------------------------------------------------------------------------------
+# OPEN
+# --------------------------------------------------------------------------------------------------
+
+@main.group('open', short_help='Open an app UI/browser/etc')
+@click.option('--cluster-name', '-c', required=False, help='Cluster name')
+@click.pass_context
+def open_(ctx, cluster_name):
+    ctx.obj = {}
+    ctx.obj['cluster'] = get_cluster(cluster_name)
+
+
+@open_.command('mesos', short_help='Open the mesos UI')
+@click.pass_context
+def open_mesos(ctx):
+    cluster = ctx.obj['cluster']
+    url = 'http://%s:5050' % cluster.master.ip
+    webbrowser.open(url, new=2)
+
+@open_.command('hdfs', short_help='Open the hdfs UI')
+@click.pass_context
+def open_hdfs(ctx):
+    cluster = ctx.obj['cluster']
+    url = 'http://%s:50070' % cluster.master.ip
+    webbrowser.open(url, new=2)
+
+# --------------------------------------------------------------------------------------------------
 
 @main.command(short_help='Advanced: rsync salt states to master')
 @click.argument('cluster-name', required=False)
@@ -243,7 +261,7 @@ def rsync(cluster_name, once):
         rsync_.loop(cluster, handler)
 
 
-@main.command('salt', short_help='Execute commands using the salt-master')
+@main.command(short_help='Execute commands using the salt-master')
 @click.argument('target', required=True)
 @click.argument('module', required=True)
 @click.argument('args', required=False)
@@ -252,6 +270,15 @@ def rsync(cluster_name, once):
 def salt(target, module, args, args2, cluster_name):
     cluster = get_cluster(cluster_name)
     salt_master_call(cluster, target, module, args, args2)
+
+
+@main.command(short_help='Run salt state.highstate')
+@click.option('--cluster-name', '-c', required=False, help='Cluster name')
+@click.argument('target', required=False)
+def highstate(target, cluster_name):
+    cluster = get_cluster(cluster_name)
+    target = target if target else '*'
+    salt_master_call(cluster, target, 'state.highstate')
 
 
 @main.command('salt-ssh', short_help='Execute commands using salt-ssh')

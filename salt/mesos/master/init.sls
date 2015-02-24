@@ -1,7 +1,6 @@
 {%- from 'mesos/settings.sls' import mesos with context %}
 
 include:
-  - mesos
   - mesos.conf
   - mesos.zookeeper
 
@@ -29,7 +28,7 @@ mesos-master:
     - enable: true
     - watch:
       - sls: mesos.conf
-      - service: zookeeper
+      - sls: mesos.zookeeper
       - file: /etc/mesos-master/ip
       - file: /etc/mesos-master/hostname
 

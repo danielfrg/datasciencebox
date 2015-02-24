@@ -1,7 +1,6 @@
 {%- from 'mesos/settings.sls' import mesos with context %}
 
 include:
-  - mesos
   - mesos.conf
 
 /etc/mesos-slave/ip:
@@ -48,13 +47,14 @@ mesos-slave:
       - sls: mesos.conf
       - file: /etc/mesos-slave/ip
       - file: /etc/mesos-slave/hostname
+      - file: /etc/mesos-slave/executor_registration_timeout
 
 mesos-master-dead:
   cmd.run:
     - name: echo manual > /etc/init/mesos-master.override
     - unless: test -e /etc/init/mesos-master.override
     - require:
-      - sls: mesos
+      - sls: mesos.conf
   service.dead:
     - name: mesos-master
     - require:
@@ -65,7 +65,7 @@ zookeeper-dead:
     - name: echo manual > /etc/init/zookeeper.override
     - unless: test -e /etc/init/zookeeper.override
     - require:
-      - sls: mesos
+      - sls: mesos.conf
   service.dead:
     - name: zookeeper
     - require:

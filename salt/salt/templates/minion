@@ -1,2 +1,9 @@
 id: {{ grains['id'] }}
 master: {{ pillar['salt']['master']['ip'] }}
+
+mine_functions:
+  network.get_hostname: []
+  network.interfaces: []
+  network.ip_addrs:
+    - eth0
+mine_interval: 2

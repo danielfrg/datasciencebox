@@ -8,5 +8,19 @@
 {%- set namenode_fqdn = 'localhost' %}
 {% endif %}
 
-{%- set namenode_dirs = ['/data/1/dfs/nn'] %}
-{%- set datanode_dirs = ['/data/1/dfs/dn'] %}
+# Namenode and Datanode directories
+{%- set namenode_dirs = []  %}
+{%- set datanode_dirs = [] %}
+{% set mounted = salt['mount.fstab']() %}
+
+{% if mounted | length == 1 %}
+{% do namenode_dirs.append('/data/dfs/nn') %}
+{% do datanode_dirs.append('/data/dfs/dn') %}
+{% else %}
+{% for disk in mounted.keys() %}
+  {% if disk != '/' %}
+    {% do namenode_dirs.append((disk ~ '/data/dfs/nn').encode('utf8')) %}
+    {% do datanode_dirs.append((disk ~ '/data/dfs/dn').encode('utf8')) %}
+  {% endif %}
+{% endfor %}
+{% endif %}
