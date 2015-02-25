@@ -1,4 +1,4 @@
-{%- from 'mesos/settings.sls' import mesos with context %}
+{%- from 'cdh5/zookeeper/settings.sls' import zk with context %}
 
 include:
   - mesos
@@ -9,4 +9,4 @@ include:
     - template: jinja
     - makedirs: true
     - context:
-      connection_string: {{ mesos['connection_string'] }}
+      connection_string: {{ zk['connection_string'] }}

@@ -3,7 +3,7 @@
 jdk-config:
   file.managed:
     - name: /etc/profile.d/java.sh
-    - source: salt://java/java.sh
+    - source: salt://java/templates/java.sh
     - template: jinja
     - mode: 644
     - user: root

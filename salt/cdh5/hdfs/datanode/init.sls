@@ -1,7 +1,6 @@
 {%- from 'cdh5/settings.sls' import datanode_dirs with context %}
 
 include:
-  - java
   - cdh5
   - cdh5.hdfs.conf
 

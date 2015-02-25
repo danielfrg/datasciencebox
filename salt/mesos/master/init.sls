@@ -2,7 +2,6 @@
 
 include:
   - mesos.conf
-  - mesos.zookeeper
 
 /etc/mesos-master/ip:
   file.managed:
@@ -28,7 +27,6 @@ mesos-master:
     - enable: true
     - watch:
       - sls: mesos.conf
-      - sls: mesos.zookeeper
       - file: /etc/mesos-master/ip
       - file: /etc/mesos-master/hostname
 
@@ -42,3 +40,14 @@ mesos-slave-dead:
     - unless: test -e /etc/init/mesos-slave.override
     - require:
       - sls: mesos.conf
+
+# zookeeper-dead:
+#   cmd.run:
+#     - name: echo manual > /etc/init/zookeeper.override
+#     - unless: test -e /etc/init/zookeeper.override
+#     - require:
+#       - sls: mesos.conf
+#   service.dead:
+#     - name: zookeeper
+#     - require:
+#       - cmd: zookeeper-dead

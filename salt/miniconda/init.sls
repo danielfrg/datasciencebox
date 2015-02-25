@@ -1,7 +1,7 @@
 include:
   - users
 
-miniconda:
+miniconda-download:
   cmd.run:
     - name: |
         wget http://repo.continuum.io/miniconda/Miniconda-3.8.3-Linux-x86_64.sh -O /tmp/miniconda.sh

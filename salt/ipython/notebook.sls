@@ -6,7 +6,7 @@ include:
     - user: dsb
     - makedirs: true
 
-notebook-log:
+notebooks-log-dir:
   file.directory:
     - name: /var/log/ipython
     - makedirs: true
@@ -14,8 +14,8 @@ notebook-log:
 ipython-notebook:
   conda.installed:
     - user: dsb
-    # - require:
-    #   - sls: miniconda
+    - require:
+      - sls: miniconda
 
 notebook.conf:
   pkg.installed:
@@ -27,7 +27,6 @@ notebook.conf:
     - makedirs: true
     - require:
       - pkg: notebook.conf
-      - file: notebook-log
 
 notebook-update-supervisor:
   module.run:
@@ -36,12 +35,10 @@ notebook-update-supervisor:
       - file: notebook.conf
 
 notebook-service:
-  file.directory:
-    - name: /var/log/ipython
   supervisord.running:
     - name: notebook
-    - restart: true
-    - require:
-      - file: notebook-service
+    - watch:
+      - file: notebook.conf
+      - file: notebooks-log-dir
       - conda: ipython-notebook
       - module: notebook-update-supervisor

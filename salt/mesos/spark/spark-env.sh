@@ -1,3 +1,5 @@
-export MESOS_NATIVE_LIBRARY=/usr/local/lib/libmesos.so
-export SPARK_EXECUTOR_URI=hdfs://{{ namenode }}:8020/{{ hdfs_spark_path }}
-export MASTER=zk://{{ zookeepers }}/mesos
+{%- from 'mesos/spark/settings.sls' import env with context -%}
+
+{% for var in env %}
+export {{ var }}="{{ env[var] }}"
+{% endfor %}

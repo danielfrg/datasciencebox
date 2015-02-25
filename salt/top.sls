@@ -11,6 +11,10 @@ base:
     - match: grain
     - ipython.notebook
 
+  'roles:zookeeper':
+    - match: grain
+    - cdh5.zookeeper
+
   'roles:mesos.master':
     - match: grain
     - mesos.master
@@ -27,6 +31,7 @@ base:
   'roles:namenode':
     - match: grain
     - cdh5.hdfs.namenode
+    - cdh5.hdfs.users
 
   'roles:datanode':
     - match: grain

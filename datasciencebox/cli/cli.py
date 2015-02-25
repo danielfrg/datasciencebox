@@ -182,13 +182,14 @@ def install_salt(ctx):
 
     # Master
     salt_ssh_call(cluster, cluster.master.name, 'state.sls', 'salt.master')
-    roles = '''["miniconda", "mesos.master", "namenode", "ipython.notebook", "spark"]'''
-    roles = '''["miniconda", "mesos.master"]'''
+    roles = '''["miniconda", "zookeeper", "mesos.master", "namenode", "ipython.notebook", "spark"]'''
+    roles = '''["java", "cdh5.hadoop.namenode", "cdh5.zookeeper", "cdh5.hive.metastore", "cdh5.impala.state-store"]'''
     pillars = pillar_template % (cluster.master.ip, roles)
     salt_ssh_call(cluster, cluster.master.name, 'state.sls', 'salt.minion', pillars)
 
     # Minions
-    roles = '''["miniconda", "mesos.slave"]'''
+    roles = '''["miniconda", "mesos.slave", "datanode"]'''
+    roles = '''["java", "cdh5.hadoop.datanode", "cdh5.impala.server"]'''
     pillars = pillar_template % (cluster.master.ip, roles)
     salt_ssh_call(cluster, '*minion*', 'state.sls', 'salt.minion', pillars)
 
@@ -239,11 +240,20 @@ def open_mesos(ctx):
     url = 'http://%s:5050' % cluster.master.ip
     webbrowser.open(url, new=2)
 
+
 @open_.command('hdfs', short_help='Open the hdfs UI')
 @click.pass_context
 def open_hdfs(ctx):
     cluster = ctx.obj['cluster']
     url = 'http://%s:50070' % cluster.master.ip
+    webbrowser.open(url, new=2)
+
+
+@open_.command('notebook', short_help='Open the IPython notebook')
+@click.pass_context
+def open_notebook(ctx):
+    cluster = ctx.obj['cluster']
+    url = 'http://%s:8888' % cluster.master.ip
     webbrowser.open(url, new=2)
 
 # --------------------------------------------------------------------------------------------------

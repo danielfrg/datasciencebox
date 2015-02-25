@@ -10,7 +10,7 @@ include:
     - user: root
     - group: root
     - mode: 755
-    - makedirs: True
+    - makedirs: true
 
 unpack-jdk-tarball:
   cmd.run:
@@ -24,10 +24,5 @@ unpack-jdk-tarball:
     - link: {{ java.java_home }}
     - path: {{ java.java_real_home }}
     - priority: 30
-
-# /usr/java/default:
-#   file.symlink:
-#     - target: {{ java.java_real_home }}
-#     - makedirs: true
 
 {%- endif %}

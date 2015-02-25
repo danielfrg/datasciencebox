@@ -1,6 +1,4 @@
 {%- from 'spark/settings.sls' import version with context %}
-{%- from 'mesos/settings.sls' import mesos with context %}
-{%- from 'cdh5/settings.sls' import namenode_fqdn with context %}
 
 include:
   - spark
@@ -31,17 +29,12 @@ spark-hdfs-3:
     - require:
       - cmd: spark-hdfs-2
 
-
 /usr/lib/spark/conf/spark-env.sh:
   file.managed:
     - source: salt://mesos/spark/spark-env.sh
     - template: jinja
     - user: root
     - group: root
-    - context:
-      namenode: {{ namenode_fqdn }}
-      hdfs_spark_path: /tmp/{{ version }}.tgz
-      zookeepers: {{ mesos['connection_string'] }}
     - require:
       - sls: spark
       - sls: cdh5.hdfs.namenode
