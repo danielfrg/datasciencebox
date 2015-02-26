@@ -1,31 +1,28 @@
-{%- from 'spark/settings.sls' import version with context %}
-
 include:
-  - spark
+  - cdh5.spark
   - cdh5.hdfs.namenode
 
 spark-hdfs-1:
   cmd.run:
-    - name: cp -r /usr/lib/spark /tmp/{{ version }};
+    - name: hadoop fs -mkdir /spark
     - user: hdfs
-    - unless: hadoop fs -test -e /tmp/{{ version }}.tgz
+    - unless: hadoop fs -test -e /spark
     - require:
-      - sls: spark
       - sls: cdh5.hdfs.namenode
 
 spark-hdfs-2:
   cmd.run:
-    - name: tar czf /tmp/{{ version }}.tgz /tmp/{{ version }};
+    - name: tar czf /tmp/spark.tgz /usr/lib/spark;
     - user: hdfs
-    - unless: hadoop fs -test -e /tmp/{{ version }}.tgz || test -e /tmp/{{ version }}.tgz
+    - unless: hadoop fs -test -e /spark/spark.tgz || test -e /tmp/spark.tgz
     - require:
       - cmd: spark-hdfs-1
 
 spark-hdfs-3:
   cmd.run:
-    - name: hadoop fs -put /tmp/{{ version }}.tgz /tmp;
+    - name: hadoop fs -put /tmp/spark.tgz /spark;
     - user: hdfs
-    - unless: hadoop fs -test -e /tmp/{{ version }}.tgz
+    - unless: hadoop fs -test -e /spark/spark.tgz
     - require:
       - cmd: spark-hdfs-2
 
@@ -36,5 +33,4 @@ spark-hdfs-3:
     - user: root
     - group: root
     - require:
-      - sls: spark
-      - sls: cdh5.hdfs.namenode
+      - sls: cdh5.spark

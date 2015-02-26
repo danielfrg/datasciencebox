@@ -23,11 +23,6 @@ base:
     - match: grain
     - mesos.slave
 
-  'roles:spark':
-    - match: grain
-    - spark
-    - mesos.spark
-
   'roles:namenode':
     - match: grain
     - cdh5.hdfs.namenode

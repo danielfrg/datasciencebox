@@ -182,14 +182,14 @@ def install_salt(ctx):
 
     # Master
     salt_ssh_call(cluster, cluster.master.name, 'state.sls', 'salt.master')
-    roles = '''["miniconda", "zookeeper", "mesos.master", "namenode", "ipython.notebook", "spark"]'''
     roles = '''["java", "cdh5.hadoop.namenode", "cdh5.zookeeper", "cdh5.hive.metastore", "cdh5.impala.state-store"]'''
+    roles = '''["miniconda", "zookeeper", "mesos.master", "namenode", "ipython.notebook", "spark"]'''
     pillars = pillar_template % (cluster.master.ip, roles)
     salt_ssh_call(cluster, cluster.master.name, 'state.sls', 'salt.minion', pillars)
 
     # Minions
-    roles = '''["miniconda", "mesos.slave", "datanode"]'''
     roles = '''["java", "cdh5.hadoop.datanode", "cdh5.impala.server"]'''
+    roles = '''["miniconda", "mesos.slave", "datanode"]'''
     pillars = pillar_template % (cluster.master.ip, roles)
     salt_ssh_call(cluster, '*minion*', 'state.sls', 'salt.minion', pillars)
 
