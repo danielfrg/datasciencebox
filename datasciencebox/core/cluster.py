@@ -323,9 +323,7 @@ class AWSInstance(Instance):
                         ex_keyname=self.profile.keyname,
                         ex_securitygroup=self.profile.security_groups,
                         ex_blockdevicemappings=ebs_mapping)
-            print 1
         except Exception, e:
-            print 2, str(e)
             if 'EBS block device mappings not supported for instance-store AMIs' in str(e):
                 node = self.profile.provider.driver.create_node(name=self.name, size=size, image=image,
                             ex_keyname=self.profile.keyname,
