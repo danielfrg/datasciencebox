@@ -312,9 +312,26 @@ class AWSInstance(Instance):
         sizes = self.profile.provider.driver.list_sizes()
         size = [s for s in sizes if s.id == self.profile.size][0]
 
-        node = self.profile.provider.driver.create_node(name=self.name, size=size, image=image,
-                    ex_keyname=self.profile.keyname,
-                    ex_securitygroup=self.profile.security_groups)
+        ebs_mapping = [{'DeviceName': '/dev/sda1',
+                        'Ebs': {'DeleteOnTermination': 'true',
+                                'VolumeSize': 200,
+                                'VolumeType': 'standard'},
+                        'VirtualName': None}]
+
+        try:
+            node = self.profile.provider.driver.create_node(name=self.name, size=size, image=image,
+                        ex_keyname=self.profile.keyname,
+                        ex_securitygroup=self.profile.security_groups,
+                        ex_blockdevicemappings=ebs_mapping)
+            print 1
+        except Exception, e:
+            print 2, str(e)
+            if 'EBS block device mappings not supported for instance-store AMIs' in str(e):
+                node = self.profile.provider.driver.create_node(name=self.name, size=size, image=image,
+                            ex_keyname=self.profile.keyname,
+                            ex_securitygroup=self.profile.security_groups)
+            else:
+                raise(e)
         self.node = node
         return node
 
