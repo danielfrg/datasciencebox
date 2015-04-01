@@ -16,3 +16,15 @@ salt-master:
     - watch:
       - pkg: salt-master
       - file: salt-master
+
+/srv/salt/base:
+  file.directory:
+    - makedirs: true
+
+/srv/salt/extra:
+  file.directory:
+    - makedirs: true
+
+/srv/pillar:
+  file.directory:
+    - makedirs: true

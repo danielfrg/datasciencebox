@@ -1,2 +1,11 @@
 auto_accept: true
 pillar_source_merging_strategy: recurse
+
+file_roots:
+  base:
+    - /srv/salt/extra
+    - /srv/salt/base
+
+pillar_roots:
+  base:
+    - /srv/pillar
