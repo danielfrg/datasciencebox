@@ -8,103 +8,68 @@ Command line utility to create instances in the cloud ready for data science.
 
 ## Usage
 
-CLI is available as `datasciencebox` or `dsb`
+The basic usage is very similar to `vagrant`, `fabric` or `docker` in which you create a
+`Vagrantfile`, `fabfile` or `Dockerfile` respectively and execute the command line
+in the directory that contains that file.
 
-Run `dsb` once to create the directories, all settings are located in `~/.datasciencebox`:
+In this case you create a `dsbfile` and use the `dsb` (or `datasciencebox`) command.
 
-1. `~/.datasciencebox/clusters`: running cluster information
-1. `~/.datasciencebox/profiles`: profiles have instance information
-1. `~/.datasciencebox/providers`: providers have login information on cloud providers
 
-### 1. Create provider
+This makes it possible to version control everything, from box settings to custom salt states.
 
-`~/.datasciencebox/providers/aws.yaml`
+A `dsbfile` is a yaml file and looks like this:
 
-```
-aws:
-  cloud: aws
-  region: us-east-1
-  key: XXXXXXXXXXXXXXX
-  secret: XXXXXXXXXXXXXXX
-```
+```yaml
+cloud: aws
+region: us-east-1
 
-### 2. Create profiles
+image: ami-c6faa6ae
 
-`~/.datasciencebox/providers/small.yaml`
+size: m3.large
+user: ubuntu
+keyname: <EC2_KEYNAME>
+keypair: ~/.ssh/<EC2_KEYPAIR>.pem
 
-```
-small:
-  provider: aws
-  size: t1.micro
-  image: ami-daaed0b2
-  user: ubuntu
-  keyname: my_key
-  keypair: ~/.ssh/my_key.pem
-  security_groups:
-    - open
-  minions:
-    n: 2
+security_groups:
+  - open
 ```
 
-### 3. Create instances
+**Credentials**: You dont want credentials to be uploaded to the version control (trust me), so
+`dsb` will also read a `dsbfile.secret` in the same directory where you can have
+for example your ec2 credentials.
 
-`dsb create new_cluster -p {{ PROFILE_NAME }}`
+```yaml
+key: <KEY>
+secret: <SECRET>
+```
 
-New instances will be created and a `~/.datasciencebox/cluster/new_cluster` directory
-will be created will the cluster information and settings.
+**Note**: No security groups or keypairs are created for you.
 
-## Packages
+### Creating the instances
 
-Before doing anything else we need to install salt in the instances
+Once the `dsbfile` is created you can create the instance(s) running `dsb up`.
 
-`dsb install salt` will bootstrap salt-master and salt-minion using salt-ssh
+This will create the instance(s) in the cloud provider and create a `.dsb` directory
+in the same place as you `dsbfile`.
 
-`dsb rsync --once` will sync salt formulas and pillar settings (see Configuration below)
+The `.dsb` directoy can be ignored for basic usage. It contains metadata about the instances
+but it can also be used to controll the settings of the cluster and even upload new salt states.
 
-### miniconda
+###  Salt
 
-`dsb install miniconda` will bootstrap (mini)conda in all the instances
+[Salt](https://github.com/saltstack/salt) is the base for everything in `dsb`. Before running
+everything you need to install salt master and salt minion on the instances.
 
-### conda/pip pkg
+Install it by running: `dsb salt`
 
-Requires: miniconda
+#### salt and pillar sync
 
-`dsb install conda requests` will install requests in all the instances (master + minion)
+Final step is to sync the salt states and pillar to the salt master.
+This is useful when changing the settings of the cluster (pillar) or adding aditional
+salt states.
 
-`dsb install conda numpy '*minion*'` will install numpy in all the minions
+`dsb sync`
 
-`dsb install pip boto` will install boto in all the instances
+Now you are ready to bootstrap stuff in you instances.
 
-`dsb install pip boto '*minion*'` will install boto in all the minions
-
-### IPython notebook
-
-Requires: miniconda
-
-`dsb install notebook`
-
-### spark + HDFS
-
-Note: Spark is supported via mesos
-
-1. Install hdfs and mesos: `dsb install hdfs` and `dsb install mesos`
-2. Install spark: `dsb install spark`
-
-## Fuck it, i want everything
-
-`dsb install highstate`
-
-## Configuration
-
-DataScienceBox is based on [salt](http://docs.saltstack.com/en/latest/)
-so in order to change the settings of the instances you have to change the pillars located at
-`~/.datasciencebox/cluster/{{ CLUSTER_NAME }}/pillar`. Default values will be located there.
-
-After changing those values need to sync the pillars to the cluster: `dsb rsync --once`
-
-## This is hard, it sucks!
-
-This was started as a toy project and is my personal playground.
-If you want a more complete product with MapReduce, Hive, Impala and more
-with better support check out the spiritual succesor:
-[conda-cluster](http://continuum.io/anaconda-cluster).
+### Install conda

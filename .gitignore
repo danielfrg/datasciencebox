@@ -58,3 +58,8 @@ target/
 
 # IPython
 .ipynb_checkpoints
+
+# DSB
+.dsb
+dsbfile
+dsbfile.*
