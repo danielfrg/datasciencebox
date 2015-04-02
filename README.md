@@ -86,9 +86,10 @@ Now you are ready to bootstrap stuff in you instances.
 
 Spark is available via apache mesos, you need to bootstrap first hdfs and mesos.
 
-1. `dsb install hdfs`. Check that is running: `dsb open hdfs`
-2. `dsb install mesos`. Check that is running: `dsb open mesos`
-3. `dsb install spark`.
+1. `dsb install hdfs`: check that is running: `dsb open hdfs`
+2. `dsb install mesos`: check that is running: `dsb open mesos`
+3. `dsb install spark`
 
 To test the easier way it to intall the Jupyter notebook and use use spark there,
-see the examples notebook.
+note that if you already installed the notebook you have to run `dsb install notebook`
+again.
