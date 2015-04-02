@@ -10,7 +10,7 @@ To update to a new version:
 '''
 
 setup(name='datasciencebox',
-      version='0.0.1',
+      version='0.1',
       description='Data Science Box',
       long_description='',
       author='Daniel Rodriguez',
@@ -26,8 +26,8 @@ setup(name='datasciencebox',
       ],
       entry_points='''
         [console_scripts]
-        dsb=datasciencebox.cli.cli:main
-        datasciencebox=datasciencebox.cli.cli:main
+        dsb=datasciencebox.cli.main:main
+        datasciencebox=datasciencebox.cli.main:main
       ''',
       install_requires=[
         'click>=3.3',

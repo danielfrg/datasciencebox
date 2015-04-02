@@ -4,7 +4,7 @@ import time
 
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
-from fabric.api import settings, sudo
+from fabric.api import settings, sudo, hide
 from fabric.contrib.project import rsync_project
 
 
@@ -20,8 +20,8 @@ class RsyncHandler(FileSystemEventHandler):
 
         this_dir = os.path.dirname(os.path.realpath(__file__))
         default_file_root = os.path.realpath(os.path.join(this_dir, '..', '..', 'salt'))
-        extra_file_root = os.path.join(project.dir, 'salt')
-        pillar_root = project.pillar_dir
+        extra_file_root = os.path.join(self.project.dir, 'salt')
+        pillar_root = self.project.pillar_dir
 
         if modified_file.startswith(default_file_root):
             extra_path = src_dir[len(default_file_root) + 1:]
@@ -46,9 +46,10 @@ class RsyncHandler(FileSystemEventHandler):
         if os.path.exists(src):
             host_string = '{0}@{1}'.format(self.project.dsbfile['user'], self.project.cloud.master.ip)
             key_filename = self.project.dsbfile['keypair']
-            with settings(host_string=host_string, key_filename=key_filename):
-                print src + ' -> ' + dst
-                rsync_project(dst, src, delete=True, extra_opts='--rsync-path="sudo rsync"', exclude='.DS_Store', default_opts='-pthrz')
+            with hide('running', 'stdout', 'stderr'):
+                with settings(host_string=host_string, key_filename=key_filename):
+                    print src + ' -> ' + dst
+                    rsync_project(dst, src, delete=True, extra_opts='--rsync-path="sudo rsync"', exclude='.DS_Store', default_opts='-pthrz')
 
     def sync_all(self):
         this_dir = os.path.dirname(os.path.realpath(__file__))

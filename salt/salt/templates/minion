@@ -4,6 +4,5 @@ master: {{ pillar['salt']['master']['ip'] }}
 mine_functions:
   network.get_hostname: []
   network.interfaces: []
-  network.ip_addrs:
-    - eth0
+  network.ip_addrs: []
 mine_interval: 2

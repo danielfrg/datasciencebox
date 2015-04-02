@@ -3,7 +3,7 @@
 include:
   - salt.pkgrepo
 
-{% if pillar['salt']['minion'] is defined and pillar['salt']['minion']['roles'] is defined %}
+{% if pillar['salt']['minion']['roles'] is defined %}
 /etc/salt/grains:
   file.managed:
     - makedirs: true
@@ -26,6 +26,6 @@ salt-minion:
     - watch:
       - pkg: salt-minion
       - file: salt-minion
-      {% if pillar['salt']['minion'] is defined and pillar['salt']['minion']['roles'] is defined %}
+      {% if pillar['salt']['minion']['roles'] is defined %}
       - file: /etc/salt/grains
       {% endif %}

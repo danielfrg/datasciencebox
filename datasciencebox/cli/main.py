@@ -4,10 +4,10 @@ import os
 import subprocess
 
 import click
-from fabric.api import settings, run, sudo
+from fabric.api import settings, run, sudo, hide
 
 from datasciencebox.core.main import Project
-from datasciencebox.cli.sync import RsyncHandler, loop as sync_loop
+from datasciencebox.core.sync import RsyncHandler, loop as sync_loop
 
 
 def salt_ssh(project, target, module, args=None, args2=None):
@@ -21,24 +21,30 @@ def salt_ssh(project, target, module, args=None, args2=None):
 
     cmd = cmd + ['--state-output=mixed']
     cmd = ' '.join(cmd)
-    print cmd
-    subprocess.call(cmd, shell=True)
+
+    proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    out, err = proc.communicate()
+    if proc.returncode != 0 or err:
+        raise Exception(err)
+    return proc.returncode, out, err
 
 
 def salt_master(project, target, module, args=None, args2=None, user=None):
     host_string = project.dsbfile['user'] + '@' + project.cloud.master.ip
-    key_filename = project.dsb['keypair']
-    with settings(host_string=host_string, key_filename=key_filename):
-        cmd = 'sudo salt {0} {1}'.format(target, module)
-        if args:
-            cmd += ' ' + args
-        if args2:
-            cmd += ' ' + args2
-        if user:
-            cmd += ' user=' + user
-        cmd += ' -t 300 --state-output=mixed'
-        print cmd
-        sudo(cmd)
+    key_filename = project.dsbfile['keypair']
+    with hide('running', 'stdout', 'stderr'):
+        with settings(host_string=host_string, key_filename=key_filename):
+            cmd = 'sudo salt {0} {1}'.format(target, module)
+            if args:
+                cmd += ' ' + args
+            if args2:
+                cmd += ' ' + args2
+            if user:
+                cmd += ' user=' + user
+            cmd += ' -t 300 --state-output=mixed'
+            # print cmd
+            out = sudo(cmd)
+            print out
 
 
 CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
@@ -52,13 +58,20 @@ def main(ctx):
     ctx.obj['project'] = project
 
 
-@main.command('up', short_help='Create the instances')
+@main.command(short_help='Create instances')
 @click.pass_context
 def up(ctx):
     project = ctx.obj['project']
     project.create()
     project.save()
     project.update()
+
+
+@main.command(short_help='Destroy instances')
+@click.pass_context
+def destroy(ctx):
+    project = ctx.obj['project']
+    project.destroy()
 
 
 @main.command(short_help='SSH to the Data Science Box')
@@ -71,30 +84,7 @@ def ssh(ctx):
     subprocess.call(cmd)
 
 
-@main.command('salt', short_help='Install salt master and minion(s) via salt-ssh')
-@click.pass_context
-def install_salt(ctx):
-    project = ctx.obj['project']
-
-    pillar_template = '''pillar='{"salt": {"master": {"ip": "%s"}, "minion": {"roles": %s } } }' '''
-
-    # Master
-    salt_ssh(project, 'master', 'state.sls', 'salt.master')
-    roles = '''["java", "cdh5.hadoop.namenode", "cdh5.zookeeper", "cdh5.hive.metastore", "cdh5.impala.state-store"]'''
-    roles = '''["miniconda", "zookeeper", "mesos.master", "namenode", "ipython.notebook", "spark"]'''
-    pillars = pillar_template % (project.cloud.master.ip, roles)
-    salt_ssh(project, 'master', 'state.sls', 'salt.minion', pillars)
-
-    # Minions
-    roles = '''["java", "cdh5.hadoop.datanode", "cdh5.impala.server"]'''
-    roles = '''["miniconda", "mesos.slave", "datanode"]'''
-    pillars = pillar_template % (project.cloud.master.ip, roles)
-    salt_ssh(project, 'minion*', 'state.sls', 'salt.minion', pillars)
-
-    salt_master(project, '*', 'saltutil.sync_all')
-
-
-@main.command(short_help='rsync salt states and pillar to master')
+@main.command(short_help='Sync salt states and pillar to master')
 @click.pass_context
 @click.option('--skip', '-s', required=False, is_flag=True, help='Skip initial sync')
 @click.option('--continuous', '-c', required=False,  is_flag=True, help='Sync continously based on file system changes')
@@ -109,6 +99,16 @@ def sync(ctx, continuous, skip):
         print 'Waiting for changes on the file system'
         sync_loop(project, handler)
 
+
+@main.command(short_help='Update (overwriting) project settings. Careful.')
+@click.pass_context
+def update(ctx):
+    project = ctx.obj['project']
+    project.update()
+
+
+from datasciencebox.cli.install import *
+from datasciencebox.cli.open import *
 
 if __name__ == '__main__':
     main()

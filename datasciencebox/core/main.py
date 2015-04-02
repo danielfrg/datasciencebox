@@ -40,11 +40,16 @@ class Project(object):
         self.dsbfile.validate_fields()
 
     def read_instances(self):
+        '''
+        Initiates `self.cloud`
+        '''
+        self.cloud = Cloud()
+        self.cloud.info = self.dsbfile
+
         filepath = os.path.join(self.dir, 'instances.yaml')
         if os.path.exists(filepath):
             with open(filepath, 'r') as f:
                 instances =  yaml.load(f.read())
-                self.cloud = Cloud()
                 self.cloud.instances = []
                 for instance in instances:
                     new_instance = Instance(self.dsbfile)
@@ -52,9 +57,11 @@ class Project(object):
                     self.cloud.instances.append(new_instance)
 
     def create(self):
-        self.cloud = Cloud()
-        self.cloud.info = self.dsbfile
         self.cloud.create()
+
+    def destroy(self):
+        self.cloud.fetch_nodes()
+        self.cloud.destroy()
 
     def update(self, force=False):
         self.create_roster()
@@ -135,8 +142,20 @@ class Project(object):
             shutil.rmtree(self.pillar_dir)
         shutil.copytree(pillar_roots_src, self.pillar_dir)
 
+        self.render_pillar('salt.sls', {'master': self.cloud.master.ip })
+
+    def render_pillar(self, path, values):
+        from jinja2 import Environment, FileSystemLoader
+        pillar_loader = FileSystemLoader(searchpath=self.pillar_dir)
+        pillar_env = Environment(loader=pillar_loader)
+        pillar_template = pillar_env.get_template(path)
+        rendered = pillar_template.render(**values)
+        with open(os.path.join(self.pillar_dir, path), 'w') as f:
+            f.write(rendered)
+
 
 class Cloud(object):
+
     def __init__(self):
         self._driver = None
         self.info = None
@@ -170,6 +189,15 @@ class Cloud(object):
             instance.node = node
         self.instances = instances
         return instances
+
+    def fetch_nodes(self):
+        for instance in self.instances:
+            instance.driver = self.driver
+            instance.fetch_node()
+
+    def destroy(self):
+        for instance in self.instances:
+            instance.destroy()
 
     def to_dict(self):
         ret = []

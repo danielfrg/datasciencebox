@@ -23,7 +23,7 @@ A `dsbfile` is a yaml file and looks like this:
 cloud: aws
 region: us-east-1
 
-image: ami-c6faa6ae
+image: ami-d6cf93be
 
 size: m3.large
 user: ubuntu
@@ -58,18 +58,37 @@ but it can also be used to controll the settings of the cluster and even upload 
 ###  Salt
 
 [Salt](https://github.com/saltstack/salt) is the base for everything in `dsb`. Before running
-everything you need to install salt master and salt minion on the instances.
+anything you need to install the salt daemons on the instances and
+sync the salt formulas to the salt master.
 
-Install it by running: `dsb salt`
-
-#### salt and pillar sync
-
-Final step is to sync the salt states and pillar to the salt master.
-This is useful when changing the settings of the cluster (pillar) or adding aditional
-salt states.
-
-`dsb sync`
+1. `dsb salt`
+2. `dsb sync`
 
 Now you are ready to bootstrap stuff in you instances.
 
-### Install conda
+### Install miniconda
+
+`dsb install miniconda` will install miniconda in all the instances.
+
+#### conda packages
+
+`dsb install conda <PKG_NAME>`, for example `dsb install conda numpy`
+
+### Install OS packages
+
+`dsb install pkg <PKG_NAME>`, for example `dsb install pkg build-essential`
+
+### Jupyter Notebook
+
+`dsb install notebook`, open the notebook URL by: `dsb open notebook`
+
+### Spark
+
+Spark is available via apache mesos, you need to bootstrap first hdfs and mesos.
+
+1. `dsb install hdfs`. Check that is running: `dsb open hdfs`
+2. `dsb install mesos`. Check that is running: `dsb open mesos`
+3. `dsb install spark`.
+
+To test the easier way it to intall the Jupyter notebook and use use spark there,
+see the examples notebook.
