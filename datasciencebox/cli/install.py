@@ -38,14 +38,14 @@ def salt(ctx):
 
         roles = '''["java", "cdh5.hadoop.namenode", "cdh5.zookeeper", "cdh5.hive.metastore", "cdh5.impala.state-store"]'''
         roles = '''["miniconda", "zookeeper", "mesos.master", "namenode", "ipython.notebook", "spark"]'''
-        pillars = pillar_template % (project.cloud.master.ip, roles)
+        pillars = pillar_template % (project.cluster.master.ip, roles)
         salt_ssh(project, 'master', 'state.sls', 'salt.minion', pillars)
         steps.next()
 
         # Minions
         roles = '''["java", "cdh5.hadoop.datanode", "cdh5.impala.server"]'''
         roles = '''["miniconda", "mesos.slave", "datanode"]'''
-        pillars = pillar_template % (project.cloud.master.ip, roles)
+        pillars = pillar_template % (project.cluster.master.ip, roles)
         salt_ssh(project, 'minion*', 'state.sls', 'salt.minion', pillars)
         steps.next()
 

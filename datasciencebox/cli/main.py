@@ -6,7 +6,7 @@ import subprocess
 import click
 from fabric.api import settings, run, sudo, hide
 
-from datasciencebox.core.main import Project
+from datasciencebox.core.project import Project
 from datasciencebox.core.sync import RsyncHandler, loop as sync_loop
 
 
@@ -30,7 +30,7 @@ def salt_ssh(project, target, module, args=None, args2=None):
 
 
 def salt_master(project, target, module, args=None, args2=None, user=None):
-    host_string = project.dsbfile['user'] + '@' + project.cloud.master.ip
+    host_string = project.dsbfile['user'] + '@' + project.cluster.master.ip
     key_filename = project.dsbfile['keypair']
     with hide('running', 'stdout', 'stderr'):
         with settings(host_string=host_string, key_filename=key_filename):
@@ -53,8 +53,6 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 def main(ctx):
     ctx.obj = {}
     project = Project.from_cwd(cwd=os.getcwd())
-    project.read()
-    project.read_instances()
     ctx.obj['project'] = project
 
 
@@ -78,7 +76,7 @@ def destroy(ctx):
 @click.pass_context
 def ssh(ctx):
     project = ctx.obj['project']
-    cmd = ['ssh', project.dsbfile['user'] + '@' + project.cloud.master.ip]
+    cmd = ['ssh', project.dsbfile['user'] + '@' + project.cluster.master.ip]
     cmd = cmd + ['-i', os.path.expanduser(project.dsbfile['keypair'])]
     cmd = cmd + ['-oStrictHostKeyChecking=no']
     subprocess.call(cmd)

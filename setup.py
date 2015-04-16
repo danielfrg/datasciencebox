@@ -30,9 +30,10 @@ setup(name='datasciencebox',
         datasciencebox=datasciencebox.cli.main:main
       ''',
       install_requires=[
-        'click>=3.3',
+        'click>=4.0',
+        'PyYAML>=3.11',
         'Fabric>=1.10.1',
-        'apache-libcloud>=0.16.0',
+        'apache-libcloud>=0.17.0',
         'salt-ssh>=2014.7.1',
         'watchdog>=0.8.3',
     ]

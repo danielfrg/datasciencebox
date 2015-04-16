@@ -44,7 +44,7 @@ class RsyncHandler(FileSystemEventHandler):
         src = os.path.realpath(src) + '/'
         dst = os.path.realpath(dst)
         if os.path.exists(src):
-            host_string = '{0}@{1}'.format(self.project.dsbfile['user'], self.project.cloud.master.ip)
+            host_string = '{0}@{1}'.format(self.project.dsbfile['user'], self.project.cluster.master.ip)
             key_filename = self.project.dsbfile['keypair']
             with hide('running', 'stdout', 'stderr'):
                 with settings(host_string=host_string, key_filename=key_filename):

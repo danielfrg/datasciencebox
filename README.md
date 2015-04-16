@@ -32,10 +32,13 @@ keypair: ~/.ssh/<EC2_KEYPAIR>.pem
 
 security_groups:
   - open
+
+minion:
+    number: 3
 ```
 
 **Credentials**: You dont want credentials to be uploaded to the version control (trust me), so
-`dsb` will also read a `dsbfile.secret` in the same directory where you can have
+`dsb` will also read a `dsbfile.secret` (that you can ignore in your vcs) in the same directory where you can have
 for example your ec2 credentials.
 
 ```yaml
@@ -61,7 +64,7 @@ but it can also be used to controll the settings of the cluster and even upload 
 anything you need to install the salt daemons on the instances and
 sync the salt formulas to the salt master.
 
-1. `dsb salt`
+1. `dsb install salt`
 2. `dsb sync`
 
 Now you are ready to bootstrap stuff in you instances.
