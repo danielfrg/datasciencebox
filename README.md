@@ -1,5 +1,7 @@
 # DataScienceBox
 
+![travis-ci](https://travis-ci.org/danielfrg/datasciencebox.svg)
+
 Command line utility to create instances in the cloud ready for data science.
 
 ## Installation
