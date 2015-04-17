@@ -6,7 +6,7 @@ Command line utility to create instances in the cloud ready for data science.
 
 ## Installation
 
-`git clone git@github.com:danielfrg/datasciencebox.git` and `pip install -e .`
+`pip install datasciencebox`
 
 ## Usage
 
