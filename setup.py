@@ -1,7 +1,4 @@
-try:
-    from setuptools import setup
-except:
-    from distutils.core import setup
+from setuptools import setup, find_packages
 
 '''
 To update to a new version:
@@ -16,14 +13,8 @@ setup(name='datasciencebox',
       author='Daniel Rodriguez',
       author_email='df.rodriguez@gmail.com',
       url='https://github.com/danielfrg/datasciencebox',
-      license='LICENSE.txt',
-      namespace_packages = [
-        'datasciencebox'
-      ],
-      packages=[
-          'datasciencebox.cli',
-          'datasciencebox.core'
-      ],
+      license='MIT',
+      packages=find_packages(),
       entry_points='''
         [console_scripts]
         dsb=datasciencebox.cli.main:main
