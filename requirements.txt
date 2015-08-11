@@ -1,8 +1,7 @@
-click>=4.0
+click>=4.1
 Fabric>=1.10.1
 apache-libcloud>=0.17.0
-salt-ssh>=2014.7.4
+salt-ssh>=2015.5.3
 watchdog>=0.8.3
-pyyaml>=3.11
 
-pytest>=2.7.0
+pytest>=2.7.2

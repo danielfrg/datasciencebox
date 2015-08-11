@@ -7,7 +7,7 @@ To update to a new version:
 '''
 
 setup(name='datasciencebox',
-      version='0.1',
+      version='0.2',
       description='Data Science Box',
       long_description='',
       author='Daniel Rodriguez',
@@ -21,11 +21,10 @@ setup(name='datasciencebox',
         datasciencebox=datasciencebox.cli.main:main
       ''',
       install_requires=[
-        'click>=4.0',
-        'PyYAML>=3.11',
-        'Fabric>=1.10.1',
+        'click>=4.1',
+        'Fabric>=1.10.2',
         'apache-libcloud>=0.17.0',
-        'salt-ssh>=2014.7.1',
+        'salt-ssh>=2015.5.3',
         'watchdog>=0.8.3',
     ]
 )
