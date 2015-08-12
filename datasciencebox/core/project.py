@@ -99,6 +99,7 @@ class Project(object):
         safe_create_dir(os.path.join(self.settings_dir, 'pillar'))
         safe_create_dir(os.path.join(self.settings_dir, 'etc', 'salt'))
         safe_create_dir(os.path.join(self.settings_dir, 'var', 'cache', 'salt'))
+        safe_create_dir(os.path.join(self.settings_dir, 'var', 'log', 'salt'))
 
     @property
     def roster_path(self):
