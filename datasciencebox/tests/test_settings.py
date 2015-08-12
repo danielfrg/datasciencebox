@@ -33,4 +33,5 @@ def test_required_aws_fields():
     settings['AWS_SIZE'] = '1'
     settings['USERNAME'] = '1'
     settings['KEYPAIR'] = '~/.ssh/something'
+    settings['NUMBER_NODES'] = 3
     settings.validate_fields()

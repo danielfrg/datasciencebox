@@ -1,19 +1,19 @@
 import pytest
 
-from datasciencebox.core.cloud import Cluster
-from datasciencebox.core.dsbfile import DSBFile
 from datasciencebox.core.project import Project
+from datasciencebox.core.settings import Settings
+from datasciencebox.core.cloud.cluster import Cluster
 
 
-dsbfile = DSBFile()
-dsbfile['user'] = 'me'
-dsbfile['keypair'] = '~/.ssh/id_rsa'
+settings = Settings()
+settings['USERNAME'] = 'me'
+settings['KEYPAIR'] = '~/.ssh/id_rsa'
 
 _ = [{'id': 0, 'ip': '0.0.0.0'}, {'id': 1, 'ip': '1.1.1.1'}, {'id': 2, 'ip': '2.2.2.2'}]
-cluster = Cluster.from_list(_, dsbfile)
+cluster = Cluster.from_list(_, settings)
 
 project = Project()
-project.dsbfile = dsbfile
+project.settings = settings
 project.cluster = cluster
 
 def test_generate_roster():

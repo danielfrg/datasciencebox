@@ -25,8 +25,7 @@ class Cluster(object):
         self.instances = []
 
         for instance in values:
-            uid = instance['id']
-            new_instance = Instance.from_uid(uid, settings=self.settings)
+            new_instance = Instance.from_dict(instance, settings=self.settings)
             self.instances.append(new_instance)
         return self
 

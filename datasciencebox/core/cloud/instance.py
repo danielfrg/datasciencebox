@@ -44,8 +44,11 @@ class Instance(object):
         return self
 
     @classmethod
-    def from_dict(cls, values):
-        pass # TODO
+    def from_dict(cls, values, settings=None, driver=None):
+        self = cls.new(settings=settings, driver=driver)
+        self.uid = values['id']
+        self.ip = values['ip']
+        return self
 
     def __repr__(self):
         return 'Instance(%s)' % self.to_dict()
