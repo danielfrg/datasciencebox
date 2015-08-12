@@ -59,6 +59,10 @@ target/
 # IPython
 .ipynb_checkpoints
 
+# Salt
+top.slsc
+.vagrant
+
 # DSB
 .dsb
 dsbfile
