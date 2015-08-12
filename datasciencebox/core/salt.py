@@ -5,14 +5,16 @@ import subprocess
 from fabric.api import settings, run, sudo, hide
 
 
+master_roles = ['miniconda', 'zookeeper', 'mesos.master', 'namenode', 'ipython.notebook', 'spark']
+minion_roles = ['miniconda', 'mesos.slave', 'datanode']
+
+
 def salt_ssh(project, target, module, args=None, kwargs=None):
     args = args or []
     kwargs = kwargs or []
     target = target or '"*"'
 
-    roster_file = '--roster-file=%s' % project.roster_path
-    config_dir = '--config-dir=%s' % project.salt_ssh_config_dir
-    cmd = ['salt-ssh', roster_file, config_dir, '--ignore-host-keys', target, module]
+    cmd = ['salt-ssh', target, module]
 
     for arg in args:
         cmd.append(arg)
@@ -20,6 +22,9 @@ def salt_ssh(project, target, module, args=None, kwargs=None):
         cmd.append('{0}={1}'.format(key, kwargs[key]))
 
     cmd.append('--state-output=mixed')
+    cmd.append('--roster-file=%s' % project.roster_path)
+    cmd.append('--config-dir=%s' % project.salt_ssh_config_dir)
+    cmd.append('--ignore-host-keys')
     cmd = ' '.join(cmd)
     print(cmd)
 

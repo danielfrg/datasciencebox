@@ -5,7 +5,7 @@ import time
 import click
 
 from datasciencebox.cli.main import main
-from datasciencebox.cli.utils import salt_ssh, salt_master
+from datasciencebox.core.salt import master_roles, minion_roles
 
 
 @main.group(short_help='Install packages, applications and more')
@@ -36,16 +36,15 @@ def salt(ctx):
     project.salt('state.sls', args=['salt.master'], target='master', ssh=True)
 
     click.echo('Installing salt minion in the head')
-    roles = """["java", "cdh5.hadoop.namenode", "cdh5.zookeeper", "cdh5.hive.metastore", "cdh5.impala.state-store"]"""
-    roles = """["miniconda", "zookeeper", "mesos.master", "namenode", "ipython.notebook", "spark"]"""
-    pillars = pillar_template % (project.cluster.master.ip, roles)
+    roles_txt = ['"%s"' % role for role in master_roles]
+    roles_txt = '[%s]' % ', '.join(roles_txt)
+    pillars = pillar_template % (project.cluster.master.ip, roles_txt)
     project.salt('state.sls', args=['salt.minion', pillars], target='master', ssh=True)
 
-    # Minions
     click.echo('Installing salt minion in the compute')
-    roles = """["java", "cdh5.hadoop.datanode", "cdh5.impala.server"]"""
-    roles = """["miniconda", "mesos.slave", "datanode"]"""
-    pillars = pillar_template % (project.cluster.master.ip, roles)
+    roles_txt = ['"%s"' % role for role in minion_roles]
+    roles_txt = '[%s]' % ', '.join(roles_txt)
+    pillars = pillar_template % (project.cluster.master.ip, roles_txt)
     project.salt('state.sls', args=['salt.minion', pillars], target='minion*', ssh=True)
 
 
