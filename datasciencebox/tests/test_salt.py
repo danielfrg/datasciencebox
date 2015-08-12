@@ -39,18 +39,18 @@ def test_generate_salt_cmd():
 
 
 def test_roster_item():
-    item = salt.roster_item(cluster.master)
+    item = salt.roster_item(cluster.master, mine=False)
     assert item == {'host': '0.0.0.0', 'sudo': True, 'user': 'me', 'priv': '~/.ssh/id_rsa'}
 
 
 def test_roster_item_roles():
-    item = salt.roster_item(cluster.master, roles=['cdh5', 'conda2'])
+    item = salt.roster_item(cluster.master, roles=['cdh5', 'conda2'], mine=False)
     assert item == {'host': '0.0.0.0', 'sudo': True, 'user': 'me', 'priv': '~/.ssh/id_rsa',
                     'grains': {'roles': ['cdh5', 'conda2'] } }
 
 
 def test_generate_roster():
-    roster = salt.generate_roster(cluster)
+    roster = salt.generate_roster(cluster, mine=False)
     ans = { 'master': {'host': '0.0.0.0', 'sudo': True, 'user': 'me', 'priv': '~/.ssh/id_rsa',
                        'grains': {'roles': master_roles } },
             'minion-1': {'host': '1.1.1.1', 'sudo': True, 'user': 'me', 'priv': '~/.ssh/id_rsa',

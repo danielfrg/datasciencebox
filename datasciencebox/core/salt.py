@@ -25,25 +25,35 @@ def generate_salt_cmd(target, module, args=None, kwargs=None):
     return cmd
 
 
-def roster_item(instance, roles=None):
+def roster_item(instance, roles=None, mine=True):
     ret = {}
     ret['host'] = instance.ip
     ret['user'] = instance.username
     ret['priv'] = instance.keypair
     ret['sudo'] = True
+
     grains = {}
     if roles:
         grains['roles'] = roles
     if grains:
         ret['grains'] = grains
+
+    if mine:
+        ret['mine_interval'] = 2
+        ret['mine_functions'] = {
+              'network.get_hostname': [],
+              'network.interfaces': [],
+              'network.ip_addrs': []
+        }
+
     return ret
 
 
-def generate_roster(cluster):
+def generate_roster(cluster, mine=True):
     ret = {}
-    ret['master'] = roster_item(cluster.instances[0], roles=master_roles)
+    ret['master'] = roster_item(cluster.instances[0], roles=master_roles, mine=mine)
     for i, instance in enumerate(cluster.instances[1:]):
-        ret['minion-%i' % (i + 1)] = roster_item(instance, roles=minion_roles)
+        ret['minion-%i' % (i + 1)] = roster_item(instance, roles=minion_roles, mine=mine)
     return ret
 
 
