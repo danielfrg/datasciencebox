@@ -19,11 +19,13 @@ def main(ctx):
     ctx.obj['project'] = project
 
 
-@main.command(short_help='Create instances')
+@main.command(short_help='Launch instances')
 @click.pass_context
 def up(ctx):
+    click.echo('Creating cluster')
     project = ctx.obj['project']
     project.create_cluster()
+    click.echo('Saving settings')
     project.save()
     project.update()
 
@@ -31,11 +33,12 @@ def up(ctx):
 @main.command(short_help='Destroy instances')
 @click.pass_context
 def destroy(ctx):
+    click.echo('Destroying cluster')
     project = ctx.obj['project']
     project.destroy()
 
 
-@main.command(short_help='SSH to the Data Science Box')
+@main.command(short_help='SSH to the master node')
 @click.pass_context
 def ssh(ctx):
     project = ctx.obj['project']
@@ -59,9 +62,10 @@ def sync(ctx, continuous, skip):
     handler = RsyncHandler()
     handler.project = project
     if not skip:
+        click.echo('Syncing salt formulas and pillars')
         handler.sync_all()
     if continuous:
-        print 'Waiting for changes on the file system'
+        click.echo('Waiting for changes on the file system')
         sync_loop(project, handler)
 
 
