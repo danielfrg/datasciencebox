@@ -85,7 +85,7 @@ class Project(object):
         self.create_roster()
         self.salt_ssh_create_dirs()
         self.salt_ssh_create_master_conf()
-        self.salt_ssh_copy_pillar()
+        self.copy_salt_and_pillar()
 
     def save(self):
         self.save_instances()
@@ -148,18 +148,27 @@ class Project(object):
             f.write(master_conf)
 
     @property
+    def salt_dir(self):
+        return os.path.join(self.settings_dir, 'salt')
+
+    @property
     def pillar_dir(self):
         return os.path.join(self.settings_dir, 'pillar')
 
-    def salt_ssh_copy_pillar(self):
+    def copy_salt_and_pillar(self):
         this_dir = os.path.dirname(os.path.realpath(__file__))
+        salt_roots_src = os.path.join(this_dir, '..', '..', 'salt')
+        salt_roots_src = os.path.realpath(salt_roots_src)
         pillar_roots_src = os.path.join(this_dir, '..', '..', 'pillar')
         pillar_roots_src = os.path.realpath(pillar_roots_src)
+
+        if os.path.exists(self.salt_dir):
+            shutil.rmtree(self.salt_dir)
+        shutil.copytree(salt_roots_src, self.salt_dir)
 
         if os.path.exists(self.pillar_dir):
             shutil.rmtree(self.pillar_dir)
         shutil.copytree(pillar_roots_src, self.pillar_dir)
-
         self.render_pillar('salt.sls', {'master': self.cluster.master.ip })
 
     def render_pillar(self, path, values):
