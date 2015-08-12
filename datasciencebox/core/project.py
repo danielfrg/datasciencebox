@@ -5,6 +5,7 @@ import shutil
 from datasciencebox.core.settings import Settings
 from datasciencebox.core.cloud.cluster import Cluster
 from datasciencebox.core.exceptions import DSBException
+from datasciencebox.core.salt import salt_master, salt_ssh
 
 
 def safe_create_dir(path):
@@ -178,6 +179,12 @@ class Project(object):
         rendered = pillar_template.render(**values)
         with open(os.path.join(self.pillar_dir, path), 'w') as f:
             f.write(rendered)
+
+    def salt(self, module, args=None, kwargs=None, target='*', ssh=False):
+        if ssh:
+            salt_ssh(self, target, module, args, kwargs)
+        else:
+            salt_master(self, target, module, args, kwargs)
 
 
 if __name__ == '__main__':

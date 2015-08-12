@@ -50,7 +50,7 @@ AWS_SECRET = os.environ['AWS_SECRET']
 **Note**: No security groups or keypairs are created for you its up to you to create
 those in AWS.
 
-### Creating the instances
+## Creating the instances
 
 Once the `dsbfile` is created you can create the instance(s) running `dsb up`.
 
@@ -58,30 +58,41 @@ This will create the instance(s) in the cloud provider and create a `.dsb` direc
 in the same place as you `dsbfile`.
 
 The `.dsb` directoy can be ignored for basic usage. It contains metadata about the instances
-but it can also be used to controll the settings of the cluster and even upload new salt states.
+but it can also be used to control the settings of the cluster (pillars) and even upload custom salt states. This also allows to version control all the deployment of a cluster.
 
-###  Salt
+## Installing
 
-[Salt](https://github.com/saltstack/salt) is the base for everything in `dsb`. Before running
-anything you need to install the salt daemons on the instances and
-sync the salt formulas to the salt master.
+Everyting in DSB is based on [Salt](https://github.com/saltstack/salt) and
+there is two ways of bootstraping stuff into the nodes,
+salt via ZMQ (recommended) or salt ssh.
+
+The recommended way is using salt via ZMQ which requires the salt master
+and minion to be installed in the nodes you can install by running this:
 
 1. `dsb install salt`
 2. `dsb sync`
 
-Now you are ready to bootstrap stuff in you instances.
+This is the default and recommended behaviour but you can use salt-ssh and not
+install anything in your nodes while getting the same results (in most cases)
+by adding a `--ssh` flag to all the install commands.
+Note that this works well for some commands like `install conda` and `install pkg`
+but might not works as expected for the distributed frameworks like zookeeper and mesos.
 
 ### Install miniconda
 
-`dsb install miniconda` will install miniconda in all the instances.
+Install miniconda under the `dsb` user
 
-#### conda packages
+`dsb install miniconda` or `dsb install miniconda --shh`
 
-`dsb install conda <PKG_NAME>`, for example `dsb install conda numpy`
+### Install conda packages
+
+`dsb install conda <PKG_NAME>`, for example `dsb install conda numpy` or
+`dsb install conda numpy --ssh`
 
 ### Install OS packages
 
-`dsb install pkg <PKG_NAME>`, for example `dsb install pkg build-essential`
+`dsb install pkg <PKG_NAME>`, for example `dsb install pkg build-essential` or
+`dsb install pkg build-essential --ssh`
 
 ### Jupyter Notebook
 
