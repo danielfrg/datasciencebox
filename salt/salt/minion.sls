@@ -14,6 +14,7 @@ include:
 salt-minion:
   pkg.installed:
     - name: {{ pkgs['salt-minion'] }}
+    - skip_verify: true
   file.managed:
     - name: /etc/salt/minion
     - template: jinja

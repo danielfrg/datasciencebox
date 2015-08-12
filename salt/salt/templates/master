@@ -3,8 +3,7 @@ pillar_source_merging_strategy: recurse
 
 file_roots:
   base:
-    - /srv/salt/extra
-    - /srv/salt/base
+    - /srv/salt
 
 pillar_roots:
   base:

@@ -32,23 +32,21 @@ def salt(ctx):
 
     pillar_template = """pillar='{"salt": {"master": {"ip": "%s"}, "minion": {"roles": %s } } }' """
 
-    with click.progressbar(range(3)) as steps:
-        # Master
-        salt_ssh(project, 'master', 'state.sls', 'salt.master')
-        steps.next()
+    click.echo('Installing salt master in the head')
+    salt_ssh(project, 'master', 'state.sls', 'salt.master')
 
-        roles = """["java", "cdh5.hadoop.namenode", "cdh5.zookeeper", "cdh5.hive.metastore", "cdh5.impala.state-store"]"""
-        roles = """["miniconda", "zookeeper", "mesos.master", "namenode", "ipython.notebook", "spark"]"""
-        pillars = pillar_template % (project.cluster.master.ip, roles)
-        salt_ssh(project, 'master', 'state.sls', 'salt.minion', pillars)
-        steps.next()
+    click.echo('Installing salt minion in the head')
+    roles = """["java", "cdh5.hadoop.namenode", "cdh5.zookeeper", "cdh5.hive.metastore", "cdh5.impala.state-store"]"""
+    roles = """["miniconda", "zookeeper", "mesos.master", "namenode", "ipython.notebook", "spark"]"""
+    pillars = pillar_template % (project.cluster.master.ip, roles)
+    salt_ssh(project, 'master', 'state.sls', 'salt.minion', pillars)
 
-        # Minions
-        roles = """["java", "cdh5.hadoop.datanode", "cdh5.impala.server"]"""
-        roles = """["miniconda", "mesos.slave", "datanode"]"""
-        pillars = pillar_template % (project.cluster.master.ip, roles)
-        salt_ssh(project, 'minion*', 'state.sls', 'salt.minion', pillars)
-        steps.next()
+    # Minions
+    click.echo('Installing salt minion in the compute')
+    roles = """["java", "cdh5.hadoop.datanode", "cdh5.impala.server"]"""
+    roles = """["miniconda", "mesos.slave", "datanode"]"""
+    pillars = pillar_template % (project.cluster.master.ip, roles)
+    salt_ssh(project, 'minion*', 'state.sls', 'salt.minion', pillars)
 
 
 @install.command(short_help='Install a package using system package manager')
