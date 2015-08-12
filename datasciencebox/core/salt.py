@@ -64,6 +64,7 @@ def salt_ssh(project, target, module, args=None, kwargs=None):
     cmd.append('--roster-file=%s' % project.roster_path)
     cmd.append('--config-dir=%s' % project.salt_ssh_config_dir)
     cmd.append('--ignore-host-keys')
+    cmd.append('--force-color')
     cmd = ' '.join(cmd)
     print(cmd)
 
