@@ -142,9 +142,9 @@ class Project(object):
 
     def copy_salt_and_pillar(self):
         this_dir = os.path.dirname(os.path.realpath(__file__))
-        salt_roots_src = os.path.join(this_dir, '..', '..', 'salt')
+        salt_roots_src = os.path.join(this_dir, '..', 'salt')
         salt_roots_src = os.path.realpath(salt_roots_src)
-        pillar_roots_src = os.path.join(this_dir, '..', '..', 'pillar')
+        pillar_roots_src = os.path.join(this_dir, '..', 'pillar')
         pillar_roots_src = os.path.realpath(pillar_roots_src)
 
         if os.path.exists(self.salt_dir):

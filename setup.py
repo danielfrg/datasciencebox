@@ -1,11 +1,14 @@
-from setuptools import setup, find_packages
+from distutils.core import setup
+from setuptools import find_packages
+# from setuptools import setup, find_packages
 
 """
-To update to a new version:
+To upload a new version:
+0. rm -rf *.egg-info
 1. change version
 2. python setup.py sdist register upload
 """
-
+print(find_packages())
 setup(name='datasciencebox',
       version='0.2',
       description='Data Science Box',
@@ -13,8 +16,9 @@ setup(name='datasciencebox',
       author='Daniel Rodriguez',
       author_email='df.rodriguez@gmail.com',
       url='https://github.com/danielfrg/datasciencebox',
-      license='MIT',
+      license='Apache 2.0',
       packages=find_packages(),
+      include_package_data=True,
       entry_points="""
         [console_scripts]
         dsb=datasciencebox.cli.main:main
