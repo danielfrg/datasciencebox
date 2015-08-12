@@ -5,7 +5,7 @@ import shutil
 from datasciencebox.core.settings import Settings
 from datasciencebox.core.cloud.cluster import Cluster
 from datasciencebox.core.exceptions import DSBException
-from datasciencebox.core.salt import salt_master, salt_ssh
+from datasciencebox.core import salt
 
 
 def safe_create_dir(path):
@@ -108,22 +108,7 @@ class Project(object):
 
     def create_roster(self):
         with open(self.roster_path, 'w') as f:
-            yaml.safe_dump(self.generate_roster(), f, default_flow_style=False)
-
-    def generate_roster(self):
-        def roster_item(instance):
-            ret = {}
-            ret['host'] = instance.ip
-            ret['user'] = instance.username
-            ret['priv'] = instance.keypair
-            ret['sudo'] = True
-            return ret
-
-        ret = {}
-        ret['master'] = roster_item(self.cluster.instances[0])
-        for i, instance in enumerate(self.cluster.instances[1:]):
-            ret['minion-%i' % (i + 1)] = roster_item(instance)
-        return ret
+            yaml.safe_dump(salt.generate_roster(self.cluster), f, default_flow_style=False)
 
     @property
     def salt_ssh_config_dir(self):
@@ -182,9 +167,9 @@ class Project(object):
 
     def salt(self, module, args=None, kwargs=None, target='*', ssh=False):
         if ssh:
-            salt_ssh(self, target, module, args, kwargs)
+            salt.salt_ssh(self, target, module, args, kwargs)
         else:
-            salt_master(self, target, module, args, kwargs)
+            salt.salt_master(self, target, module, args, kwargs)
 
 
 if __name__ == '__main__':

@@ -15,11 +15,3 @@ cluster = Cluster.from_list(_, settings)
 project = Project()
 project.settings = settings
 project.cluster = cluster
-
-def test_generate_roster():
-    roster = project.generate_roster()
-    ans = { 'master': {'host': '0.0.0.0', 'sudo': True, 'user': 'me', 'priv': '~/.ssh/id_rsa'},
-            'minion-1': {'host': '1.1.1.1', 'sudo': True, 'user': 'me', 'priv': '~/.ssh/id_rsa'},
-            'minion-2': {'host': '2.2.2.2', 'sudo': True, 'user': 'me', 'priv': '~/.ssh/id_rsa'}
-        }
-    assert roster == ans

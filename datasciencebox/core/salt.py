@@ -14,7 +14,7 @@ def generate_salt_cmd(target, module, args=None, kwargs=None):
     Generates a command for salt master or salt ssh commands
     """
     args = args or []
-    kwargs = kwargs or []
+    kwargs = kwargs or {}
     target = target or '*'
     target = '"%s"' % target
     cmd = [target, module]
@@ -23,6 +23,28 @@ def generate_salt_cmd(target, module, args=None, kwargs=None):
     for key in kwargs:
         cmd.append('{0}={1}'.format(key, kwargs[key]))
     return cmd
+
+
+def roster_item(instance, roles=None):
+    ret = {}
+    ret['host'] = instance.ip
+    ret['user'] = instance.username
+    ret['priv'] = instance.keypair
+    ret['sudo'] = True
+    grains = {}
+    if roles:
+        grains['roles'] = roles
+    if grains:
+        ret['grains'] = grains
+    return ret
+
+
+def generate_roster(cluster):
+    ret = {}
+    ret['master'] = roster_item(cluster.instances[0], roles=master_roles)
+    for i, instance in enumerate(cluster.instances[1:]):
+        ret['minion-%i' % (i + 1)] = roster_item(instance, roles=minion_roles)
+    return ret
 
 
 def salt_ssh(project, target, module, args=None, kwargs=None):
