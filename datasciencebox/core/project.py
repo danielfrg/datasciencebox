@@ -135,10 +135,8 @@ class Project(object):
             master_conf_template = f.read()
 
         values = {}
-        default_file_roots = os.path.join(this_dir, '..', '..', 'salt')
-        values['default_file_roots'] = os.path.realpath(default_file_roots)
-        values['extra_file_roots'] = os.path.join(self.settings_dir, 'salt')
-        values['pillar_roots'] = self.pillar_dir
+        values['salt_root'] = self.salt_dir
+        values['pillar_root'] = self.pillar_dir
         values['root_dir'] = self.settings_dir
         values['cachedir'] = os.path.join(self.settings_dir, 'var', 'cache', 'salt')
 

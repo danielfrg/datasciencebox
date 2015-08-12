@@ -17,11 +17,7 @@ salt-master:
       - pkg: salt-master
       - file: salt-master
 
-/srv/salt/base:
-  file.directory:
-    - makedirs: true
-
-/srv/salt/extra:
+/srv/salt:
   file.directory:
     - makedirs: true
 
