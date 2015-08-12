@@ -62,4 +62,3 @@ target/
 # DSB
 .dsb
 dsbfile
-dsbfile.secret

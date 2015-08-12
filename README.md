@@ -16,39 +16,39 @@ in the directory that contains that file.
 
 In this case you create a `dsbfile` and use the `dsb` (or `datasciencebox`) command.
 
-
 This makes it possible to version control everything, from box settings to custom salt states.
 
-A `dsbfile` is a yaml file and looks like this:
+A `dsbfile` is a python file and looks like this (for aws):
 
-```yaml
-cloud: aws
-region: us-east-1
+```python
+CLOUD = 'aws'
 
-image: ami-d6cf93be
+AWS_KEY = '<KEY>'
+AWS_SECRET = '<SECRET_KEY>'
+AWS_REGION = 'us-east-1'
+AWS_IMAGE = 'ami-d6cf93be'
+AWS_SIZE = 'm3.large'
+AWS_KEYNAME = '<EC2_KEYNAME>'
+AWS_SECURITY_GROUPS = ['default']
 
-size: m3.large
-user: ubuntu
-keyname: <EC2_KEYNAME>
-keypair: ~/.ssh/<EC2_KEYPAIR>.pem
-
-security_groups:
-  - open
-
-minion:
-    number: 3
+USERNAME = 'ubuntu'
+KEYPAIR = '~/.ssh/<EC2_KEYPAIR>.pem'
+NUMBER_INSTANCES = 3
 ```
 
-**Credentials**: You dont want credentials to be uploaded to the version control (trust me), so
-`dsb` will also read a `dsbfile.secret` (that you can ignore in your vcs) in the same directory where you can have
-for example your ec2 credentials.
+**Credentials**: You don't want credentials to be uploaded to the version control (trust me).
+But since the `dsbfile` is a python file you can always do something like this
+to read from environment variables for example:
 
-```yaml
-key: <KEY>
-secret: <SECRET>
+```python
+import os
+
+AWS_KEY = os.environ['AWS_KEY']
+AWS_SECRET = os.environ['AWS_SECRET']
 ```
 
-**Note**: No security groups or keypairs are created for you.
+**Note**: No security groups or keypairs are created for you its up to you to create
+those in AWS.
 
 ### Creating the instances
 

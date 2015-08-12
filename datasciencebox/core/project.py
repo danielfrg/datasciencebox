@@ -2,8 +2,8 @@ import os
 import yaml
 import shutil
 
-from datasciencebox.core.dsbfile import DSBFile
-from datasciencebox.core.cloud import Cluster
+from datasciencebox.core.settings import Settings
+from datasciencebox.core.cloud.cluster import Cluster
 from datasciencebox.core.exceptions import DSBException
 
 
@@ -14,68 +14,67 @@ def safe_create_dir(path):
 
 class Project(object):
 
-    def __init__(self, cwd=None):
-        self.cwd = cwd if cwd else os.getcwd()
-        self.cluster = None
-        self.dsbfile = None
-
     @classmethod
-    def from_cwd(cls, cwd=None):
-        cwd = cwd if cwd else os.getcwd()
-        self = cls(cwd=cwd)
+    def from_dir(cls, path=os.getcwd()):
+        self = cls(path=path)
 
-        if not os.path.exists(self.dsbfile_path):
-            raise DSBException('dsbfile not found')
+        if not os.path.exists(self.settings_path):
+            raise DSBException('settings not found')
 
-        self.read_dsbfile()
+        self.read_settings()
         self.read_instances()
         return self
 
+    def __init__(self, path=None):
+        self.dir = path
+        self.cluster = None
+        self.settings = None
+
     @property
-    def dir(self):
-        path = os.path.join(self.cwd, '.dsb')
+    def settings_path(self):
+        return os.path.join(self.dir, 'dsbfile')
+
+    @property
+    def settings_dir(self):
+        """
+        Directory that contains the instances.yaml and other stuff
+        """
+        path = os.path.join(self.dir, '.dsb')
         safe_create_dir(path)
         return os.path.realpath(path)
 
-    @property
-    def dsbfile_path(self):
-        return os.path.join(self.cwd, 'dsbfile')
-
-    def read_dsbfile(self):
-        '''
-        Read the dsbfile info
-        '''
-        fname = 'dsbfile'
-        fname_secret = fname + '.secret'
-
-        fpaths = []
-        fpaths.append(os.path.join(self.cwd, fname))
-        fpaths.append(os.path.join(self.cwd, fname_secret))
-        self.dsbfile = DSBFile.from_filepaths(fpaths)
-
-        self.dsbfile.validate_fields()
+    def read_settings(self):
+        """
+        Read the settings "dsbfile" file
+        Populates `self.settings`
+        """
+        if os.path.exists(self.settings_path):
+            self.settings = Settings.from_dsbfile(self.settings_path)
+        else:
+            pass # TODO: do something?
 
     def read_instances(self):
-        '''
+        """
         Read `.dsb/instances.yaml`
-        Initiates `self.cluster`
-        '''
-        filepath = self.instances_path
-        if os.path.exists(filepath):
-            self.cluster = Cluster.from_filepath(filepath, self.dsbfile)
+        Populates `self.cluster`
+        """
+        if os.path.exists(self.instances_path):
+            with open(self.instances_path, 'r') as f:
+                list_ = yaml.load(f.read())
+                self.cluster = Cluster.from_list(list_, settings=self.settings)
+        else:
+            pass # TODO: do something?
 
     def save_instances(self):
-        filepath = self.instances_path
-        with open(filepath, 'w') as f:
+        with open(self.instances_path, 'w') as f:
             yaml.safe_dump(self.cluster.to_list(), f, default_flow_style=False)
 
     @property
     def instances_path(self):
-        return os.path.join(self.dir, 'instances.yaml')
+        return os.path.join(self.settings_dir, 'instances.yaml')
 
-    def create(self):
-        self.cluster = Cluster()
-        self.cluster.dsbfile = self.dsbfile
+    def create_cluster(self):
+        self.cluster = Cluster(settings=self.settings)
         self.cluster.create()
 
     def destroy(self):
@@ -91,17 +90,19 @@ class Project(object):
     def save(self):
         self.save_instances()
 
+    # --------------------------------------------------------------------------
     # Salt-SSH
+    # --------------------------------------------------------------------------
 
     def salt_ssh_create_dirs(self):
-        safe_create_dir(os.path.join(self.dir, 'salt'))
-        safe_create_dir(os.path.join(self.dir, 'pillar'))
-        safe_create_dir(os.path.join(self.dir, 'etc', 'salt'))
-        safe_create_dir(os.path.join(self.dir, 'var', 'cache', 'salt'))
+        safe_create_dir(os.path.join(self.settings_dir, 'salt'))
+        safe_create_dir(os.path.join(self.settings_dir, 'pillar'))
+        safe_create_dir(os.path.join(self.settings_dir, 'etc', 'salt'))
+        safe_create_dir(os.path.join(self.settings_dir, 'var', 'cache', 'salt'))
 
     @property
     def roster_path(self):
-        return os.path.join(self.dir, 'roster.yaml')
+        return os.path.join(self.settings_dir, 'roster.yaml')
 
     def create_roster(self):
         with open(self.roster_path, 'w') as f:
@@ -111,8 +112,8 @@ class Project(object):
         def roster_item(instance):
             ret = {}
             ret['host'] = instance.ip
-            ret['user'] = instance.data['user']
-            ret['priv'] = instance.data['keypair']
+            ret['user'] = instance.username
+            ret['priv'] = instance.keypair
             ret['sudo'] = True
             return ret
 
@@ -124,7 +125,7 @@ class Project(object):
 
     @property
     def salt_ssh_config_dir(self):
-        return os.path.join(self.dir, 'etc', 'salt')
+        return os.path.join(self.settings_dir, 'etc', 'salt')
 
     def salt_ssh_create_master_conf(self):
         this_dir = os.path.dirname(os.path.realpath(__file__))
@@ -135,20 +136,20 @@ class Project(object):
         values = {}
         default_file_roots = os.path.join(this_dir, '..', '..', 'salt')
         values['default_file_roots'] = os.path.realpath(default_file_roots)
-        values['extra_file_roots'] = os.path.join(self.dir, 'salt')
+        values['extra_file_roots'] = os.path.join(self.settings_dir, 'salt')
         values['pillar_roots'] = self.pillar_dir
-        values['root_dir'] = self.dir
-        values['cachedir'] = os.path.join(self.dir, 'var', 'cache', 'salt')
+        values['root_dir'] = self.settings_dir
+        values['cachedir'] = os.path.join(self.settings_dir, 'var', 'cache', 'salt')
 
         master_conf = master_conf_template.format(**values)
-        etc_salt_dir = os.path.join(self.dir, 'etc', 'salt')
+        etc_salt_dir = os.path.join(self.settings_dir, 'etc', 'salt')
         salt_master_file = os.path.join(etc_salt_dir, 'master')
         with open(salt_master_file, 'w') as f:
             f.write(master_conf)
 
     @property
     def pillar_dir(self):
-        return os.path.join(self.dir, 'pillar')
+        return os.path.join(self.settings_dir, 'pillar')
 
     def salt_ssh_copy_pillar(self):
         this_dir = os.path.dirname(os.path.realpath(__file__))
@@ -172,10 +173,11 @@ class Project(object):
 
 
 if __name__ == '__main__':
-    p = Project()
-    p.read()
-    p.read_instances()
+    p = Project.from_dir('../')
+    p.create_cluster()
+    p.save()
+
+    # p.read()
     # print p.generate_roster()
-    p.update()
-    # p.create()
+    # p.update()
     # p.save()

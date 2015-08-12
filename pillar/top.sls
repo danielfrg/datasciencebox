@@ -2,10 +2,10 @@
 import os
 
 def run():
-  '''
+  """
   Returns all the pillars in this directory if they exists
   Right now it only handles one level of depth
-  '''
+  """
   pillar_dir = os.path.dirname(os.path.realpath(__file__))
 
   matches = []

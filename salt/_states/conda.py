@@ -4,9 +4,9 @@ import os
 __virtualname__ = 'conda'
 
 def __virtual__():
-    '''
+    """
     Only load if the conda module is available in __salt__
-    '''
+    """
     if 'pip.list' in __salt__:
         return __virtualname__
     return False

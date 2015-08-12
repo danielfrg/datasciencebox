@@ -4,7 +4,8 @@ import time
 
 import click
 
-from datasciencebox.cli.main import main, salt_ssh, salt_master
+from datasciencebox.cli.main import main
+from datasciencebox.cli.utils import salt_ssh, salt_master
 
 
 @main.group(short_help='Install packages, applications and more')
@@ -29,22 +30,22 @@ def miniconda(ctx, target):
 def salt(ctx):
     project = ctx.obj['project']
 
-    pillar_template = '''pillar='{"salt": {"master": {"ip": "%s"}, "minion": {"roles": %s } } }' '''
+    pillar_template = """pillar='{"salt": {"master": {"ip": "%s"}, "minion": {"roles": %s } } }' """
 
     with click.progressbar(range(3)) as steps:
         # Master
         salt_ssh(project, 'master', 'state.sls', 'salt.master')
         steps.next()
 
-        roles = '''["java", "cdh5.hadoop.namenode", "cdh5.zookeeper", "cdh5.hive.metastore", "cdh5.impala.state-store"]'''
-        roles = '''["miniconda", "zookeeper", "mesos.master", "namenode", "ipython.notebook", "spark"]'''
+        roles = """["java", "cdh5.hadoop.namenode", "cdh5.zookeeper", "cdh5.hive.metastore", "cdh5.impala.state-store"]"""
+        roles = """["miniconda", "zookeeper", "mesos.master", "namenode", "ipython.notebook", "spark"]"""
         pillars = pillar_template % (project.cluster.master.ip, roles)
         salt_ssh(project, 'master', 'state.sls', 'salt.minion', pillars)
         steps.next()
 
         # Minions
-        roles = '''["java", "cdh5.hadoop.datanode", "cdh5.impala.server"]'''
-        roles = '''["miniconda", "mesos.slave", "datanode"]'''
+        roles = """["java", "cdh5.hadoop.datanode", "cdh5.impala.server"]"""
+        roles = """["miniconda", "mesos.slave", "datanode"]"""
         pillars = pillar_template % (project.cluster.master.ip, roles)
         salt_ssh(project, 'minion*', 'state.sls', 'salt.minion', pillars)
         steps.next()
