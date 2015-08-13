@@ -1,0 +1,11 @@
+name: dsb-dev
+dependencies:
+  - python=2.7
+  - click
+  - fabric
+  - pytest
+  - pyyaml
+  - pip:
+    - apache-libcloud
+    - salt-ssh
+    - watchdog
