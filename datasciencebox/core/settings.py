@@ -24,6 +24,8 @@ class Settings(dict):
             return ['NODES', 'USERNAME', 'KEYPAIR']
         elif self['CLOUD'] == 'aws':
             return ['NUMBER_NODES', 'AWS_KEY', 'AWS_SECRET', 'AWS_KEYNAME', 'AWS_SECURITY_GROUPS', 'AWS_IMAGE', 'AWS_SIZE', 'USERNAME', 'KEYPAIR']
+        elif self['CLOUD'] == 'gcp':
+            return ['NUMBER_NODES', 'GCP_ID', 'GCP_SECRET', 'GCP_PROJECT', 'GCP_DATACENTER', 'GCP_SIZE', 'GCP_IMAGE', 'USERNAME', 'KEYPAIR']
         else:
             raise DSBException('Cloud "%s" not supported' % self['CLOUD'])
 

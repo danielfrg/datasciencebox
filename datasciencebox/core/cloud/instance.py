@@ -30,6 +30,8 @@ class Instance(object):
             self = BareInstance(settings, driver=driver)
         elif cloud == 'aws':
             self = AWSInstance(settings, driver=driver)
+        elif cloud == 'gcp':
+            self = GCPInstance(settings, driver=driver)
         else:
             raise DSBException('Cloud "%s" not supported' % cloud)
         return self
@@ -185,6 +187,32 @@ class AWSInstance(Instance):
 
         self.node = node
         return node
+
+    def destroy(self):
+        self.node.destroy()
+
+
+class GCPInstance(Instance):
+
+    def fetch_uid(self):
+        return self.node.id
+
+    def fetch_ip(self):
+        return self.node.public_ips[0]
+
+    def fetch_node(self):
+        return self.driver.list_nodes(ex_node_ids=[self.uid])[0]
+
+    def create(self):
+        name = ''
+        image = self.settings['GCP_IMAGE']
+        size = self.settings['GCP_SIZE']
+
+        print(self.driver.list_images())
+        # node = self.driver.create_node(name=name, size=size, image=image)
+        #
+        # self.node = node
+        # return node
 
     def destroy(self):
         self.node.destroy()

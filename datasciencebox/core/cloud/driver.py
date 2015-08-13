@@ -19,14 +19,24 @@ class Driver(object):
     }
 
     @classmethod
-    def new(cls, dsbfile):
-        cloud = dsbfile['CLOUD'].lower()
+    def new(cls, settings):
+        cloud = settings['CLOUD'].lower()
         if cloud == 'bare':
             return None
         elif cloud == 'aws':
-            return Driver.aws_create(dsbfile)
+            return Driver.aws_create(settings)
+        elif cloud == 'gcp':
+            return Driver.gcp_create(settings)
 
     @classmethod
-    def aws_create(cls, dsbfile):
-        cls = get_driver(cls.aws_region_map[dsbfile['AWS_REGION'].lower()])
-        return cls(dsbfile['AWS_KEY'], dsbfile['AWS_SECRET'])
+    def aws_create(cls, settings):
+        cls = get_driver(cls.aws_region_map[settings['AWS_REGION'].lower()])
+        return cls(settings['AWS_KEY'], settings['AWS_SECRET'])
+
+    @classmethod
+    def gcp_create(cls, settings):
+        ComputeEngine = get_driver(Provider.GCE)
+        driver = ComputeEngine(settings['GCP_EMAIL'], settings['GCP_PEM_FILE'],
+                               project=settings['GCP_PROJECT'],
+                               datacenter=settings['GCP_DATACENTER'])
+        return cls(s)
