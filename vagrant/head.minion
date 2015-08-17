@@ -6,3 +6,9 @@ mine_functions:
   network.interfaces: []
   network.ip_addrs: []
 mine_interval: 2
+
+grains:
+  roles:
+    - namenode
+    - zookeeper
+    - mesos.master

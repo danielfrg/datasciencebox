@@ -6,3 +6,8 @@ mine_functions:
   network.interfaces: []
   network.ip_addrs: []
 mine_interval: 2
+
+grains:
+  roles:
+    - datanode
+    - mesos.slave

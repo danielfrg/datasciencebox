@@ -11,6 +11,9 @@ Vagrant.configure("2") do |config|
   config.hostmanager.ignore_private_ip = false
 
   config.vm.define :head, primary: true do |machine|
+    machine.ssh.username = "root"
+    machine.ssh.password = "vagrant"
+
     machine.vm.provider :virtualbox do |v|
       v.name = "cc-head"
       v.customize ["modifyvm", :id, "--memory", "2048"]
@@ -29,17 +32,24 @@ Vagrant.configure("2") do |config|
 
     machine.vm.provision :hostmanager
 
+    machine.vm.provision "file", source: "head.master", destination: "/etc/salt/master"
+
     machine.vm.provision :salt do |salt|
-      salt.master_config = "master.head"
-      salt.minion_config = "minion.head"
+      salt.master_config = "head.master"  # Line is ignored?
+      salt.minion_config = "head.minion"
       salt.bootstrap_options = '-P'
       salt.install_master = true
       salt.run_highstate = false
       salt.verbose = true
     end
+
+    machine.vm.provision "shell", inline: "service salt-minion restart"
   end
 
   config.vm.define :compute do |machine|
+    machine.ssh.username = "root"
+    machine.ssh.password = "vagrant"
+
     machine.vm.provider :virtualbox do |v|
       v.name = "cc-compute"
       v.customize ["modifyvm", :id, "--memory", "2048"]
@@ -53,10 +63,12 @@ Vagrant.configure("2") do |config|
     machine.vm.provision :hostmanager
 
     machine.vm.provision :salt do |salt|
-      salt.minion_config = "minion.compute"
+      salt.minion_config = "compute.minion"
       salt.bootstrap_options = '-P'
       salt.run_highstate = false
       salt.verbose = true
     end
+
+    machine.vm.provision "shell", inline: "service salt-minion restart"
   end
 end
