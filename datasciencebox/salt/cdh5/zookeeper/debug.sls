@@ -1,4 +1,4 @@
-{%- from 'cdh5/zookeeper/settings.sls' import zk with context %}
+{%- from 'cdh5/zookeeper/settings.sls' import zookeeper_instances, zk with context %}
 
 /tmp/zk.debug:
   file.managed:
@@ -9,3 +9,4 @@
         snap_retain_count: {{ zk['snap_retain_count'] }}
         zookeepers: {{ zk['zookeepers'] }}
         connection_string: {{ zk['connection_string'] }}
+        zookeeper_instances: {{ zookeeper_instances }}

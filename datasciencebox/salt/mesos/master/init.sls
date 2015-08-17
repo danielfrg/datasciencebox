@@ -3,6 +3,15 @@
 include:
   - mesos.conf
 
+/etc/mesos-master/cluster:
+  file.managed:
+    - source: salt://mesos/etc/mesos/ip
+    - template: jinja
+    - makedirs: true
+    - context:
+      ip: datasciencebox
+    - makedirs: true
+
 /etc/mesos-master/ip:
   file.managed:
     - source: salt://mesos/etc/mesos/ip
@@ -28,6 +37,7 @@ mesos-master:
     - watch:
       - sls: mesos.conf
       - file: /etc/mesos-master/ip
+      - file: /etc/mesos-master/cluster
       - file: /etc/mesos-master/hostname
 
 mesos-slave-dead:
