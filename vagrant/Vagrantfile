@@ -15,7 +15,7 @@ Vagrant.configure("2") do |config|
     machine.ssh.password = "vagrant"
 
     machine.vm.provider :virtualbox do |v|
-      v.name = "cc-head"
+      v.name = "dsb-head"
       v.customize ["modifyvm", :id, "--memory", "2048"]
     end
 
@@ -52,7 +52,7 @@ Vagrant.configure("2") do |config|
     machine.ssh.password = "vagrant"
 
     machine.vm.provider :virtualbox do |v|
-      v.name = "cc-compute"
+      v.name = "dsb-compute"
       v.customize ["modifyvm", :id, "--memory", "2048"]
     end
 
