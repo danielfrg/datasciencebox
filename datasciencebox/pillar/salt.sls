@@ -1,6 +1,6 @@
 salt:
   master:
-    ip: {{ master }}
+    ip: salt-master
 
   minion:
     roles:

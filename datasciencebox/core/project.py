@@ -1,6 +1,8 @@
 import os
+import sys
 import yaml
 import shutil
+import fileinput
 
 from datasciencebox.core.settings import Settings
 from datasciencebox.core.cloud.cluster import Cluster
@@ -154,16 +156,17 @@ class Project(object):
         if os.path.exists(self.pillar_dir):
             shutil.rmtree(self.pillar_dir)
         shutil.copytree(pillar_roots_src, self.pillar_dir)
-        self.render_pillar('salt.sls', {'master': self.cluster.master.ip })
+        self._fix_salt_pillar()
 
-    def render_pillar(self, path, values):
-        from jinja2 import Environment, FileSystemLoader
-        pillar_loader = FileSystemLoader(searchpath=self.pillar_dir)
-        pillar_env = Environment(loader=pillar_loader)
-        pillar_template = pillar_env.get_template(path)
-        rendered = pillar_template.render(**values)
-        with open(os.path.join(self.pillar_dir, path), 'w') as f:
-            f.write(rendered)
+        # Fix salt pillar
+        self.replace_all(os.path.join(pillar_roots_src, 'salt.sls'), 'salt-master', self.cluster.master.ip )
+
+    @staticmethod
+    def replace_all(file, searchExp, replaceExp):
+        for line in fileinput.input(file, inplace=1):
+            if searchExp in line:
+                line = line.replace(searchExp,replaceExp)
+            sys.stdout.write(line)
 
     def salt(self, module, args=None, kwargs=None, target='*', ssh=False):
         if ssh:
