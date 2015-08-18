@@ -156,16 +156,15 @@ class Project(object):
         if os.path.exists(self.pillar_dir):
             shutil.rmtree(self.pillar_dir)
         shutil.copytree(pillar_roots_src, self.pillar_dir)
-        self._fix_salt_pillar()
 
         # Fix salt pillar
-        self.replace_all(os.path.join(pillar_roots_src, 'salt.sls'), 'salt-master', self.cluster.master.ip )
+        self.replace_all(os.path.join(self.pillar_dir, 'salt.sls'), 'salt-master', self.cluster.master.ip )
 
     @staticmethod
     def replace_all(file, searchExp, replaceExp):
         for line in fileinput.input(file, inplace=1):
             if searchExp in line:
-                line = line.replace(searchExp,replaceExp)
+                line = line.replace(searchExp, replaceExp)
             sys.stdout.write(line)
 
     def salt(self, module, args=None, kwargs=None, target='*', ssh=False):
