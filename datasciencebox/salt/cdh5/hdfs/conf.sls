@@ -1,4 +1,4 @@
-{%- from 'cdh5/settings.sls' import namenode_fqdn, namenode_dirs, datanode_dirs with context %}
+{%- from 'cdh5/hdfs/settings.sls' import namenode_fqdn, namenode_dirs, datanode_dirs with context %}
 
 /etc/hadoop/conf:
   file.recurse:

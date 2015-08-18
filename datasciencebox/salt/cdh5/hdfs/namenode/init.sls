@@ -1,4 +1,4 @@
-{%- from 'cdh5/settings.sls' import namenode_dirs with context %}
+{%- from 'cdh5/hdfs/settings.sls' import namenode_dirs with context %}
 
 include:
   - cdh5

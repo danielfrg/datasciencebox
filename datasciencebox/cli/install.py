@@ -82,8 +82,7 @@ def notebook(ctx, ssh):
 @click.pass_context
 def hdfs(ctx, ssh):
     project = ctx.obj['project']
-    project.salt('state.sls', args=['cdh5.hdfs.namenode'], target='master', ssh=ssh)
-    project.salt('state.sls', args=['cdh5.hdfs.datanode'], target='minion*', ssh=ssh)
+    project.salt('state.sls', args=['cdh5.hdfs.cluster'], target='*', ssh=ssh)
 
 
 @install.command(short_help='Install mesos in the cluster')
@@ -92,8 +91,7 @@ def hdfs(ctx, ssh):
 def mesos(ctx, ssh):
     project = ctx.obj['project']
     project.salt('state.sls', args=['cdh5.zookeeper'], target='master', ssh=ssh)
-    project.salt('state.sls', args=['mesos.master'], target='master', ssh=ssh)
-    project.salt('state.sls', args=['mesos.slave'], target='minion*', ssh=ssh)
+    project.salt('state.sls', args=['mesos.cluster'], target='*', ssh=ssh)
 
 
 @install.command(short_help='Install spark in the master')

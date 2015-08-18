@@ -1,4 +1,4 @@
-{%- from 'cdh5/settings.sls' import namenode_fqdn with context -%}
+{%- from 'cdh5/hdfs/settings.sls' import namenode_fqdn with context -%}
 {%- from 'cdh5/zookeeper/settings.sls' import zk with context -%}
 {%- from 'mesos/settings.sls' import mesos with context -%}
 

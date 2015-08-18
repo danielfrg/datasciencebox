@@ -1,4 +1,4 @@
-{%- from 'cdh5/settings.sls' import datanode_dirs with context %}
+{%- from 'cdh5/hdfs/settings.sls' import datanode_dirs with context %}
 
 include:
   - cdh5
