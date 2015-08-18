@@ -33,8 +33,6 @@ def up(ctx, salt):
     if salt:
         click.echo('Installing salt (master)')
         ctx.invoke(install_salt)
-        click.echo('Syncing formulas')
-        ctx.invoke(sync)
 
 
 @main.command(short_help='Destroy instances')

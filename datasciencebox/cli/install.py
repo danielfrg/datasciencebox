@@ -47,6 +47,9 @@ def install_salt(ctx):
     pillars = pillar_template % (project.cluster.master.ip, roles_txt)
     project.salt('state.sls', args=['salt.minion', pillars], target='minion*', ssh=True)
 
+    click.echo('Syncing formulas')
+    ctx.invoke(main.sync)
+
 
 @install.command('pkg', short_help='Install a package using system package manager')
 @click.pass_context
