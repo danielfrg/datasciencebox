@@ -3,6 +3,7 @@
 [![travis-ci](https://travis-ci.org/danielfrg/datasciencebox.svg)](https://travis-ci.org/danielfrg/datasciencebox)
 
 Command line utility to create instances in the cloud ready for data science.
+Includes conda package management plus some Big Data frameworks (spark).
 
 ## Installation
 
@@ -18,9 +19,10 @@ In this case you create a `dsbfile` and use the `dsb` (or `datasciencebox`) comm
 
 This makes it possible to version control everything, from box settings to custom salt states.
 
-A `dsbfile` is a python file and looks like this (for aws):
+A `dsbfile` is a python file and looks like this:
 
 ```python
+# AWS
 CLOUD = 'aws'
 
 AWS_KEY = '<KEY>'
@@ -31,10 +33,13 @@ AWS_SIZE = 'm3.large'
 AWS_KEYNAME = '<EC2_KEYNAME>'
 AWS_SECURITY_GROUPS = ['default']
 
+# ALL
 USERNAME = 'ubuntu'
 KEYPAIR = '~/.ssh/<EC2_KEYPAIR>.pem'
 NUMBER_INSTANCES = 3
 ```
+
+**Supported OS**: At this moment only Ubuntu (12.04 and 14.04) are supported.
 
 **Credentials**: You don't want credentials to be uploaded to the version control (trust me).
 But since the `dsbfile` is a python file you can always do something like this
@@ -63,49 +68,93 @@ but it can also be used to control the settings of the cluster (pillars) and eve
 ## Installing
 
 Everyting in DSB is based on [Salt](https://github.com/saltstack/salt) and
-there is two ways of bootstraping stuff into the nodes,
-salt via ZMQ (recommended) or salt ssh.
+there are two ways of bootstraping stuff into the nodes,
+salt master (via ZMQ - recommended) or salt ssh.
 
 The recommended way is using salt via ZMQ which requires the salt master
 and minion to be installed in the nodes you can install by running this:
 
-1. `dsb install salt`
-2. `dsb sync`
+``` bash
+$ dsb install salt
+```
 
-This is the default and recommended behaviour but you can use salt-ssh and not
+This is the default and recommended behavior but you can use salt-ssh and not
 install anything in your nodes while getting the same results (in most cases)
-by adding a `--ssh` flag to all the install commands.
+by adding a `--ssh` flag to all the commands.
 Note that this works well for some commands like `install conda` and `install pkg`
 but might not works as expected for the distributed frameworks like zookeeper and mesos.
 
-### Install miniconda
-
-Install miniconda under the `dsb` user
-
-`dsb install miniconda` or `dsb install miniconda --shh`
-
-### Install conda packages
-
-`dsb install conda <PKG_NAME>`, for example `dsb install conda numpy` or
-`dsb install conda numpy --ssh`
+## General management
 
 ### Install OS packages
 
-`dsb install pkg <PKG_NAME>`, for example `dsb install pkg build-essential` or
-`dsb install pkg build-essential --ssh`
+```bash
+$ dsb install pkg <PKG_NAME>
+$ # Example
+$ dsb install pkg build-essential
+$ dsb install pkg build-essential --ssh
+```
+
+## Conda management
+
+Conda package management is done for the `dsb` user in all the nodes.
+
+You need to install miniconda in all the nodes:
+
+```bash
+$ dsb install miniconda
+$ dsb install miniconda --shh
+```
+
+### conda packages
+
+```bash
+$ dsb install conda <PKG_NAME>
+$ # Example
+$ dsb install conda numpy
+$ dsb install conda numpy --ssh
+```
 
 ### Jupyter Notebook
 
-`dsb install notebook`, open the notebook URL by: `dsb open notebook`
+```bash
+$ dsb install notebook
+$ dsb open notebook
+```
+
+## Cloudera
+
+### HDFS
+
+```bash
+$ dsb install hdfs
+$ dsb open hdfs
+```
+
+## Mesos
+
+```bash
+$ dsb install mesos
+$ dsb open mesos
+```
 
 ### Spark
 
-Spark is available via apache mesos, you need to bootstrap first hdfs and mesos.
+Spark is available usint  mesos as scheduler, hdfs is also required.
 
-1. `dsb install hdfs`: check that is running: `dsb open hdfs`
-2. `dsb install mesos`: check that is running: `dsb open mesos`
-3. `dsb install spark`
+```bash
+$ dsb install spark
+```
 
 To test the easier way it to intall the Jupyter notebook and use use spark there,
 note that if you already installed the notebook you have to run `dsb install notebook`
 again.
+
+### Marathon
+
+Marathon can be used to deploy any application or docker container in Mesos.
+
+```bash
+$ dsb install mesos-marathon
+$ dsb open mesos-marathon
+```
