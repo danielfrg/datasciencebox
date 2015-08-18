@@ -5,8 +5,8 @@ import subprocess
 from fabric.api import settings, run, sudo, hide
 
 
-master_roles = ['miniconda', 'zookeeper', 'mesos.master', 'namenode', 'ipython.notebook', 'spark']
-minion_roles = ['miniconda', 'mesos.slave', 'datanode']
+master_roles = ['miniconda', 'zookeeper', 'mesos.master', 'hdfs.namenode', 'ipython.notebook', 'spark']
+minion_roles = ['miniconda', 'mesos.slave', 'hdfs.datanode']
 
 
 def generate_salt_cmd(target, module, args=None, kwargs=None):

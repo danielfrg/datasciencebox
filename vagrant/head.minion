@@ -9,6 +9,6 @@ mine_interval: 2
 
 grains:
   roles:
-    - namenode
+    - hdfs.namenode
     - zookeeper
     - mesos.master

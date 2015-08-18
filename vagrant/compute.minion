@@ -9,5 +9,5 @@ mine_interval: 2
 
 grains:
   roles:
-    - datanode
+    - hdfs.datanode
     - mesos.slave
