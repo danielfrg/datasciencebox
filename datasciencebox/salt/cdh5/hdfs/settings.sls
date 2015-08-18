@@ -27,3 +27,6 @@
   {% endif %}
 {% endfor %}
 {% endif %}
+
+{%- set namenode_dirs = salt['pillar.get']('hdfs:namenode_dirs', namenode_dirs)  %}
+{%- set datanode_dirs = salt['pillar.get']('hdfs:datanode_dirs', datanode_dirs) %}
