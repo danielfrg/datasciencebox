@@ -5,7 +5,7 @@
 {% if is_vagrant %}
   {% do localvars.update({'interface': 1}) %}
 {% else %}
-  {% do localvars.update({'interface': 1}) %}
+  {% do localvars.update({'interface': 0}) %}
 {% endif %}
 
 {% set force_mine_update = salt['mine.send']('network.ip_addrs') %}
