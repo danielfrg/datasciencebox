@@ -21,6 +21,14 @@ def open_mesos(ctx):
     webbrowser.open(url, new=2)
 
 
+@open_.command('mesos-marathon', short_help='Open the Marathon UI')
+@click.pass_context
+def open_mesos_marathon(ctx):
+    project = ctx.obj['project']
+    url = 'http://%s:8080' % project.cluster.master.ip
+    webbrowser.open(url, new=2)
+
+
 @open_.command('hdfs', short_help='Open the hdfs UI')
 @click.pass_context
 def open_hdfs(ctx):

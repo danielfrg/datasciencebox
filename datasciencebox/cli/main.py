@@ -20,14 +20,21 @@ def main(ctx):
 
 
 @main.command(short_help='Launch instances')
+@click.option('--salt/--no-salt', default=True, required=False, help='Whether to install salt')
 @click.pass_context
-def up(ctx):
+def up(ctx, salt):
     click.echo('Creating cluster')
     project = ctx.obj['project']
     project.create_cluster()
     click.echo('Saving settings')
     project.save()
     project.update()
+
+    if salt:
+        click.echo('Installing salt (master)')
+        ctx.invoke(install_salt)
+        click.echo('Syncing formulas')
+        ctx.invoke(sync)
 
 
 @main.command(short_help='Destroy instances')
