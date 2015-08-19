@@ -21,12 +21,19 @@ class Project(object):
 
     @classmethod
     def from_dir(cls, path=os.getcwd()):
+        dir_ = path
+        while dir_ != '/':
+            if os.path.exists(os.path.join(dir_, 'dsbfile')):
+                logger.debug('"dsbfile" FOUND on "%s"' % dir_)
+                break
+            logger.debug('"dsbfile" not found on "%s" trying parent directory' % dir_)
+            dir_ = os.path.abspath(os.path.join(dir_, os.pardir))
+
+        if not os.path.exists(os.path.join(dir_, 'dsbfile')):
+            raise DSBException('"dsbfile" not found on ""%s" or its parents' % path)
+
+        self = cls(path=dir_)
         logger.debug('Starting project from: %s' % path)
-        self = cls(path=path)
-
-        if not os.path.exists(self.settings_path):
-            raise DSBException('"dsbfile" not found on %s' % path)
-
         self.read_settings()
         self.read_instances()
         return self
