@@ -146,11 +146,10 @@ class BareInstance(Instance):
         warnings.warn('Bare Metal instance cannot fetch a node', DSBWarning)
 
     def create(self):
-        # TODO: ofcourse they "can", just do nothing?
-        warnings.warn('Bare Metal instances cannot be created', DSBWarning)
+        warnings.warn('Bare Metal instance cannot be created', DSBWarning)
 
     def destroy(self):
-        raise NotImplementedError('Bare Metal instance cannot be destroyed')
+        warnings.warn('Bare Metal instance cannot be destroyed', DSBWarning)
 
 class AWSInstance(Instance):
 

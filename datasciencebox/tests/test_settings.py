@@ -12,7 +12,7 @@ def test_required_bare_fields():
     with pytest.raises(AssertionError) as excinfo:
         settings.validate_fields()
 
-    settings['NODES'] = {}
+    settings['NODES'] = []
     settings['USERNAME'] = 'root'
     settings['KEYPAIR'] = '~/.ssh/something'
     settings.validate_fields()

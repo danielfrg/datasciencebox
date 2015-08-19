@@ -67,9 +67,16 @@ class Cluster(object):
 
     def create(self):
         if self.settings['CLOUD'] == 'bare':
-            warnings.warn("Bare Metal cluster cannot be created", DSBWarning)
-            return
+            self.create_bare()
 
+    def create_bare(self):
+        self.instances = []
+        for ip in self.settings['NODES']:
+            new_instance = Instance.new(settings=self.settings, cluster=self)
+            new_instance.ip = ip
+            self.instances.append(new_instance)
+
+    def create_cloud(self):
         instances = []
         for i in range(self.settings['NUMBER_NODES']):
             new_instance = Instance.new(settings=self.settings, cluster=self)
@@ -84,6 +91,7 @@ class Cluster(object):
         new_nodes = [node for node in all_nodes if node.id in node_ids]
         for instance, node in zip(instances, new_nodes):
             instance.node = node
+
         self.instances = instances
 
     def fetch_nodes(self):
