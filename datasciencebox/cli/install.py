@@ -57,11 +57,11 @@ def install_salt(ctx):
 
 
 @install.command('pkg', short_help='Install a package using system package manager')
-@log_option
-@click.pass_context
 @click.argument('pkg', required=True)
 @click.option('--ssh', is_flag=True, required=False, show_default=True, help='Whether to use ssh')
 @click.option('--target', '-t', required=False, help='Wildcard matching salt minions')
+@log_option
+@click.pass_context
 def install_pkg(ctx, pkg, ssh, target):
     project = Project.from_dir(path=ctx.obj['cwd'])
     args = [pkg]
@@ -69,11 +69,11 @@ def install_pkg(ctx, pkg, ssh, target):
 
 
 @install.command('conda', short_help='Install conda package')
-@log_option
-@click.pass_context
 @click.argument('pkg', required=True)
 @click.option('--ssh', is_flag=True, required=False, show_default=True, help='Whether to use ssh')
 @click.option('--target', '-t', required=False, help='Wildcard matching salt minions')
+@log_option
+@click.pass_context
 def install_conda(ctx, pkg, ssh, target):
     project = Project.from_dir(path=ctx.obj['cwd'])
     project.salt('conda.install', args=[pkg], kwargs={'user': 'dsb'}, target=target, ssh=ssh)
