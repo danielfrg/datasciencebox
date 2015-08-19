@@ -3,7 +3,6 @@ import pytest
 from datasciencebox.core.settings import Settings
 from datasciencebox.core.cloud.instance import Instance, BareInstance, AWSInstance
 
-
 settings = Settings()
 
 

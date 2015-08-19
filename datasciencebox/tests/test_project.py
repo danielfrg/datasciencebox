@@ -4,7 +4,6 @@ from datasciencebox.core.project import Project
 from datasciencebox.core.settings import Settings
 from datasciencebox.core.cloud.cluster import Cluster
 
-
 settings = Settings()
 settings['USERNAME'] = 'me'
 settings['KEYPAIR'] = '~/.ssh/id_rsa'

@@ -45,7 +45,11 @@ class RsyncHandler(FileSystemEventHandler):
             with hide('running', 'stdout', 'stderr'):
                 with settings(host_string=host_string, key_filename=key_filename):
                     print(src + ' -> ' + dst)
-                    rsync_project(dst, src, delete=True, extra_opts='--rsync-path="sudo rsync" -oStrictHostKeyChecking=no', exclude='.DS_Store', default_opts='-pthrz')
+                    rsync_project(dst, src,
+                                  delete=True,
+                                  extra_opts='--rsync-path="sudo rsync" -oStrictHostKeyChecking=no',
+                                  exclude='.DS_Store',
+                                  default_opts='-pthrz')
 
     def sync_all(self):
         this_dir = os.path.dirname(os.path.realpath(__file__))

@@ -4,7 +4,6 @@ import sys
 import logging
 import logging.handlers
 
-
 # Hide messages if we log before setting up handler
 logging.root.manager.emittedNoHandlerWarning = True
 

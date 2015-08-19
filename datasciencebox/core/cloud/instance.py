@@ -152,6 +152,7 @@ class BareInstance(Instance):
     def destroy(self):
         warnings.warn('Bare Metal instance cannot be destroyed', DSBWarning)
 
+
 class AWSInstance(Instance):
 
     def fetch_uid(self):
@@ -177,22 +178,31 @@ class AWSInstance(Instance):
         sizes = self.driver.list_sizes()
         size = [s for s in sizes if s.id == instance_type][0]
 
-        ebs_mapping = [{'DeviceName': '/dev/sda1',
-                        'Ebs': {'DeleteOnTermination': 'true',
-                                'VolumeSize': root_size,
-                                'VolumeType': root_type},
-                        'VirtualName': None}]
+        ebs_mapping = [{
+            'DeviceName': '/dev/sda1',
+            'Ebs':
+            {'DeleteOnTermination': 'true',
+             'VolumeSize': root_size,
+             'VolumeType': root_type},
+            'VirtualName': None
+        }]
 
         try:
-            self.node = self.driver.create_node(name=name, size=size, image=image,
-                        ex_keyname=ex_keyname, ex_securitygroup=ex_securitygroup,
-                        ex_blockdevicemappings=ebs_mapping)
+            self.node = self.driver.create_node(name=name,
+                                                size=size,
+                                                image=image,
+                                                ex_keyname=ex_keyname,
+                                                ex_securitygroup=ex_securitygroup,
+                                                ex_blockdevicemappings=ebs_mapping)
         except Exception, e:
             if 'EBS block device mappings not supported for instance-store AMIs' in str(e):
-                self.node = self.driver.create_node(name=name, size=size, image=image,
-                            ex_keyname=ex_keyname, ex_securitygroup=ex_securitygroup)
+                self.node = self.driver.create_node(name=name,
+                                                    size=size,
+                                                    image=image,
+                                                    ex_keyname=ex_keyname,
+                                                    ex_securitygroup=ex_securitygroup)
             else:
-                raise(e)
+                raise (e)
 
         return self.node
 
@@ -227,11 +237,18 @@ class GCPInstance(Instance):
         with open(os.path.expanduser(self.settings['GCP_PUBLIC_KEY'])) as f:
             metadata['sshKeys'] = '%s:%s' % (self.settings['USERNAME'], f.read())
 
-        volume = self.driver.create_volume(size=root_disk_size, name=name, ex_disk_type=root_disk_type, image=image)
+        volume = self.driver.create_volume(size=root_disk_size,
+                                           name=name,
+                                           ex_disk_type=root_disk_type,
+                                           image=image)
 
-        self.node = self.driver.create_node(name=name, size=size, image=image,
-                                ex_metadata=metadata, ex_network=network,
-                                ex_boot_disk=volume, ex_disk_auto_delete=True)
+        self.node = self.driver.create_node(name=name,
+                                            size=size,
+                                            image=image,
+                                            ex_metadata=metadata,
+                                            ex_network=network,
+                                            ex_boot_disk=volume,
+                                            ex_disk_auto_delete=True)
         return self.node
 
     def destroy(self):

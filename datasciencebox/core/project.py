@@ -58,7 +58,7 @@ class Project(object):
         if os.path.exists(self.settings_path):
             self.settings = Settings.from_dsbfile(self.settings_path)
         else:
-            pass # TODO: do something?
+            pass    # TODO: do something?
 
     def read_instances(self):
         """
@@ -160,7 +160,8 @@ class Project(object):
             shutil.rmtree(self.pillar_dir)
         shutil.copytree(pillar_roots_src, self.pillar_dir)
 
-        self.replace_all(os.path.join(self.pillar_dir, 'salt.sls'), 'salt-master', self.cluster.master.ip )
+        ip = self.cluster.master.ip
+        self.replace_all(os.path.join(self.pillar_dir, 'salt.sls'), 'salt-master', ip)
 
     @staticmethod
     def replace_all(file, searchExp, replaceExp):

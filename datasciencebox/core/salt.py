@@ -7,8 +7,8 @@ from fabric.api import settings, run, sudo, hide
 from datasciencebox.core.logger import getLogger
 logger = getLogger()
 
-
-master_roles = ['miniconda', 'zookeeper', 'mesos.master', 'hdfs.namenode', 'ipython.notebook', 'spark']
+master_roles = ['miniconda', 'zookeeper', 'mesos.master', 'hdfs.namenode', 'ipython.notebook',
+                'spark']
 minion_roles = ['miniconda', 'mesos.slave', 'hdfs.datanode']
 
 
@@ -44,9 +44,9 @@ def roster_item(instance, roles=None, mine=True):
     if mine:
         ret['mine_interval'] = 2
         ret['mine_functions'] = {
-              'network.get_hostname': [],
-              'network.interfaces': [],
-              'network.ip_addrs': []
+            'network.get_hostname': [],
+            'network.interfaces': [],
+            'network.ip_addrs': []
         }
 
     return ret

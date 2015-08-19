@@ -25,7 +25,8 @@ def start():
         click.echo('ERROR: %s' % e, err=True)
         sys.exit(1)
     except KeyboardInterrupt:
-        click.echo("Interrupted by Ctrl-C. One or more actions could be still running in the cluster")
+        click.echo(
+            "Interrupted by Ctrl-C. One or more actions could be still running in the cluster")
         sys.exit(1)
     except Exception as e:
         click.echo(traceback.format_exc(), err=True)
@@ -33,7 +34,13 @@ def start():
 
 
 def log_option(func):
-    @click.option('--log-level', '-l', required=False, default='error', type=click.Choice(['debug', 'error']), show_default=True, help='Logging level')
+
+    @click.option('--log-level', '-l',
+                  required=False,
+                  default='error',
+                  type=click.Choice(['debug', 'error']),
+                  show_default=True,
+                  help='Logging level')
     @click.pass_context
     def new_func(ctx, log_level, *args, **kwargs):
         if log_level == 'info':
@@ -46,10 +53,13 @@ def log_option(func):
 
         ctx.obj['log_level'] = log_level
         return ctx.invoke(func, *args, **kwargs)
+
     return update_wrapper(new_func, func)
 
 
 CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
+
+
 @click.group(context_settings=CONTEXT_SETTINGS)
 @click.pass_context
 def main(ctx):
@@ -114,7 +124,10 @@ def ssh(ctx, node):
 
 @main.command(short_help='Sync salt states and pillar to master')
 @click.option('--skip', '-s', required=False, is_flag=True, help='Skip initial sync')
-@click.option('--continuous', '-c', required=False,  is_flag=True, help='Sync continously based on file system changes')
+@click.option('--continuous', '-c',
+              required=False,
+              is_flag=True,
+              help='Sync continously based on file system changes')
 @log_option
 @click.pass_context
 def sync(ctx, continuous, skip):
