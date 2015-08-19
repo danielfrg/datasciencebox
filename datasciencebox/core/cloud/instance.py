@@ -200,20 +200,23 @@ class GCPInstance(Instance):
         return self.node.public_ips[0]
 
     def fetch_node(self):
-        return self.driver.list_nodes(ex_node_ids=[self.uid])[0]
+        all_nodes = self.driver.list_nodes()
+        node = [node for node in all_nodes if node.id == self.uid]
+        return node[0]
 
     def create(self, suffix=''):
         suffix = '-%s' % suffix if suffix is not None else ''
         name = '%s%s' % (self.settings['ID'], suffix)
         image = self.settings['GCP_IMAGE']
         size = self.settings['GCP_SIZE']
+        network = self.settings['GCP_NETWORK']
 
         metadata = {}
         with open(os.path.expanduser(self.settings['GCP_PUBLIC_KEY'])) as f:
             metadata['sshKeys'] = '%s:%s' % (self.settings['USERNAME'], f.read())
-        
+
         self.node = self.driver.create_node(name=name, size=size, image=image,
-                                ex_metadata=metadata)
+                                ex_metadata=metadata, ex_network=network)
         return self.node
 
     def destroy(self):
