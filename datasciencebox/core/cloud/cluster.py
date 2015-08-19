@@ -38,6 +38,9 @@ class Cluster(object):
             ret.append(instance.to_dict())
         return ret
 
+    def __len__(self):
+        return len(self.instances)
+
     @property
     def master(self):
         return self.instances[0]

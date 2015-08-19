@@ -4,7 +4,7 @@ import time
 
 import click
 
-from datasciencebox.cli.main import main
+from datasciencebox.cli.main import main, sync
 from datasciencebox.core.salt import master_roles, minion_roles
 
 
@@ -41,14 +41,15 @@ def install_salt(ctx):
     pillars = pillar_template % (project.cluster.master.ip, roles_txt)
     project.salt('state.sls', args=['salt.minion', pillars], target='master', ssh=True)
 
-    click.echo('Installing salt minion in the compute')
-    roles_txt = ['"%s"' % role for role in minion_roles]
-    roles_txt = '[%s]' % ', '.join(roles_txt)
-    pillars = pillar_template % (project.cluster.master.ip, roles_txt)
-    project.salt('state.sls', args=['salt.minion', pillars], target='minion*', ssh=True)
+    if len(project.cluster) > 1:
+        click.echo('Installing salt minion in the compute')
+        roles_txt = ['"%s"' % role for role in minion_roles]
+        roles_txt = '[%s]' % ', '.join(roles_txt)
+        pillars = pillar_template % (project.cluster.master.ip, roles_txt)
+        project.salt('state.sls', args=['salt.minion', pillars], target='minion*', ssh=True)
 
     click.echo('Syncing formulas')
-    ctx.invoke(main.sync)
+    ctx.invoke(sync)
 
 
 @install.command('pkg', short_help='Install a package using system package manager')
