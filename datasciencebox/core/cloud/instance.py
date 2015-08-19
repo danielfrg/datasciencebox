@@ -3,16 +3,19 @@ import warnings
 
 from libcloud.compute.base import NodeImage
 
+from datasciencebox.core.logger import getLogger
+logger = getLogger()
 from datasciencebox.core.cloud.driver import Driver
 from datasciencebox.core.exceptions import DSBException, DSBWarning
 
 
 class Instance(object):
 
-    def __init__(self, settings, driver=None):
+    def __init__(self, settings, cluster=None):
+        logger.debug('Initializing Instance')
         self.settings = settings
-        self.driver = driver or Driver.new(settings)
-
+        self.cluster = cluster
+        self._driver = None
         self._node = None
         self._uid = None
         self._ip = None
@@ -20,34 +23,33 @@ class Instance(object):
         self._keypair = None
 
     @classmethod
-    def new(cls, settings=None, driver=None):
+    def new(cls, settings, cluster=None):
         """
         Create a new Cloud instance based on the Settings
         """
         cloud = settings['CLOUD']
-        driver = driver or Driver.new(settings)
         if cloud == 'bare':
-            self = BareInstance(settings, driver=driver)
+            self = BareInstance(settings, cluster=cluster)
         elif cloud == 'aws':
-            self = AWSInstance(settings, driver=driver)
+            self = AWSInstance(settings, cluster=cluster)
         elif cloud == 'gcp':
-            self = GCPInstance(settings, driver=driver)
+            self = GCPInstance(settings, cluster=cluster)
         else:
             raise DSBException('Cloud "%s" not supported' % cloud)
         return self
 
     @classmethod
-    def from_uid(cls, uid, settings=None, driver=None):
+    def from_uid(cls, uid, settings=None, cluster=None):
         """
         Fetch a Cloud instance based on the UniqueID
         """
-        self = cls.new(settings=settings, driver=driver)
+        self = cls.new(settings=settings, cluster=cluster)
         self.uid = uid
         return self
 
     @classmethod
-    def from_dict(cls, values, settings=None, driver=None):
-        self = cls.new(settings=settings, driver=driver)
+    def from_dict(cls, values, settings=None, cluster=None):
+        self = cls.new(settings=settings, cluster=cluster)
         self.uid = values['id']
         self.ip = values['ip']
         return self
@@ -60,6 +62,11 @@ class Instance(object):
         ret['id'] = self.uid
         ret['ip'] = self.ip
         return ret
+
+    def get_driver(self):
+        return self.cluster.driver
+
+    driver = property(get_driver, None, None)
 
     def get_uid(self):
         if self._uid is None:

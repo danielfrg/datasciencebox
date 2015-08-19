@@ -9,6 +9,9 @@ from fabric.api import settings, run, sudo, hide
 from datasciencebox.core.project import Project
 from datasciencebox.core.sync import RsyncHandler, loop as sync_loop
 
+from datasciencebox.core.logger import setup_logging
+setup_logging()
+
 
 CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 @click.group(context_settings=CONTEXT_SETTINGS)

@@ -1,6 +1,8 @@
 from libcloud.compute.types import Provider
 from libcloud.compute.providers import get_driver
 
+from datasciencebox.core.logger import getLogger
+logger = getLogger()
 from datasciencebox.core.exceptions import DSBException, DSBWarning
 
 
@@ -20,6 +22,7 @@ class Driver(object):
 
     @classmethod
     def new(cls, settings):
+        logger.debug('Creating new driver')
         cloud = settings['CLOUD'].lower()
         if cloud == 'bare':
             return None
@@ -30,11 +33,13 @@ class Driver(object):
 
     @classmethod
     def aws_create(cls, settings):
+        logger.debug('Creating AWS driver')
         cls = get_driver(cls.aws_region_map[settings['AWS_REGION'].lower()])
         return cls(settings['AWS_KEY'], settings['AWS_SECRET'])
 
     @classmethod
     def gcp_create(cls, settings):
+        logger.debug('Creating GCP driver')
         import libcloud.security
         libcloud.security.VERIFY_SSL_CERT = False
 

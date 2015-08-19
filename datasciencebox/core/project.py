@@ -4,10 +4,12 @@ import yaml
 import shutil
 import fileinput
 
+from datasciencebox.core.logger import getLogger
+logger = getLogger()
+from datasciencebox.core import salt
 from datasciencebox.core.settings import Settings
 from datasciencebox.core.cloud.cluster import Cluster
 from datasciencebox.core.exceptions import DSBException
-from datasciencebox.core import salt
 
 
 def safe_create_dir(path):
@@ -19,6 +21,7 @@ class Project(object):
 
     @classmethod
     def from_dir(cls, path=os.getcwd()):
+        logger.debug('Starting project from: %s' % path)
         self = cls(path=path)
 
         if not os.path.exists(self.settings_path):

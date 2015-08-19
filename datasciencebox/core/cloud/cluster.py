@@ -3,6 +3,8 @@ import warnings
 
 from libcloud.compute.base import NodeImage
 
+from datasciencebox.core.logger import getLogger
+logger = getLogger()
 from datasciencebox.core.cloud.driver import Driver
 from datasciencebox.core.cloud.instance import Instance
 from datasciencebox.core.exceptions import DSBException, DSBWarning
@@ -11,6 +13,7 @@ from datasciencebox.core.exceptions import DSBException, DSBWarning
 class Cluster(object):
 
     def __init__(self, driver=None, settings=None):
+        logger.debug('Initializing Cluster')
         self._driver = driver
         self.settings = settings
         self.instances = []
@@ -20,12 +23,13 @@ class Cluster(object):
         """
         From a list of dicts (each dict is an instances)
         """
+        logger.debug('Creating Cluster from list')
         self = cls()
         self.settings = settings
         self.instances = []
 
         for instance in values:
-            new_instance = Instance.from_dict(instance, settings=self.settings)
+            new_instance = Instance.from_dict(instance, settings, cluster=self)
             self.instances.append(new_instance)
         return self
 
@@ -50,6 +54,16 @@ class Cluster(object):
         if self._driver is None:
             self._driver = Driver.new(self.settings)
         return self._driver
+
+    def get_driver(self):
+        if self._driver is None:
+            self._driver = Driver.new(self.settings)
+        return self._driver
+
+    def set_driver(self, value):
+        self._uid = value
+
+    driver = property(get_driver, set_driver, None)
 
     def create(self):
         if self.settings['CLOUD'] == 'bare':
