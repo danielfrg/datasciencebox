@@ -72,7 +72,7 @@ class Cluster(object):
 
         instances = []
         for i in range(self.settings['NUMBER_NODES']):
-            new_instance = Instance.new(settings=self.settings, driver=self.driver)
+            new_instance = Instance.new(settings=self.settings, cluster=self)
             instances.append(new_instance)
 
         create_nodes = [instance.create(suffix=i) for i, instance in enumerate(instances)]
