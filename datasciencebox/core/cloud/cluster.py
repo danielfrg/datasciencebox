@@ -88,7 +88,6 @@ class Cluster(object):
 
     def fetch_nodes(self):
         for instance in self.instances:
-            instance.driver = self.driver
             instance.fetch_node()
 
     def destroy(self):
