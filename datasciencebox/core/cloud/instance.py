@@ -175,18 +175,17 @@ class AWSInstance(Instance):
                         'VirtualName': None}]
 
         try:
-            node = self.driver.create_node(name=name, size=size, image=image,
+            self.node = self.driver.create_node(name=name, size=size, image=image,
                         ex_keyname=ex_keyname, ex_securitygroup=ex_securitygroup,
                         ex_blockdevicemappings=ebs_mapping)
         except Exception, e:
             if 'EBS block device mappings not supported for instance-store AMIs' in str(e):
-                node = self.driver.create_node(name=name, size=size, image=image,
-                        ex_keyname=ex_keyname, ex_securitygroup=ex_securitygroup)
+                self.node = self.driver.create_node(name=name, size=size, image=image,
+                            ex_keyname=ex_keyname, ex_securitygroup=ex_securitygroup)
             else:
                 raise(e)
 
-        self.node = node
-        return node
+        return self.node
 
     def destroy(self):
         self.node.destroy()
@@ -203,16 +202,15 @@ class GCPInstance(Instance):
     def fetch_node(self):
         return self.driver.list_nodes(ex_node_ids=[self.uid])[0]
 
-    def create(self):
-        name = ''
+    def create(self, suffix=''):
+        suffix = '-%s' % suffix if suffix is not None else ''
+        name = '%s%s' % (self.settings['ID'], suffix)
+        print(name)
         image = self.settings['GCP_IMAGE']
         size = self.settings['GCP_SIZE']
 
-        print(self.driver.list_images())
-        # node = self.driver.create_node(name=name, size=size, image=image)
-        #
-        # self.node = node
-        # return node
+        self.node = self.driver.create_node(name=name, size=size, image=image)
+        return self.node
 
     def destroy(self):
         self.node.destroy()

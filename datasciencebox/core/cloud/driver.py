@@ -35,8 +35,11 @@ class Driver(object):
 
     @classmethod
     def gcp_create(cls, settings):
+        import libcloud.security
+        libcloud.security.VERIFY_SSL_CERT = False
+
         ComputeEngine = get_driver(Provider.GCE)
-        driver = ComputeEngine(settings['GCP_EMAIL'], settings['GCP_PEM_FILE'],
+        driver = ComputeEngine(settings['GCP_EMAIL'], settings['GCP_KEY_FILE'],
                                project=settings['GCP_PROJECT'],
                                datacenter=settings['GCP_DATACENTER'])
-        return cls(s)
+        return driver
