@@ -165,10 +165,11 @@ class AWSInstance(Instance):
         return self.driver.list_nodes(ex_node_ids=[self.uid])[0]
 
     def create(self):
-        name = ''
+        name = self.settings['ID']
         ami_id = self.settings['AWS_IMAGE']
         image = NodeImage(id=ami_id, name=None, driver=self.driver)
-
+        root_size = self.settings['AWS_ROOT_SIZE']
+        root_type = self.settings['AWS_ROOT_TYPE']
         ex_keyname = self.settings['AWS_KEYNAME']
         ex_securitygroup = self.settings['AWS_SECURITY_GROUPS']
 
@@ -178,8 +179,8 @@ class AWSInstance(Instance):
 
         ebs_mapping = [{'DeviceName': '/dev/sda1',
                         'Ebs': {'DeleteOnTermination': 'true',
-                                'VolumeSize': 200,
-                                'VolumeType': 'gp2'},
+                                'VolumeSize': root_size,
+                                'VolumeType': root_type},
                         'VirtualName': None}]
 
         try:
@@ -219,13 +220,18 @@ class GCPInstance(Instance):
         image = self.settings['GCP_IMAGE']
         size = self.settings['GCP_SIZE']
         network = self.settings['GCP_NETWORK']
+        root_disk_size = self.settings['GCP_ROOT_SIZE']
+        root_disk_type = self.settings['GCP_ROOT_TYPE']
 
         metadata = {}
         with open(os.path.expanduser(self.settings['GCP_PUBLIC_KEY'])) as f:
             metadata['sshKeys'] = '%s:%s' % (self.settings['USERNAME'], f.read())
 
+        volume = self.driver.create_volume(size=root_disk_size, name=name, ex_disk_type=root_disk_type, image=image)
+
         self.node = self.driver.create_node(name=name, size=size, image=image,
-                                ex_metadata=metadata, ex_network=network)
+                                ex_metadata=metadata, ex_network=network,
+                                ex_boot_disk=volume, ex_disk_auto_delete=True)
         return self.node
 
     def destroy(self):
