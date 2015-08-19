@@ -28,6 +28,7 @@ def test_required_aws_fields():
     settings['AWS_KEY'] = '1'
     settings['AWS_SECRET'] = '1'
     settings['AWS_KEYNAME'] = '1'
+    settings['AWS_REGION'] = '1'
     settings['AWS_SECURITY_GROUPS'] = '1'
     settings['AWS_IMAGE'] = '1'
     settings['AWS_SIZE'] = '1'
