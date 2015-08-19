@@ -21,8 +21,8 @@ setup(name='datasciencebox',
       include_package_data=True,
       entry_points="""
         [console_scripts]
-        dsb=datasciencebox.cli.main:main
-        datasciencebox=datasciencebox.cli.main:main
+        dsb=datasciencebox.cli.main:start
+        datasciencebox=datasciencebox.cli.main:start
       """,
       install_requires=[
         'click>=4.1',

@@ -1,16 +1,32 @@
 from __future__ import absolute_import, unicode_literals
 
 import os
+import sys
 import subprocess
 
 import click
 from fabric.api import settings, run, sudo, hide
 
 from datasciencebox.core.project import Project
+from datasciencebox.core.exceptions import DSBException
 from datasciencebox.core.sync import RsyncHandler, loop as sync_loop
 
 from datasciencebox.core.logger import setup_logging
 setup_logging()
+
+
+def start():
+    try:
+        main(obj={})
+    except DSBException as e:
+        click.echo('ERROR: %s' % e, err=True)
+        sys.exit(1)
+    except KeyboardInterrupt:
+        click.echo("Interrupted by Ctrl-C. One or more actions could be still running in the cluster")
+        sys.exit(1)
+    except Exception as e:
+        click.echo(traceback.format_exc(), err=True)
+        sys.exit(1)
 
 
 CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
@@ -99,4 +115,4 @@ from datasciencebox.cli.install import *
 from datasciencebox.cli.open import *
 
 if __name__ == '__main__':
-    main()
+    start()

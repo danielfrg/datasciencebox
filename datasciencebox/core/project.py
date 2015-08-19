@@ -25,7 +25,7 @@ class Project(object):
         self = cls(path=path)
 
         if not os.path.exists(self.settings_path):
-            raise DSBException('settings not found')
+            raise DSBException('"dsbfile" not found on %s' % path)
 
         self.read_settings()
         self.read_instances()
