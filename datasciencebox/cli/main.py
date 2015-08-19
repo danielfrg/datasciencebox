@@ -43,6 +43,17 @@ def destroy(ctx):
     project.destroy()
 
 
+@main.command(short_help='Execute a salt module')
+@click.argument('target')
+@click.argument('module')
+@click.argument('args', required=False, nargs=-1)
+@click.option('--ssh', is_flag=True, required=False, show_default=True, help='Whether to use ssh')
+@click.pass_context
+def salt(ctx, target, module, args, ssh):
+    project = ctx.obj['project']
+    project.salt(module, args=args, target=target, ssh=ssh)
+
+
 @main.command(short_help='SSH to the master node')
 @click.pass_context
 def ssh(ctx):
