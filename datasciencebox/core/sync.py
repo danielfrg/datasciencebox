@@ -47,7 +47,8 @@ class RsyncHandler(FileSystemEventHandler):
                     print(src + ' -> ' + dst)
                     rsync_project(dst, src,
                                   delete=True,
-                                  extra_opts='--rsync-path="sudo rsync" -oStrictHostKeyChecking=no',
+                                  extra_opts='--rsync-path="sudo rsync"',
+                                  ssh_opts='-oStrictHostKeyChecking=no',
                                   exclude='.DS_Store',
                                   default_opts='-pthrz')
 
