@@ -205,11 +205,15 @@ class GCPInstance(Instance):
     def create(self, suffix=''):
         suffix = '-%s' % suffix if suffix is not None else ''
         name = '%s%s' % (self.settings['ID'], suffix)
-        print(name)
         image = self.settings['GCP_IMAGE']
         size = self.settings['GCP_SIZE']
 
-        self.node = self.driver.create_node(name=name, size=size, image=image)
+        metadata = {}
+        with open(os.path.expanduser(self.settings['GCP_PUBLIC_KEY'])) as f:
+            metadata['sshKeys'] = '%s:%s' % (self.settings['USERNAME'], f.read())
+        
+        self.node = self.driver.create_node(name=name, size=size, image=image,
+                                ex_metadata=metadata)
         return self.node
 
     def destroy(self):
