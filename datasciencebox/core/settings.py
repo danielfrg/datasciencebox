@@ -1,6 +1,8 @@
 import os
 import importlib
 
+from datasciencebox.core.logger import getLogger
+logger = getLogger()
 from datasciencebox.core.exceptions import DSBException
 
 
@@ -8,6 +10,7 @@ class Settings(dict):
 
     def __init__(self, *args, **kwargs):
         super(Settings, self).__init__(*args, **kwargs)
+        logger.debug('Initializing Settings')
         self['CLOUD'] = 'bare'
 
     def validate_fields(self):
@@ -31,6 +34,7 @@ class Settings(dict):
 
     @classmethod
     def from_dsbfile(cls, filepath):
+        logger.debug('Creating settings from: %s' % filepath)
         all_values = {}
         execfile(filepath, all_values)
 
@@ -42,6 +46,7 @@ class Settings(dict):
 
     @classmethod
     def from_dict(cls, values):
+        logger.debug('Creating settings dictionary')
         self = cls()
         self.update(values)
         self.validate_fields()

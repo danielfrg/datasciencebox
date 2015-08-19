@@ -54,6 +54,7 @@ class Project(object):
         Read the settings "dsbfile" file
         Populates `self.settings`
         """
+        logger.debug('Reading settings from: %s' % self.settings_path)
         if os.path.exists(self.settings_path):
             self.settings = Settings.from_dsbfile(self.settings_path)
         else:
@@ -64,14 +65,14 @@ class Project(object):
         Read `.dsb/instances.yaml`
         Populates `self.cluster`
         """
+        logger.debug('Reading instances from: %s' % self.instances_path)
         if os.path.exists(self.instances_path):
             with open(self.instances_path, 'r') as f:
                 list_ = yaml.load(f.read())
                 self.cluster = Cluster.from_list(list_, settings=self.settings)
-        else:
-            pass # TODO: do something?
 
     def save_instances(self):
+        logger.debug('Saving instances file to: %s' % self.instances_path)
         with open(self.instances_path, 'w') as f:
             yaml.safe_dump(self.cluster.to_list(), f, default_flow_style=False)
 
@@ -93,14 +94,12 @@ class Project(object):
         self.salt_ssh_create_master_conf()
         self.copy_salt_and_pillar()
 
-    def save(self):
-        self.save_instances()
-
     # --------------------------------------------------------------------------
     # Salt-SSH
     # --------------------------------------------------------------------------
 
     def salt_ssh_create_dirs(self):
+        logger.debug('Creating salt-ssh dirs into: %s' % self.settings_dir)
         safe_create_dir(os.path.join(self.settings_dir, 'salt'))
         safe_create_dir(os.path.join(self.settings_dir, 'pillar'))
         safe_create_dir(os.path.join(self.settings_dir, 'etc', 'salt'))
@@ -112,6 +111,7 @@ class Project(object):
         return os.path.join(self.settings_dir, 'roster.yaml')
 
     def create_roster(self):
+        logger.debug('Creating roster file to: %s' % self.roster_path)
         with open(self.roster_path, 'w') as f:
             yaml.safe_dump(salt.generate_roster(self.cluster), f, default_flow_style=False)
 
@@ -160,7 +160,6 @@ class Project(object):
             shutil.rmtree(self.pillar_dir)
         shutil.copytree(pillar_roots_src, self.pillar_dir)
 
-        # Fix salt pillar
         self.replace_all(os.path.join(self.pillar_dir, 'salt.sls'), 'salt-master', self.cluster.master.ip )
 
     @staticmethod
@@ -178,11 +177,6 @@ class Project(object):
 
 
 if __name__ == '__main__':
-    p = Project.from_dir('../')
+    p = Project.from_dir('../../')
     p.create_cluster()
-    p.save()
-
-    # p.read()
-    # print p.generate_roster()
-    # p.update()
-    # p.save()
+    p.save_instances()

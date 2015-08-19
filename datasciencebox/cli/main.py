@@ -29,8 +29,8 @@ def up(ctx, salt):
     click.echo('Creating cluster')
     project = ctx.obj['project']
     project.create_cluster()
-    click.echo('Saving settings')
-    project.save()
+    click.echo('Creating metadata')
+    project.save_instances()
     project.update()
 
     if salt:

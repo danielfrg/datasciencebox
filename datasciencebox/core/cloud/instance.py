@@ -27,6 +27,7 @@ class Instance(object):
         """
         Create a new Cloud instance based on the Settings
         """
+        logger.debug('Creating new "%s" Instance' % settings['CLOUD'])
         cloud = settings['CLOUD']
         if cloud == 'bare':
             self = BareInstance(settings, cluster=cluster)
@@ -160,6 +161,7 @@ class AWSInstance(Instance):
         return self.node.public_ips[0]
 
     def fetch_node(self):
+        logger.debug('Fetching aws Instance: %s' % self.uid)
         return self.driver.list_nodes(ex_node_ids=[self.uid])[0]
 
     def create(self):
@@ -206,6 +208,7 @@ class GCPInstance(Instance):
         return self.node.public_ips[0]
 
     def fetch_node(self):
+        logger.debug('Fetching aws Instance: %s' % self.uid)
         all_nodes = self.driver.list_nodes()
         node = [node for node in all_nodes if node.id == self.uid]
         return node[0]

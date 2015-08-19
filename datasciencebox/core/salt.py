@@ -4,6 +4,9 @@ import subprocess
 
 from fabric.api import settings, run, sudo, hide
 
+from datasciencebox.core.logger import getLogger
+logger = getLogger()
+
 
 master_roles = ['miniconda', 'zookeeper', 'mesos.master', 'hdfs.namenode', 'ipython.notebook', 'spark']
 minion_roles = ['miniconda', 'mesos.slave', 'hdfs.datanode']
@@ -66,14 +69,14 @@ def salt_ssh(project, target, module, args=None, kwargs=None):
     cmd.append('--ignore-host-keys')
     cmd.append('--force-color')
     cmd = ' '.join(cmd)
-    print(cmd)
+    logger.debug('salt-ssh cmd: %s' % cmd)
 
     proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     out, err = proc.communicate()
     if proc.returncode != 0 or err:
         raise Exception(err)
-    print out
-    return proc.returncode, out, err
+    print(out + err)
+    return out + err
 
 
 def salt_master(project, target, module, args=None, kwargs=None):
@@ -83,12 +86,13 @@ def salt_master(project, target, module, args=None, kwargs=None):
     key_filename = project.settings['KEYPAIR']
     with hide('running', 'stdout', 'stderr'):
         with settings(host_string=host_string, key_filename=key_filename):
-            cmd = ['sudo', 'salt']
+            cmd = ['salt']
             cmd.extend(generate_salt_cmd(target, module, args, kwargs))
             cmd.append('--timeout=300')
             cmd.append('--state-output=mixed')
             cmd = ' '.join(cmd)
-            print(cmd)
+            logger.debug('salt cmd: %s' % cmd)
 
             out = sudo(cmd)
             print(out)
+            return out
