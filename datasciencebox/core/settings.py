@@ -46,7 +46,7 @@ class Settings(dict):
 
     @classmethod
     def from_dict(cls, values):
-        logger.debug('Creating settings dictionary')
+        logger.debug('Creating settings from dictionary')
         self = cls()
         self.update(values)
         self.validate_fields()

@@ -68,6 +68,8 @@ class Cluster(object):
     def create(self):
         if self.settings['CLOUD'] == 'bare':
             self.create_bare()
+        else:
+            self.create_cloud()
 
     def create_bare(self):
         self.instances = []
