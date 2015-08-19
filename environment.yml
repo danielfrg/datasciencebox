@@ -9,3 +9,4 @@ dependencies:
     - apache-libcloud
     - salt-ssh
     - watchdog
+    - yapf
