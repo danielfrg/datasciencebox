@@ -96,13 +96,15 @@ def salt(ctx, target, module, args, ssh):
 
 
 @main.command(short_help='SSH to the master node')
+@click.argument('node', required=False, default=0)
 @log_option
 @click.pass_context
-def ssh(ctx):
+def ssh(ctx, node):
     project = Project.from_dir(path=ctx.obj['cwd'])
-    ip = project.cluster.master.ip
-    username = project.settings['USERNAME']
-    keypair = os.path.expanduser(project.settings['KEYPAIR'])
+    node = project.cluster.instances[node]
+    ip = node.ip
+    username = node.username
+    keypair = os.path.expanduser(node.keypair)
     cmd = ['ssh', username + '@' + ip]
     cmd = cmd + ['-i', keypair]
     cmd = cmd + ['-oStrictHostKeyChecking=no']
