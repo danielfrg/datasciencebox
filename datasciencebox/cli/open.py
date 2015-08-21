@@ -24,10 +24,10 @@ def open_mesos(ctx):
     webbrowser.open(url, new=2)
 
 
-@open_.command('mesos-marathon', short_help='Open the Marathon UI')
+@open_.command('marathon', short_help='Open the Marathon UI')
 @log_option
 @click.pass_context
-def open_mesos_marathon(ctx):
+def open_marathon(ctx):
     project = Project.from_dir(path=ctx.obj['cwd'])
     url = 'http://%s:8080' % project.cluster.master.ip
     webbrowser.open(url, new=2)

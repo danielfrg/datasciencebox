@@ -107,11 +107,11 @@ def install_mesos(ctx, ssh):
     project.salt('state.sls', args=['mesos.cluster'], target='*', ssh=ssh)
 
 
-@install.command('mesos-marathon', short_help='Install mesos in the cluster')
+@install.command('marathon', short_help='Install mesos in the cluster')
 @click.option('--ssh', is_flag=True, required=False, show_default=True, help='Whether to use ssh')
 @log_option
 @click.pass_context
-def install_mesos_marathon(ctx, ssh):
+def install_marathon(ctx, ssh):
     project = Project.from_dir(path=ctx.obj['cwd'])
     project.salt('state.sls', args=['mesos.marathon'], target='master', ssh=ssh)
 
