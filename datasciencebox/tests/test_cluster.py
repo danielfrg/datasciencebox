@@ -14,8 +14,8 @@ def test_cluster_from_to_list():
     exported_ans = [{'id': 0,
                      'ip': '0.0.0.0'}, {'id': 1,
                                         'ip': '1.1.1.1'}, {'id': 2,
-                                                           'ip': '2.2.2.2'}]    # BareInstance cannot fetch IP
+                                                           'ip': '2.2.2.2'}]
 
-    assert type(exported) == list
+    assert isinstance(exported, list)
     assert exported == exported_ans
     assert len(cluster.instances) == 3

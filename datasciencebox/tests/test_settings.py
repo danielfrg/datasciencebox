@@ -1,7 +1,6 @@
 import pytest
 
 from datasciencebox.core.settings import Settings
-from datasciencebox.core.exceptions import DSBException
 
 
 def test_required_bare_fields():
@@ -9,7 +8,7 @@ def test_required_bare_fields():
 
     assert settings['CLOUD'] == 'bare'
 
-    with pytest.raises(AssertionError) as excinfo:
+    with pytest.raises(AssertionError):
         settings.validate_fields()
 
     settings['NODES'] = []
@@ -22,7 +21,7 @@ def test_required_aws_fields():
     settings = Settings()
     settings['CLOUD'] = 'aws'
 
-    with pytest.raises(AssertionError) as excinfo:
+    with pytest.raises(AssertionError):
         settings.validate_fields()
 
     settings['AWS_KEY'] = '1'

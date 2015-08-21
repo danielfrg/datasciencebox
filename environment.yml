@@ -5,6 +5,7 @@ dependencies:
   - fabric
   - pytest
   - pyyaml
+  - pylint
   - pip:
     - apache-libcloud
     - salt-ssh
