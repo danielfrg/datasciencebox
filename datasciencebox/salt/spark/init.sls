@@ -19,5 +19,5 @@ link-spark:
   cmd.run:
     - name: ln -s /usr/lib/spark-1.4.1-bin-hadoop2.6.tgz /usr/lib/spark
     - unless: test -e /usr/lib/spark
-    - require:
+    - watch:
       - cmd: untar-spark
