@@ -1,24 +1,12 @@
-{% set p  = salt['pillar.get']('java', {}) %}
-{% set g  = salt['grains.get']('java', {}) %}
-
-{%- set java_home = salt['grains.get']('java_home', salt['pillar.get']('java_home', '/usr/java/default')) %}
-
-{%- set default_version_name = 'jdk1.7.0_75' %}
-{%- set default_prefix       = '/usr/java' %}
-{%- set default_source_url   = 'http://download.oracle.com/otn-pub/java/jdk/7u75-b13/jdk-7u75-linux-x64.tar.gz' %}
-{%- set default_dl_opts      = '-b oraclelicense=accept-securebackup-cookie -L' %}
-
-{%- set version_name   = g.get('version_name', p.get('version_name', default_version_name)) %}
-{%- set source_url     = g.get('source_url', p.get('source_url', default_source_url)) %}
-{%- set dl_opts        = g.get('dl_opts', p.get('dl_opts', default_dl_opts)) %}
-{%- set prefix         = g.get('prefix', p.get('prefix', default_prefix)) %}
-{%- set java_real_home = prefix + '/' + version_name %}
-
-{%- set java = {} %}
-{%- do java.update( { 'version_name'   : version_name,
-                      'source_url'     : source_url,
-                      'dl_opts'        : dl_opts,
-                      'java_home'      : java_home,
-                      'prefix'         : prefix,
-                      'java_real_home' : java_real_home
-                  }) %}
+{% set java = salt['grains.filter_by']({
+    'Debian': {
+        'pkgname': 'openjdk-7-jre-headless',
+        'java_home': '/usr/lib/jvm/java-7-openjdk-amd64/jre',
+        'bin_path': '/usr/lib/jvm/java-7-openjdk-amd64/jre/bin',
+    },
+    'RedHat': {
+        'pkgname': 'java-1.7.0-openjdk',
+        'java_home': '/usr/lib/jvm/jre-1.7.0-openjdk.x86_64',
+        'bin_path': '/usr/lib/jvm/jre-1.7.0-openjdk.x86_64/bin',
+    },
+}, merge=salt['pillar.get']('java:lookup')) %}

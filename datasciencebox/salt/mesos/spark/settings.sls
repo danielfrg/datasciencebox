@@ -1,10 +1,11 @@
-{%- from 'cdh5/hdfs/settings.sls' import namenode_fqdn with context -%}
-{%- from 'cdh5/zookeeper/settings.sls' import zk with context -%}
+{%- from 'java/settings.sls' import java with context -%}
 {%- from 'mesos/settings.sls' import mesos with context -%}
+{%- from 'cdh5/zookeeper/settings.sls' import zk with context -%}
+{%- from 'cdh5/hdfs/settings.sls' import namenode_fqdn with context -%}
 
 {% set env = {} %}
 
-{% do env.update({'JAVA_HOME': '/usr/java/default' }) %}
+{% do env.update({'JAVA_HOME': {{ java.home }} }) %}
 {% do env.update({'SPARK_HOME': '/usr/lib/spark' }) %}
 
 {% do env.update({'MESOS_NATIVE_LIBRARY': '/usr/local/lib/libmesos.so' }) %}
