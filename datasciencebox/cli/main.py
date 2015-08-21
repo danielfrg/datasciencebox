@@ -8,7 +8,6 @@ import subprocess
 from functools import update_wrapper
 
 import click
-from fabric.api import settings, run, sudo, hide
 
 from datasciencebox.core.project import Project
 from datasciencebox.core.exceptions import DSBException
@@ -105,6 +104,16 @@ def salt(ctx, target, module, args, ssh):
     project.salt(module, args=args, target=target, ssh=ssh)
 
 
+@main.command(short_help='Execute a salt module')
+@click.argument('command')
+@click.option('--ssh', is_flag=True, required=False, show_default=True, help='Whether to use ssh')
+@log_option
+@click.pass_context
+def cmd(ctx, command, ssh):
+    project = Project.from_dir(path=ctx.obj['cwd'])
+    project.salt('cmd.run', args=[command], ssh=ssh)
+
+
 @main.command(short_help='SSH to the master node')
 @click.argument('node', required=False, default=0)
 @log_option
@@ -143,7 +152,7 @@ def sync(ctx, continuous, skip):
         sync_loop(project, handler)
 
 
-@main.command(short_help='Update (overwriting) project settings. Careful.')
+@main.command(short_help='Update (overwriting) project settings and salt formulas')
 @log_option
 @click.pass_context
 def update(ctx):
