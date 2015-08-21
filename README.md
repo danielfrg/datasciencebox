@@ -23,20 +23,47 @@ A `dsbfile` is a python file and looks like this:
 
 ```python
 # AWS
+ID = 'daniel'
+
+# AWS
 CLOUD = 'aws'
-
-AWS_KEY = '<KEY>'
-AWS_SECRET = '<SECRET_KEY>'
+NUMBER_NODES = 2
+AWS_KEY = ''
+AWS_SECRET = ''
+AWS_KEYNAME = ''
 AWS_REGION = 'us-east-1'
-AWS_IMAGE = 'ami-d6cf93be'
+AWS_IMAGE = 'ami-08faa660'
 AWS_SIZE = 'm3.large'
-AWS_KEYNAME = '<EC2_KEYNAME>'
 AWS_SECURITY_GROUPS = ['default']
+AWS_ROOT_SIZE = 100
+AWS_ROOT_TYPE = 'gp2'
 
-# ALL
 USERNAME = 'ubuntu'
-KEYPAIR = '~/.ssh/<EC2_KEYPAIR>.pem'
-NUMBER_INSTANCES = 3
+KEYPAIR = '~/.ssh/mykey.pem'
+
+# GCP
+CLOUD = 'gcp'
+NUMBER_NODES = 2
+GCP_EMAIL = ''
+GCP_KEY_FILE = '~/.ssh/mykey.json'
+GCP_PUBLIC_KEY = '~/.ssh/id_rsa.pub'
+GCP_PROJECT = ''
+GCP_DATACENTER = 'us-central1-f'
+GCP_SIZE = 'n1-standard-1'
+GCP_IMAGE = 'ubuntu-1204-precise-v20150625'
+GCP_NETWORK = 'allopen'
+GCP_ROOT_SIZE = 100
+GCP_ROOT_TYPE = 'pd-ssd'
+
+USERNAME = ''
+KEYPAIR = '~/.ssh/id_rsa'
+
+# BARE
+CLOUD = 'bare'
+NODES = ['0.0.0.0', '0.0.0.0']
+
+USERNAME = 'ubuntu'
+KEYPAIR = '~/.ssh/id_rsa'
 ```
 
 **Supported OS**: At this moment only Ubuntu (12.04 and 14.04) are supported.
@@ -53,38 +80,43 @@ AWS_SECRET = os.environ['AWS_SECRET']
 ```
 
 **Note**: No security groups or keypairs are created for you its up to you to create
-those in AWS.
+those in AWS or similar.
 
 ## Creating the instances
 
 Once the `dsbfile` is created you can create the instance(s) running `dsb up`.
 
 This will create the instance(s) in the cloud provider and create a `.dsb` directory
-in the same place as you `dsbfile`.
+in the same location as the `dsbfile`.
 
 The `.dsb` directoy can be ignored for basic usage. It contains metadata about the instances
 but it can also be used to control the settings of the cluster (pillars) and even upload custom salt states. This also allows to version control all the deployment of a cluster.
 
-## Installing
+For a `bare` cluster this command will just create the required metadata.
 
-Everyting in DSB is based on [Salt](https://github.com/saltstack/salt) and
-there are two ways of bootstraping stuff into the nodes,
-salt master (via ZMQ - recommended) or salt ssh.
+### Initial setup
 
-The recommended way is using salt via ZMQ which requires the salt master
-and minion to be installed in the nodes you can install by running this:
+Everything in the DSB is based on [Salt](https://github.com/saltstack/salt) and there are two ways of bootstraping stuff into the nodes: salt master or salt ssh.
 
-``` bash
-$ dsb install salt
-```
+The recommended (and default) way is using salt via ZMQ which requires the salt master
+and minion to be installed in the nodes. This is done by default with `dsb up` but
+can be omitted with the `--no-salt` flag. If you want to just use salt-ssh
+or just create the cloud instances.
 
-This is the default and recommended behavior but you can use salt-ssh and not
-install anything in your nodes while getting the same results (in most cases)
-by adding a `--ssh` flag to all the commands.
-Note that this works well for some commands like `install conda` and `install pkg`
+If you want to use salt ssh only you need to add the `--ssh` flag to all the commands.
+Note that this works well for some commands like `dsb cmd ...`, ` dsb install conda ...`
 but might not works as expected for the distributed frameworks like zookeeper and mesos.
 
 ## General management
+
+### General commands
+
+```bash
+$ dsb cmd <CMD>
+$ # Example
+$ dsb cmd 'date'
+$ dsb cmd 'date' --ssh
+```
 
 ### Install OS packages
 
@@ -95,18 +127,29 @@ $ dsb install pkg build-essential
 $ dsb install pkg build-essential --ssh
 ```
 
+### General salt module
+
+Note that the commands before (and basically any other command) is just an alias for a general salt command.
+
+```bash
+$ dsb salt '*' network.ipaddrs
+$ # Example
+$ dsb salt '*' network.ipaddrs
+$ dsb salt '*' network.ipaddrs --ssh
+```
+
 ## Conda management
 
 Conda package management is done for the `dsb` user in all the nodes.
 
-You need to install miniconda in all the nodes:
+First, you need to install miniconda in all the nodes:
 
 ```bash
 $ dsb install miniconda
 $ dsb install miniconda --shh
 ```
 
-### conda packages
+Then you can install conda packages:
 
 ```bash
 $ dsb install conda <PKG_NAME>
@@ -140,7 +183,7 @@ $ dsb open mesos
 
 ### Spark
 
-Spark is available usint  mesos as scheduler, hdfs is also required.
+Spark is available using  mesos as scheduler, hdfs is also required.
 
 ```bash
 $ dsb install spark
