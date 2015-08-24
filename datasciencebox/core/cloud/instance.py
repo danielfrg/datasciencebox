@@ -5,7 +5,6 @@ from libcloud.compute.base import NodeImage
 
 from datasciencebox.core.logger import getLogger
 logger = getLogger()
-from datasciencebox.core.cloud.driver import Driver
 from datasciencebox.core.exceptions import DSBException, DSBWarning
 
 
@@ -165,7 +164,7 @@ class AWSInstance(Instance):
         logger.debug('Fetching aws Instance: %s' % self.uid)
         return self.driver.list_nodes(ex_node_ids=[self.uid])[0]
 
-    def create(self):
+    def create(self, suffix=None):
         name = self.settings['ID']
         ami_id = self.settings['AWS_IMAGE']
         image = NodeImage(id=ami_id, name=None, driver=self.driver)
@@ -224,7 +223,7 @@ class GCPInstance(Instance):
         node = [node for node in all_nodes if node.id == self.uid]
         return node[0]
 
-    def create(self, suffix=''):
+    def create(self, suffix=None):
         suffix = '-%s' % suffix if suffix is not None else ''
         name = '%s%s' % (self.settings['ID'], suffix)
         image = self.settings['GCP_IMAGE']
