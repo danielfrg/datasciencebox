@@ -32,7 +32,7 @@ AWS_KEY = ''
 AWS_SECRET = ''
 AWS_KEYNAME = ''
 AWS_REGION = 'us-east-1'
-AWS_IMAGE = 'ami-08faa660'
+AWS_IMAGE = 'ami-d05e75b8'
 AWS_SIZE = 'm3.large'
 AWS_SECURITY_GROUPS = ['default']
 AWS_ROOT_SIZE = 100
@@ -50,7 +50,7 @@ GCP_PUBLIC_KEY = '~/.ssh/id_rsa.pub'
 GCP_PROJECT = ''
 GCP_DATACENTER = 'us-central1-f'
 GCP_SIZE = 'n1-standard-1'
-GCP_IMAGE = 'ubuntu-1204-precise-v20150625'
+GCP_IMAGE = 'ubuntu-1404'
 GCP_NETWORK = 'allopen'
 GCP_ROOT_SIZE = 100
 GCP_ROOT_TYPE = 'pd-ssd'
@@ -66,7 +66,7 @@ USERNAME = 'ubuntu'
 KEYPAIR = '~/.ssh/id_rsa'
 ```
 
-**Supported OS**: At this moment only Ubuntu (12.04 and 14.04) are supported.
+**Supported OS**: At this moment only Ubuntu 14.04 is supported.
 
 **Credentials**: You don't want credentials to be uploaded to the version control (trust me).
 But since the `dsbfile` is a python file you can always do something like this
@@ -198,6 +198,6 @@ again.
 Marathon can be used to deploy any application or docker container in Mesos.
 
 ```bash
-$ dsb install mesos-marathon
-$ dsb open mesos-marathon
+$ dsb install marathon
+$ dsb open marathon
 ```
