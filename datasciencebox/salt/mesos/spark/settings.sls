@@ -16,5 +16,5 @@
 {% do env.update({'CLUSTER_URL': 'mesos://' ~ mesos['master'] ~ ':5050' }) %}
 
 {% do env.update({'PYTHONPATH': '/usr/lib/spark/python:/usr/lib/spark/python/lib/py4j-0.8.2.1-src.zip:$PYTHONPATH' }) %}
-{% do env.update({'PYSPARK_SUBMIT_ARGS': '--master mesos://' ~ mesos['master'] ~ ':5050' }) %}
+{% do env.update({'PYSPARK_SUBMIT_ARGS': '--master mesos://' ~ mesos['master'] ~ ':5050' ~ ' pyspark-shell' }) %}
 {% do env.update({'PYSPARK_PYTHON': '/home/dsb/anaconda/bin/python' }) %}
