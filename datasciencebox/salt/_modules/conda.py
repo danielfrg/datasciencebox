@@ -18,12 +18,12 @@ def conda_prefix(user=None):
     Get the conda prefix for a particular user (~/anaconda)
     If user is None it defaults to /opt/anaconda
     """
-    if user:
+    if not user or user == 'root':
+        return __salt__['grains.get']('conda:prefix', default='/opt/anaconda')
+    else:
         for u in pwd.getpwall():
             if u.pw_name == user:
                 return os.path.join(u.pw_dir, 'anaconda')
-    else:
-        return __salt__['grains.get']('conda:prefix', default='/opt/anaconda')
 
 
 def create(name, user=None):

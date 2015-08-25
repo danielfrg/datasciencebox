@@ -46,7 +46,7 @@ def install_salt(ctx):
     project.salt('state.sls', args=['salt.minion', pillars], target='master', ssh=True)
 
     if len(project.cluster) > 1:
-        click.echo('Installing salt minion in the compute')
+        click.echo('Installing salt minion in the compute nodes')
         roles_txt = ['"%s"' % role for role in minion_roles]
         roles_txt = '[%s]' % ', '.join(roles_txt)
         pillars = pillar_template % (project.cluster.master.ip, roles_txt)
@@ -76,7 +76,7 @@ def install_pkg(ctx, pkg, ssh, target):
 @click.pass_context
 def install_conda(ctx, pkg, ssh, target):
     project = Project.from_dir(path=ctx.obj['cwd'])
-    project.salt('conda.install', args=[pkg], kwargs={'user': 'dsb'}, target=target, ssh=ssh)
+    project.salt('conda.install', args=[pkg], kwargs={'user': project.settings['USERNAME']}, target=target, ssh=ssh)
 
 
 @install.command('notebook', short_help='Install ipython notebook in the master')

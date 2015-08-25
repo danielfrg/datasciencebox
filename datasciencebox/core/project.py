@@ -169,6 +169,7 @@ class Project(object):
 
         ip = self.cluster.master.ip
         self.replace_all(os.path.join(self.pillar_dir, 'salt.sls'), 'salt-master', ip)
+        self.replace_all(os.path.join(self.pillar_dir, 'system.sls'), 'ubuntu', self.settings['USERNAME'])
 
     @staticmethod
     def replace_all(file, searchExp, replaceExp):

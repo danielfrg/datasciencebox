@@ -1,9 +1,11 @@
+{%- from 'system/settings.sls' import user with context -%}
+
 include:
   - miniconda
 
-/home/dsb/notebooks:
+/home/{{ user }}/notebooks:
   file.directory:
-    - user: dsb
+    - user: {{ user }}
     - makedirs: true
 
 notebooks-log-dir:
@@ -13,7 +15,7 @@ notebooks-log-dir:
 
 ipython-notebook:
   conda.installed:
-    - user: dsb
+    - user: {{ user }}
     - require:
       - sls: miniconda
 
