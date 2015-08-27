@@ -1,8 +1,6 @@
 Vagrant.configure("2") do |config|
-  config.vm.box = "ubuntu/precise64"
-  config.vm.box_url = "ubuntu/precise64"
-
-  config.vm.synced_folder '.', '/vagrant', disabled: true
+  config.vm.box = "ubuntu/trusty64"
+  config.vm.box_url = "ubuntu/trusty64"
 
   # Manage /etc/hosts on host and VMs
   config.hostmanager.enabled = false
@@ -11,14 +9,12 @@ Vagrant.configure("2") do |config|
   config.hostmanager.ignore_private_ip = false
 
   config.vm.define :head, primary: true do |machine|
-    machine.ssh.username = "root"
-    machine.ssh.password = "vagrant"
-
     machine.vm.provider :virtualbox do |v|
       v.name = "dsb-head"
       v.customize ["modifyvm", :id, "--memory", "2048"]
     end
 
+    # machine.vm.synced_folder '.', '/vagrant', disabled: true
     machine.vm.synced_folder "../datasciencebox/salt", "/srv/salt"
     machine.vm.synced_folder "../datasciencebox/pillar", "/srv/pillar"
 
@@ -33,28 +29,28 @@ Vagrant.configure("2") do |config|
 
     machine.vm.provision :hostmanager
 
-    machine.vm.provision "file", source: "head.master", destination: "/etc/salt/master"
-
     machine.vm.provision :salt do |salt|
-      salt.master_config = "head.master"  # Line is ignored?
-      salt.minion_config = "head.minion"
+      # salt.master_config = "head.master"
+      # salt.minion_config = "head.minion"
       salt.bootstrap_options = '-P'
       salt.install_master = true
       salt.run_highstate = false
       salt.verbose = true
     end
 
-    machine.vm.provision "shell", inline: "service salt-minion restart"
+    machine.vm.provision "shell", inline: "sudo cp /vagrant/head.master /etc/salt/master"
+    machine.vm.provision "shell", inline: "sudo cp /vagrant/head.minion /etc/salt/minion"
+    machine.vm.provision "shell", inline: "sudo service salt-master restart"
+    machine.vm.provision "shell", inline: "sudo service salt-minion restart"
   end
 
   config.vm.define :compute do |machine|
-    machine.ssh.username = "root"
-    machine.ssh.password = "vagrant"
-
     machine.vm.provider :virtualbox do |v|
       v.name = "dsb-compute"
       v.customize ["modifyvm", :id, "--memory", "2048"]
     end
+
+    # machine.vm.synced_folder '.', '/vagrant', disabled: true
 
     machine.vm.hostname = "compute"
     machine.vm.network :private_network, ip: "10.10.10.101"
@@ -64,12 +60,13 @@ Vagrant.configure("2") do |config|
     machine.vm.provision :hostmanager
 
     machine.vm.provision :salt do |salt|
-      salt.minion_config = "compute.minion"
+      # salt.minion_config = "compute.minion"
       salt.bootstrap_options = '-P'
       salt.run_highstate = false
       salt.verbose = true
     end
 
-    machine.vm.provision "shell", inline: "service salt-minion restart"
+    machine.vm.provision "shell", inline: "sudo cp /vagrant/compute.minion /etc/salt/minion"
+    machine.vm.provision "shell", inline: "sudo service salt-minion restart"
   end
 end
