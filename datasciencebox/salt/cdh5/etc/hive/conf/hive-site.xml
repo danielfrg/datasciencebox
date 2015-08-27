@@ -1,0 +1,53 @@
+{%- from 'cdh5/hive/settings.sls' import metastore_host with context -%}
+{%- from 'cdh5/zookeeper/settings.sls' import zk with context -%}
+
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+
+<configuration>
+
+<property>
+  <name>hive.support.concurrency</name>
+  <description>Enable Hive's Table Lock Manager Service</description>
+  <value>true</value>
+</property>
+
+<property>
+  <name>hive.zookeeper.quorum</name>
+  <description>Zookeeper quorum used by Hive's Table Lock Manager (hostname:port comma delimited)</description>
+  <value>{{ zk.connection_string }}</value>
+</property>
+
+<!-- MetaStore Settings -->
+<property>
+  <name>javax.jdo.option.ConnectionURL</name>
+  <value>jdbc:postgresql://127.0.0.1/metastore</value>
+</property>
+
+<property>
+  <name>javax.jdo.option.ConnectionDriverName</name>
+  <value>org.postgresql.Driver</value>
+</property>
+
+<property>
+  <name>javax.jdo.option.ConnectionUserName</name>
+  <value>hiveuser</value>
+</property>
+
+<property>
+  <name>javax.jdo.option.ConnectionPassword</name>
+  <value></value>
+</property>
+
+<property>
+  <name>datanucleus.autoCreateSchema</name>
+  <value>false</value>
+</property>
+
+<property>
+  <name>hive.metastore.uris</name>
+  <value>thrift://{{ metastore_host }}:9083</value>
+  <description>IP address (or fully-qualified domain name) and port of the metastore host</description>
+</property>
+
+</configuration>

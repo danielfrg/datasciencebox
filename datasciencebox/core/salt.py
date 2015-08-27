@@ -2,13 +2,13 @@ from __future__ import absolute_import, unicode_literals
 
 import subprocess
 
-from fabric.api import settings, run, sudo, hide
+from fabric.api import settings, sudo, hide
 
 from datasciencebox.core.logger import getLogger
 logger = getLogger()
 
 master_roles = ['miniconda', 'zookeeper', 'mesos.master', 'hdfs.namenode', 'ipython.notebook',
-                'spark']
+                'spark', 'hive.metastore']
 minion_roles = ['miniconda', 'mesos.slave', 'hdfs.datanode']
 
 

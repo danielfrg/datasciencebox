@@ -12,3 +12,4 @@ grains:
     - hdfs.namenode
     - zookeeper
     - mesos.master
+    - hive.metastore
