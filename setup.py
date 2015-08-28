@@ -10,7 +10,7 @@ To upload a new version:
 """
 print(find_packages())
 setup(name='datasciencebox',
-      version='0.2',
+      version='0.3',
       description='Data Science Box',
       long_description='',
       author='Daniel Rodriguez',

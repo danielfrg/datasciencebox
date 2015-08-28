@@ -174,6 +174,14 @@ $ dsb install hdfs
 $ dsb open hdfs
 ```
 
+### Impala
+
+Using Postgres as Hive Metastore. Impala shell is available in all the compute nodes (no master).
+
+```bash
+$ dsb install impala
+```
+
 ## Mesos
 
 ```bash
@@ -183,7 +191,7 @@ $ dsb open mesos
 
 ### Spark
 
-Spark is available using  mesos as scheduler, hdfs is also required.
+Spark is available using Mesos as scheduler
 
 ```bash
 $ dsb install spark
