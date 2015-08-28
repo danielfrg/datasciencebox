@@ -1,6 +1,3 @@
-{% set is_namenode = 'hdfs.namenode' in grains['roles'] %}
-{% set is_datanode = 'hdfs.datanode' in grains['roles'] %}
-
 {%- set force_mine_update = salt['mine.send']('network.get_hostname') %}
 {%- set namenodes = salt['mine.get']('roles:hdfs.namenode', 'network.get_hostname', 'grain') %}
 

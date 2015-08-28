@@ -1,0 +1,19 @@
+{%- from 'cdh5/hive/settings.sls' import metastore_host with context -%}
+
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+
+<configuration>
+
+  <property>
+    <name>hive.metastore.uris</name>
+    <value>thrift://{{ metastore_host }}:9083</value>
+  </property>
+
+  <property>
+    <name>hive.metastore.client.socket.timeout</name>
+    <value>3600</value>
+    <description>MetaStore Client socket timeout in seconds</description>
+  </property>
+
+</configuration>

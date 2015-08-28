@@ -123,3 +123,19 @@ def install_marathon(ctx, ssh):
 def install_spark(ctx, ssh):
     project = Project.from_dir(path=ctx.obj['cwd'])
     project.salt('state.sls', args=['mesos.spark'], target='master', ssh=ssh)
+
+
+@install.command('impala', short_help='Install Impala in the master')
+@click.option('--ssh', is_flag=True, required=False, show_default=True, help='Whether to use ssh')
+@log_option
+@click.pass_context
+def install_impala(ctx, ssh):
+    project = Project.from_dir(path=ctx.obj['cwd'])
+    click.echo('Step 1/4: Zookeeper')
+    project.salt('state.sls', args=['cdh5.zookeeper'], target='master', ssh=ssh)
+    click.echo('Step 2/4: HDFS')
+    project.salt('state.sls', args=['cdh5.hdfs.cluster'], target='*', ssh=ssh)
+    click.echo('Step 3/4: Hive Metastore')
+    project.salt('state.sls', args=['cdh5.hive.metastore'], target='master', ssh=ssh)
+    click.echo('Step 4/4: Impala')
+    project.salt('state.sls', args=['cdh5.impala.cluster'], target='*', ssh=ssh)

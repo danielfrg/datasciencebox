@@ -8,8 +8,8 @@ from datasciencebox.core.logger import getLogger
 logger = getLogger()
 
 master_roles = ['miniconda', 'zookeeper', 'mesos.master', 'hdfs.namenode', 'ipython.notebook',
-                'spark', 'hive.metastore']
-minion_roles = ['miniconda', 'mesos.slave', 'hdfs.datanode']
+                'spark', 'hive.metastore', 'impala.state-store']
+minion_roles = ['miniconda', 'mesos.slave', 'hdfs.datanode', 'impala.server']
 
 
 def generate_salt_cmd(target, module, args=None, kwargs=None):

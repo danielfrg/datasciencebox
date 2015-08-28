@@ -14,7 +14,6 @@
 {%- endfor -%}
 
 <configuration>
-
     <property>
       <name>dfs.namenode.name.dir</name>
       <value>{{ namenodes | join(',') }}</value>
@@ -23,6 +22,26 @@
     <property>
       <name>dfs.datanode.data.dir</name>
       <value>{{ datanodes | join(',') }}</value>
+    </property>
+
+    <property>
+        <name>dfs.client.read.shortcircuit</name>
+        <value>true</value>
+    </property>
+
+    <property>
+        <name>dfs.domain.socket.path</name>
+        <value>/var/run/hadoop-hdfs/dn</value>
+    </property>
+
+    <property>
+        <name>dfs.client.file-block-storage-locations.timeout.millis</name>
+        <value>10000</value>
+    </property>
+
+    <property>
+      <name>dfs.datanode.hdfs-blocks-metadata.enabled</name>
+      <value>true</value>
     </property>
 
 </configuration>
