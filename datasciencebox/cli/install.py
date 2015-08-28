@@ -85,6 +85,7 @@ def install_conda(ctx, pkg, ssh, target):
 @click.pass_context
 def install_notebook(ctx, ssh):
     project = Project.from_dir(path=ctx.obj['cwd'])
+    click.echo('Step 1/1: Jupyter Notebook')
     project.salt('state.sls', args=['ipython.notebook'], target='master', ssh=ssh)
 
 
@@ -94,6 +95,7 @@ def install_notebook(ctx, ssh):
 @click.pass_context
 def install_hdfs(ctx, ssh):
     project = Project.from_dir(path=ctx.obj['cwd'])
+    click.echo('Step 1/1: HDFS')
     project.salt('state.sls', args=['cdh5.hdfs.cluster'], target='*', ssh=ssh)
 
 
@@ -103,7 +105,9 @@ def install_hdfs(ctx, ssh):
 @click.pass_context
 def install_mesos(ctx, ssh):
     project = Project.from_dir(path=ctx.obj['cwd'])
+    click.echo('Step 1/2: Zookeeper')
     project.salt('state.sls', args=['cdh5.zookeeper'], target='master', ssh=ssh)
+    click.echo('Step 2/2: Mesos')
     project.salt('state.sls', args=['mesos.cluster'], target='*', ssh=ssh)
 
 
@@ -113,6 +117,11 @@ def install_mesos(ctx, ssh):
 @click.pass_context
 def install_marathon(ctx, ssh):
     project = Project.from_dir(path=ctx.obj['cwd'])
+    click.echo('Step 1/3: Zookeeper')
+    project.salt('state.sls', args=['cdh5.zookeeper'], target='master', ssh=ssh)
+    click.echo('Step 2/3: Mesos')
+    project.salt('state.sls', args=['mesos.cluster'], target='*', ssh=ssh)
+    click.echo('Step 3/3: Marathon')
     project.salt('state.sls', args=['mesos.marathon'], target='master', ssh=ssh)
 
 
@@ -122,6 +131,13 @@ def install_marathon(ctx, ssh):
 @click.pass_context
 def install_spark(ctx, ssh):
     project = Project.from_dir(path=ctx.obj['cwd'])
+    click.echo('Step 1/4: Zookeeper')
+    project.salt('state.sls', args=['cdh5.zookeeper'], target='master', ssh=ssh)
+    click.echo('Step 2/4: HDFS')
+    project.salt('state.sls', args=['cdh5.hdfs.cluster'], target='*', ssh=ssh)
+    click.echo('Step 3/4: Mesos')
+    project.salt('state.sls', args=['mesos.cluster'], target='*', ssh=ssh)
+    click.echo('Step 4/4: Spark on Mesos')
     project.salt('state.sls', args=['mesos.spark'], target='master', ssh=ssh)
 
 
