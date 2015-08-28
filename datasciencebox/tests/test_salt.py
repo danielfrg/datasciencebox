@@ -6,7 +6,7 @@ from datasciencebox.core.cloud.cluster import Cluster
 
 settings = Settings()
 settings['USERNAME'] = 'me'
-settings['KEYPAIR'] = '~/.ssh/id_rsa'
+settings['KEYPAIR'] = '/home/ubuntu/.ssh/id_rsa'
 
 _ = [{'id': 0, 'ip': '0.0.0.0'}, {'id': 1, 'ip': '1.1.1.1'}, {'id': 2, 'ip': '2.2.2.2'}]
 cluster = Cluster.from_list(_, settings)
@@ -42,7 +42,7 @@ def test_generate_salt_cmd():
 
 def test_roster_item():
     item = salt.roster_item(cluster.master, mine=False)
-    assert item == {'host': '0.0.0.0', 'sudo': True, 'user': 'me', 'priv': '~/.ssh/id_rsa'}
+    assert item == {'host': '0.0.0.0', 'sudo': True, 'user': 'me', 'priv': '/home/ubuntu/.ssh/id_rsa'}
 
 
 def test_roster_item_roles():
@@ -51,7 +51,7 @@ def test_roster_item_roles():
         'host': '0.0.0.0',
         'sudo': True,
         'user': 'me',
-        'priv': '~/.ssh/id_rsa',
+        'priv': '/home/ubuntu/.ssh/id_rsa',
         'grains': {'roles': ['cdh5', 'conda2']}
     }
 
@@ -63,21 +63,21 @@ def test_generate_roster():
             'host': '0.0.0.0',
             'sudo': True,
             'user': 'me',
-            'priv': '~/.ssh/id_rsa',
+            'priv': '/home/ubuntu/.ssh/id_rsa',
             'grains': {'roles': master_roles}
         },
         'minion-1': {
             'host': '1.1.1.1',
             'sudo': True,
             'user': 'me',
-            'priv': '~/.ssh/id_rsa',
+            'priv': '/home/ubuntu/.ssh/id_rsa',
             'grains': {'roles': minion_roles}
         },
         'minion-2': {
             'host': '2.2.2.2',
             'sudo': True,
             'user': 'me',
-            'priv': '~/.ssh/id_rsa',
+            'priv': '/home/ubuntu/.ssh/id_rsa',
             'grains': {'roles': minion_roles}
         },
     }
