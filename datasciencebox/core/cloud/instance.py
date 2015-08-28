@@ -1,11 +1,15 @@
 import os
+import socket
 import warnings
 
+import paramiko
+from paramiko.ssh_exception import BadHostKeyException, AuthenticationException, SSHException
 from libcloud.compute.base import NodeImage
 
 from datasciencebox.core.logger import getLogger
 logger = getLogger()
 from datasciencebox.core.exceptions import DSBException, DSBWarning
+from datasciencebox.core.utils import retry
 
 
 class Instance(object):
@@ -119,7 +123,7 @@ class Instance(object):
 
     def get_keypair(self):
         if self._keypair is None:
-            self._keypair = self.settings['KEYPAIR']
+            self._keypair = os.path.expanduser(self.settings['KEYPAIR'])
         return self._keypair
 
     def set_keypair(self, value):
@@ -132,6 +136,13 @@ class Instance(object):
 
     def destroy(self):
         raise NotImplementedError('Subclass of Instance must implement "destroy"')
+
+    @retry(catch=(BadHostKeyException, AuthenticationException, SSHException, socket.error))
+    def check_ssh(self):
+        ssh = paramiko.SSHClient()
+        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        ssh.connect(self.ip, username=self.username, key_filename=self.keypair)
+        return True
 
 
 class BareInstance(Instance):

@@ -1,8 +1,3 @@
-import os
-import warnings
-
-from libcloud.compute.base import NodeImage
-
 from datasciencebox.core.logger import getLogger
 logger = getLogger()
 from datasciencebox.core.cloud.driver import Driver
@@ -103,3 +98,9 @@ class Cluster(object):
     def destroy(self):
         for instance in self.instances:
             instance.destroy()
+
+    def check_ssh(self):
+        ans = {}
+        for instance in self.instances:
+            ans[instance.ip] = instance.check_ssh()
+        return ans

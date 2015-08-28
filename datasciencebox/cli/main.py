@@ -71,12 +71,24 @@ def main(ctx):
 @log_option
 @click.pass_context
 def up(ctx, salt):
-    click.echo('Creating cluster')
     project = Project.from_dir(path=ctx.obj['cwd'])
+
+    click.echo('Creating cluster')
     project.create_cluster()
+
     click.echo('Creating metadata')
     project.save_instances()
     project.update()
+
+    click.echo('Checking SSH Connection')
+    ssh_status = project.cluster.check_ssh()
+    if all(ssh_status.values()):
+        click.echo('SSH connection to all nodes OK')
+    else:
+        click.echo('SSH connection to some nodes did not work.', err=True)
+        click.echo('This might be just the cloud provider being slow, wait a while and try again', err=True)
+        click.echo(ssh_status, err=True)
+        sys.exit(1)
 
     if salt:
         click.echo('Installing salt (master)')
