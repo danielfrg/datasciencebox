@@ -21,3 +21,7 @@ mesos:
     - name: mesos
     - require:
       - module: refresh_db
+
+docker:
+  pkg.installed:
+    - name: docker
