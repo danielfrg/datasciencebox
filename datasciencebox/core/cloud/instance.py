@@ -252,13 +252,15 @@ class GCPInstance(Instance):
                                            ex_disk_type=root_disk_type,
                                            image=image)
 
+        sa_scopes = [{'scopes': ['compute', 'storage-full']}]
         self.node = self.driver.create_node(name=name,
                                             size=size,
                                             image=image,
                                             ex_metadata=metadata,
                                             ex_network=network,
                                             ex_boot_disk=volume,
-                                            ex_disk_auto_delete=True)
+                                            ex_disk_auto_delete=True,
+                                            ex_service_accounts=sa_scopes)
         return self.node
 
     def destroy(self):
