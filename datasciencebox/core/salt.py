@@ -1,5 +1,10 @@
+"""
+Module that contains salt utilities
+All functions here should return dictionaries or object no IO
+"""
 from __future__ import absolute_import, unicode_literals
 
+import os
 import subprocess
 
 from fabric.api import settings, sudo, hide
@@ -12,9 +17,19 @@ master_roles = ['miniconda', 'zookeeper', 'mesos.master', 'hdfs.namenode', 'ipyt
 minion_roles = ['miniconda', 'mesos.slave', 'hdfs.datanode', 'impala.server']
 
 
+
+def generate_salt_ssh_master_conf(project):
+    conf = {}
+    conf['file_roots'] = {'base': [project.salt_dir]}
+    conf['pillar_roots'] = {'base': [project.pillar_dir]}
+    conf['root_dir'] = project.settings_dir
+    conf['cachedir'] = os.path.join(project.settings_dir, 'var', 'cache', 'salt')
+    return conf
+
+
 def generate_salt_cmd(target, module, args=None, kwargs=None):
     """
-    Generates a command for salt master or salt ssh commands
+    Generates a command (the arguments) for the `salt` or `salt-ssh` CLI
     """
     args = args or []
     kwargs = kwargs or {}
@@ -61,6 +76,9 @@ def generate_roster(cluster, mine=True):
 
 
 def salt_ssh(project, target, module, args=None, kwargs=None):
+    """
+    Execute a `salt-ssh` command
+    """
     cmd = ['salt-ssh']
     cmd.extend(generate_salt_cmd(target, module, args, kwargs))
     cmd.append('--state-output=mixed')
@@ -80,6 +98,9 @@ def salt_ssh(project, target, module, args=None, kwargs=None):
 
 
 def salt_master(project, target, module, args=None, kwargs=None):
+    """
+    Execute a `salt` command in the head node
+    """
     ip = project.cluster.master.ip
     username = project.settings['USERNAME']
     host_string = username + '@' + ip

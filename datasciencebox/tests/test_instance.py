@@ -1,16 +1,28 @@
 import pytest
 
 from datasciencebox.core.settings import Settings
-from datasciencebox.core.cloud.instance import Instance, BareInstance
+from datasciencebox.core.cloud.instance import Instance, BareInstance, AWSInstance, GCPInstance
 
 settings = Settings()
 
 
-def test_bare_new():
+def test_new_bare():
     instance = Instance.new(settings=settings)
     assert isinstance(instance, BareInstance)
 
+    instance = Instance.new(settings=settings, uid='myid')
+    assert instance.uid == 'myid'
 
-def test_bare_fromdict_todict():
-    instance = Instance.from_uid('fakeid', settings=settings)
-    assert instance.uid == 'fakeid'
+    instance = Instance.new(settings=settings, uid='myid', ip='1.1.1.1')
+    assert instance.ip == '1.1.1.1'
+
+
+def test_new_others():
+    settings['CLOUD'] = 'aws'
+    instance = Instance.new(settings=settings)
+    assert isinstance(instance, AWSInstance)
+
+
+    settings['CLOUD'] = 'gcp'
+    instance = Instance.new(settings=settings)
+    assert isinstance(instance, GCPInstance)

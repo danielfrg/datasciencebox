@@ -1,6 +1,9 @@
 import pytest
 
+import os
+
 from datasciencebox.core import salt
+from datasciencebox.core.project import Project
 from datasciencebox.core.settings import Settings
 from datasciencebox.core.cloud.cluster import Cluster
 
@@ -15,6 +18,16 @@ master_roles = ['master', 'master2', 'conda']
 minion_roles = ['minion2', 'conda']
 salt.master_roles = master_roles
 salt.minion_roles = minion_roles
+
+
+def test_generate_salt_ssh_master_conf(tmpdir):
+    path = tmpdir.dirname
+    p = Project(path=path)
+    master = salt.generate_salt_ssh_master_conf(p)
+    assert master['root_dir'] == os.path.join(p.settings_dir)
+    assert master['cachedir'] == os.path.join(p.settings_dir, 'var', 'cache', 'salt')
+    assert master['file_roots']['base'] == [os.path.join(p.settings_dir, 'salt')]
+    assert master['pillar_roots']['base'] == [os.path.join(p.settings_dir, 'pillar')]
 
 
 def test_generate_salt_cmd():

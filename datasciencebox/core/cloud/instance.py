@@ -26,7 +26,7 @@ class Instance(object):
         self._keypair = None
 
     @classmethod
-    def new(cls, settings, cluster=None):
+    def new(cls, settings, cluster=None, uid=None, ip=None):
         """
         Create a new Cloud instance based on the Settings
         """
@@ -40,22 +40,9 @@ class Instance(object):
             self = GCPInstance(settings, cluster=cluster)
         else:
             raise DSBException('Cloud "%s" not supported' % cloud)
-        return self
 
-    @classmethod
-    def from_uid(cls, uid, settings=None, cluster=None):
-        """
-        Fetch a Cloud instance based on the UniqueID
-        """
-        self = cls.new(settings=settings, cluster=cluster)
         self.uid = uid
-        return self
-
-    @classmethod
-    def from_dict(cls, values, settings=None, cluster=None):
-        self = cls.new(settings=settings, cluster=cluster)
-        self.uid = values['id']
-        self.ip = values['ip']
+        self.ip = ip
         return self
 
     def __repr__(self):

@@ -1,23 +1,22 @@
 import os
-import sys
 import yaml
 import shutil
-import fileinput
 
 from datasciencebox.core.logger import getLogger
 logger = getLogger()
 from datasciencebox.core import salt
+from datasciencebox.core import utils
 from datasciencebox.core.settings import Settings
 from datasciencebox.core.cloud.cluster import Cluster
 from datasciencebox.core.exceptions import DSBException
 
 
-def safe_create_dir(path):
-    if not os.path.exists(path):
-        os.makedirs(path)
-
-
 class Project(object):
+    """
+    Main DataScienceBox entrypoint.
+
+    Manages all the IO to and from files.
+    """
 
     @classmethod
     def from_dir(cls, path=os.getcwd()):
@@ -50,15 +49,14 @@ class Project(object):
     @property
     def settings_dir(self):
         """
-        Directory that contains the instances.yaml and other stuff
+        Directory that contains the the settings for the project
         """
         path = os.path.join(self.dir, '.dsb')
-        safe_create_dir(path)
         return os.path.realpath(path)
 
     def read_settings(self):
         """
-        Read the settings "dsbfile" file
+        Read the "dsbfile" file
         Populates `self.settings`
         """
         logger.debug('Reading settings from: %s' % self.settings_path)
@@ -96,53 +94,24 @@ class Project(object):
         self.cluster.destroy()
 
     def update(self, force=False):
-        self.create_roster()
-        self.salt_ssh_create_dirs()
-        self.salt_ssh_create_master_conf()
-        self.copy_salt_and_pillar()
+        self.salt_ssh()
 
     # --------------------------------------------------------------------------
-    # Salt-SSH
+    # Salt
     # --------------------------------------------------------------------------
 
-    def salt_ssh_create_dirs(self):
-        logger.debug('Creating salt-ssh dirs into: %s' % self.settings_dir)
-        safe_create_dir(os.path.join(self.settings_dir, 'salt'))
-        safe_create_dir(os.path.join(self.settings_dir, 'pillar'))
-        safe_create_dir(os.path.join(self.settings_dir, 'etc', 'salt'))
-        safe_create_dir(os.path.join(self.settings_dir, 'var', 'cache', 'salt'))
-        safe_create_dir(os.path.join(self.settings_dir, 'var', 'log', 'salt'))
+    def salt(self, module, target='*', args=None, kwargs=None, ssh=False):
+        """
+        Execute a salt (or salt-ssh) command
+        """
+        if ssh:
+            salt.salt_ssh(self, target, module, args, kwargs)
+        else:
+            salt.salt_master(self, target, module, args, kwargs)
 
     @property
     def roster_path(self):
         return os.path.join(self.settings_dir, 'roster.yaml')
-
-    def create_roster(self):
-        logger.debug('Creating roster file to: %s' % self.roster_path)
-        with open(self.roster_path, 'w') as f:
-            yaml.safe_dump(salt.generate_roster(self.cluster), f, default_flow_style=False)
-
-    @property
-    def salt_ssh_config_dir(self):
-        return os.path.join(self.settings_dir, 'etc', 'salt')
-
-    def salt_ssh_create_master_conf(self):
-        this_dir = os.path.dirname(os.path.realpath(__file__))
-        template_path = os.path.join(this_dir, 'templates', 'master.conf')
-        with open(template_path, 'r') as f:
-            master_conf_template = f.read()
-
-        values = {}
-        values['salt_root'] = self.salt_dir
-        values['pillar_root'] = self.pillar_dir
-        values['root_dir'] = self.settings_dir
-        values['cachedir'] = os.path.join(self.settings_dir, 'var', 'cache', 'salt')
-
-        master_conf = master_conf_template.format(**values)
-        etc_salt_dir = os.path.join(self.settings_dir, 'etc', 'salt')
-        salt_master_file = os.path.join(etc_salt_dir, 'master')
-        with open(salt_master_file, 'w') as f:
-            f.write(master_conf)
 
     @property
     def salt_dir(self):
@@ -151,6 +120,43 @@ class Project(object):
     @property
     def pillar_dir(self):
         return os.path.join(self.settings_dir, 'pillar')
+
+    @property
+    def salt_ssh_config_dir(self):
+        return os.path.join(self.settings_dir, 'etc', 'salt')
+
+    def salt_ssh(self):
+        """
+        Setup `salt-ssh`
+        """
+        self.create_roster_file()
+        self.salt_ssh_create_dirs()
+        self.salt_ssh_create_master_file()
+        self.copy_salt_and_pillar()
+
+    def create_roster_file(self):
+        logger.debug('Creating roster file to: %s' % self.roster_path)
+        with open(self.roster_path, 'w') as f:
+            dict_ = salt.generate_roster(self.cluster)
+            yaml.safe_dump(dict_, f, default_flow_style=False)
+
+    def salt_ssh_create_dirs(self):
+        """
+        Creates the `salt-ssh` required directory structure
+        """
+        logger.debug('Creating salt-ssh dirs into: %s' % self.settings_dir)
+        utils.create_dir(os.path.join(self.settings_dir, 'salt'))
+        utils.create_dir(os.path.join(self.settings_dir, 'pillar'))
+        utils.create_dir(os.path.join(self.settings_dir, 'etc', 'salt'))
+        utils.create_dir(os.path.join(self.settings_dir, 'var', 'cache', 'salt'))
+        utils.create_dir(os.path.join(self.settings_dir, 'var', 'log', 'salt'))
+
+    def salt_ssh_create_master_file(self):
+        etc_salt_dir = os.path.join(self.settings_dir, 'etc', 'salt')
+        master_conf_file = os.path.join(etc_salt_dir, 'master')
+        with open(master_conf_file, 'w') as f:
+            dict_ = salt.generate_salt_ssh_master_conf(project=self)
+            yaml.safe_dump(dict_, f, default_flow_style=False)
 
     def copy_salt_and_pillar(self):
         this_dir = os.path.dirname(os.path.realpath(__file__))
@@ -168,21 +174,8 @@ class Project(object):
         shutil.copytree(pillar_roots_src, self.pillar_dir)
 
         ip = self.cluster.master.ip
-        self.replace_all(os.path.join(self.pillar_dir, 'salt.sls'), 'salt-master', ip)
-        self.replace_all(os.path.join(self.pillar_dir, 'system.sls'), 'ubuntu', self.settings['USERNAME'])
-
-    @staticmethod
-    def replace_all(file, searchExp, replaceExp):
-        for line in fileinput.input(file, inplace=1):
-            if searchExp in line:
-                line = line.replace(searchExp, replaceExp)
-            sys.stdout.write(line)
-
-    def salt(self, module, args=None, kwargs=None, target='*', ssh=False):
-        if ssh:
-            salt.salt_ssh(self, target, module, args, kwargs)
-        else:
-            salt.salt_master(self, target, module, args, kwargs)
+        utils.replace_all(os.path.join(self.pillar_dir, 'salt.sls'), 'salt-master', ip)
+        utils.replace_all(os.path.join(self.pillar_dir, 'system.sls'), 'ubuntu', self.settings['USERNAME'])
 
 
 if __name__ == '__main__':

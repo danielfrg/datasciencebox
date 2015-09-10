@@ -85,7 +85,11 @@ def install_conda(ctx, pkg, ssh, target):
 @click.pass_context
 def install_notebook(ctx, ssh):
     project = Project.from_dir(path=ctx.obj['cwd'])
-    click.echo('Step 1/1: Jupyter Notebook')
+    click.echo('Step 1/2: Conda')
+    project.salt('state.sls', args=['miniconda'], target='master', ssh=ssh)
+    if not ssh:
+        project.salt('saltutil.sync_all', target='master')
+    click.echo('Step 2/2: Jupyter Notebook')
     project.salt('state.sls', args=['ipython.notebook'], target='master', ssh=ssh)
 
 
