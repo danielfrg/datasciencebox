@@ -1,13 +1,13 @@
 from distutils.core import setup
 from setuptools import find_packages
-# from setuptools import setup, find_packages
+
 """
 To upload a new version:
 0. rm -rf *.egg-info
 1. change version
 2. python setup.py sdist register upload
 """
-print(find_packages())
+
 setup(name='datasciencebox',
       version='0.3',
       description='Data Science Box',
