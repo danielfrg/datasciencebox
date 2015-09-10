@@ -8,10 +8,9 @@ from salt.exceptions import CommandExecutionError, CommandNotFoundError
 def __virtual__():
     return True
 
-__func_alias__ = {
-    'list_': 'list',
-    'conda_prefix': 'prefix'
-}
+
+__func_alias__ = {'list_': 'list', 'conda_prefix': 'prefix'}
+
 
 def conda_prefix(user=None):
     """

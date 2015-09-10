@@ -17,7 +17,6 @@ master_roles = ['miniconda', 'zookeeper', 'mesos.master', 'hdfs.namenode', 'ipyt
 minion_roles = ['miniconda', 'mesos.slave', 'hdfs.datanode', 'impala.server']
 
 
-
 def generate_salt_ssh_master_conf(project):
     conf = {}
     conf['file_roots'] = {'base': [project.salt_dir]}

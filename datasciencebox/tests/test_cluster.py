@@ -4,12 +4,14 @@ from datasciencebox.core.settings import Settings
 from datasciencebox.core.cloud.cluster import Cluster
 from datasciencebox.core.cloud.instance import Instance, BareInstance, AWSInstance, GCPInstance
 
-
 settings = Settings()
 
 
 def test_cluster_from_to_list():
-    input_dict = [{'id': 0, 'ip': '0.0.0.0'}, {'id': 1, 'ip': '1.1.1.1'}, {'id': 2, 'ip': '2.2.2.2'}]
+    input_dict = [{'id': 0,
+                   'ip': '0.0.0.0'}, {'id': 1,
+                                      'ip': '1.1.1.1'}, {'id': 2,
+                                                         'ip': '2.2.2.2'}]
     cluster = Cluster.from_list(input_dict, settings)
 
     exported = cluster.to_list()

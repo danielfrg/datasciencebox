@@ -22,7 +22,6 @@ def test_new_others():
     instance = Instance.new(settings=settings)
     assert isinstance(instance, AWSInstance)
 
-
     settings['CLOUD'] = 'gcp'
     instance = Instance.new(settings=settings)
     assert isinstance(instance, GCPInstance)

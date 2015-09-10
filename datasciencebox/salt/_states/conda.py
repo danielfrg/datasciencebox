@@ -1,7 +1,7 @@
 import os
 
-
 __virtualname__ = 'conda'
+
 
 def __virtual__():
     """
@@ -94,7 +94,7 @@ def installed(name, env=None, saltenv='base', user=None):
         for line in lines:
             line = line.strip()
             if line != '' and not line.startswith('#'):
-                line = line.split('#')[0].strip()  # Remove inline comments
+                line = line.split('#')[0].strip()    # Remove inline comments
                 packages.append(line)
     else:
         packages = [pkg.strip() for pkg in name.split(',')]
@@ -103,9 +103,12 @@ def installed(name, env=None, saltenv='base', user=None):
 
     def extract_info(pkgname):
         pkgname, pkgversion = package, ''
-        pkgname, pkgversion = (package.split('==')[0], package.split('==')[1]) if '==' in package else (package, pkgversion)
-        pkgname, pkgversion = (package.split('>=')[0], package.split('>=')[1]) if '>=' in package else (pkgname, pkgversion)
-        pkgname, pkgversion = (package.split('>')[0], package.split('>=')[1]) if '>' in package else (pkgname, pkgversion)
+        pkgname, pkgversion = (package.split('==')[0], package.split('==')[1]
+                              ) if '==' in package else (package, pkgversion)
+        pkgname, pkgversion = (package.split('>=')[0], package.split('>=')[1]
+                              ) if '>=' in package else (pkgname, pkgversion)
+        pkgname, pkgversion = (package.split('>')[0], package.split('>=')[1]
+                              ) if '>' in package else (pkgname, pkgversion)
         return pkgname, pkgversion
 
     installed, failed, old = 0, 0, 0

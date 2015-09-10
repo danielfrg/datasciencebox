@@ -46,7 +46,8 @@ def test_generate_salt_cmd():
     cmd = salt.generate_salt_cmd('*', 'test.ping', kwargs={'user': 'root', 'test': True})
     assert cmd == ['"*"', 'test.ping', 'test=True', 'user=root']
 
-    cmd = salt.generate_salt_cmd('*', 'conda.install',
+    cmd = salt.generate_salt_cmd('*',
+                                 'conda.install',
                                  args=['a1', 'a2'],
                                  kwargs={'user': 'root',
                                          'test': True})
@@ -55,7 +56,12 @@ def test_generate_salt_cmd():
 
 def test_roster_item():
     item = salt.roster_item(cluster.master, mine=False)
-    assert item == {'host': '0.0.0.0', 'sudo': True, 'user': 'me', 'priv': '/home/ubuntu/.ssh/id_rsa'}
+    assert item == {
+        'host': '0.0.0.0',
+        'sudo': True,
+        'user': 'me',
+        'priv': '/home/ubuntu/.ssh/id_rsa'
+    }
 
 
 def test_roster_item_roles():

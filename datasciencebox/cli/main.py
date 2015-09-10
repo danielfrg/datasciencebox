@@ -30,7 +30,8 @@ def start():
 
 def log_option(func):
 
-    @click.option('--log-level', '-l',
+    @click.option('--log-level',
+                  '-l',
                   required=False,
                   default='error',
                   type=click.Choice(['debug', 'error']),
@@ -53,6 +54,7 @@ def log_option(func):
 
 
 CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
+
 
 @click.group(context_settings=CONTEXT_SETTINGS)
 @click.pass_context

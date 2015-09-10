@@ -18,12 +18,12 @@ def catch_Exception():
     raise Exception
 
 
-@retry(wait=0, catch=(NotImplementedError, ))
+@retry(wait=0, catch=(NotImplementedError,))
 def catch_NotImplementedException():
     raise NotImplementedError
 
 
-@retry(wait=0, catch=(NotImplementedError, ))
+@retry(wait=0, catch=(NotImplementedError,))
 def catch_NotImplementedException_raise_Exception():
     raise Exception
 

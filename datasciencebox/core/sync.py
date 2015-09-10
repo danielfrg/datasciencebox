@@ -45,7 +45,8 @@ class RsyncHandler(FileSystemEventHandler):
             with hide('running', 'stdout', 'stderr'):
                 with settings(host_string=host_string, key_filename=key_filename):
                     print(src + ' -> ' + dst)
-                    rsync_project(dst, src,
+                    rsync_project(dst,
+                                  src,
                                   delete=True,
                                   extra_opts='--rsync-path="sudo rsync"',
                                   ssh_opts='-oStrictHostKeyChecking=no',

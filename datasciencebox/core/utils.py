@@ -15,9 +15,10 @@ def retry(retries=10, wait=5, catch=None):
     """
     Decorator to retry on exceptions raised
     """
-    catch = catch or (Exception, )
+    catch = catch or (Exception,)
 
     def real_retry(function):
+
         def wrapper(*args, **kwargs):
             for i in range(retries):
                 try:
@@ -29,7 +30,9 @@ def retry(retries=10, wait=5, catch=None):
                     raise e
                 else:
                     raise DSBException('Retries limit exceded.')
+
         return wrapper
+
     return real_retry
 
 

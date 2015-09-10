@@ -30,7 +30,8 @@ def up(ctx, salt):
         click.echo('SSH connection to all nodes OK')
     else:
         click.echo('SSH connection to some nodes did not work.', err=True)
-        click.echo('This might be just the cloud provider being slow, wait a while and try again', err=True)
+        click.echo('This might be just the cloud provider being slow, wait a while and try again',
+                   err=True)
         click.echo(ssh_status, err=True)
         sys.exit(1)
 
@@ -90,7 +91,8 @@ def ssh(ctx, node):
 
 @main.command(short_help='Sync salt states and pillar to master')
 @click.option('--skip', '-s', required=False, is_flag=True, help='Skip initial sync')
-@click.option('--continuous', '-c',
+@click.option('--continuous',
+              '-c',
               required=False,
               is_flag=True,
               help='Sync continously based on file system changes')

@@ -76,7 +76,11 @@ def install_pkg(ctx, pkg, ssh, target):
 @click.pass_context
 def install_conda(ctx, pkg, ssh, target):
     project = Project.from_dir(path=ctx.obj['cwd'])
-    project.salt('conda.install', args=[pkg], kwargs={'user': project.settings['USERNAME']}, target=target, ssh=ssh)
+    project.salt('conda.install',
+                 args=[pkg],
+                 kwargs={'user': project.settings['USERNAME']},
+                 target=target,
+                 ssh=ssh)
 
 
 @install.command('notebook', short_help='Install ipython notebook in the master')
