@@ -41,12 +41,17 @@ def up(ctx, salt):
 
 
 @main.command(short_help='Destroy instances')
+@click.option('--force', '-f', is_flag=True, default=False, help='Don\'t ask questions, assume yes.')
 @log_option
 @click.pass_context
-def destroy(ctx):
-    click.echo('Destroying cluster')
-    project = Project.from_dir(path=ctx.obj['cwd'])
-    project.destroy()
+def destroy(ctx, force):
+    if force or click.confirm('Are you sure you want to destroy the cluster?'):
+        click.echo('Destroying cluster')
+        project = Project.from_dir(path=ctx.obj['cwd'])
+        project.destroy()
+        click.echo('Cluster destroyed')
+    else:
+        click.echo('Nothing happened')
 
 
 @main.command(short_help='Execute a salt module')
