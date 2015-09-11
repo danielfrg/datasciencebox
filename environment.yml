@@ -2,6 +2,7 @@ name: dsb-dev
 dependencies:
   - python=2.7
   - click
+  - ipython
   - fabric
   - pytest
   - pyyaml
@@ -11,3 +12,4 @@ dependencies:
     - salt-ssh
     - watchdog
     - yapf
+    - versioneer

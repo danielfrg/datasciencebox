@@ -1,6 +1,8 @@
 from distutils.core import setup
 from setuptools import find_packages
 
+import versioneer
+
 """
 To upload a new version:
 0. rm -rf *.egg-info
@@ -9,7 +11,8 @@ To upload a new version:
 """
 
 setup(name='datasciencebox',
-      version='0.3',
+      version=versioneer.get_version(),
+      cmdclass=versioneer.get_cmdclass(),
       description='Data Science Box',
       long_description='',
       author='Daniel Rodriguez',

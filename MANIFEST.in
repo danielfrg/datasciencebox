@@ -2,3 +2,5 @@ include LICENSE
 recursive-include datasciencebox/salt *
 recursive-include datasciencebox/pillar *
 recursive-include datasciencebox/core/templates *
+include versioneer.py
+include datasciencebox/_version.py
