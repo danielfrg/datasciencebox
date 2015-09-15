@@ -143,7 +143,7 @@ class Instance(object):
     def check_ssh(self):
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh.connect(self.ip, username=self.username, key_filename=self.keypair)
+        ssh.connect(self.ip, port=self.port, username=self.username, key_filename=self.keypair)
         return True
 
 
