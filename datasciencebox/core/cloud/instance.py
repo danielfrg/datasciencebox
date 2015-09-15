@@ -22,7 +22,7 @@ class Instance(object):
         self._node = None
         self._uid = None
         self._ip = None
-        self._port = '22'
+        self._port = 22
         self._username = None
         self._keypair = None
 
@@ -87,7 +87,7 @@ class Instance(object):
     def set_ip(self, value):
         if value:
             try:
-                self._ip, self._port = value.split(":")
+                self._ip, self.port = value.split(":")
             except ValueError:
                 self._ip = value
 
@@ -98,6 +98,7 @@ class Instance(object):
 
     def set_port(self, value):
         self._port = value or self.port
+        self._port = int(self._port)
 
     port = property(get_port, set_port, None)
 
@@ -149,7 +150,7 @@ class Instance(object):
 class BareInstance(Instance):
 
     def fetch_uid(self):
-        warnings.warn('Bare Metal instance cannot fetch id', DSBWarning)
+        pass
 
     def fetch_ip(self):
         warnings.warn('Bare Metal instance cannot fetch ip address', DSBWarning)
