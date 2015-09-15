@@ -4,15 +4,14 @@ import os
 
 from datasciencebox.core import salt
 from datasciencebox.core.project import Project
-from datasciencebox.core.settings import Settings
 from datasciencebox.core.cloud.cluster import Cluster
+from datasciencebox.core.cloud.instance import Instance
 
-settings = Settings()
-settings['USERNAME'] = 'me'
-settings['KEYPAIR'] = '/home/ubuntu/.ssh/id_rsa'
 
-_ = [{'id': 0, 'ip': '0.0.0.0'}, {'id': 1, 'ip': '1.1.1.1'}, {'id': 2, 'ip': '2.2.2.2'}]
-cluster = Cluster.from_list(_, settings)
+cluster = Cluster()
+cluster.instances.append(Instance(ip='0.0.0.0', username='me', keypair='/home/ubuntu/.ssh/id_rsa'))
+cluster.instances.append(Instance(ip='1.1.1.1:2222', username='ubuntu', keypair='/home/ubuntu/.ssh/id_rsa2'))
+cluster.instances.append(Instance(ip='2.2.2.2', port='3333', username='centos', keypair='/home/ubuntu/.ssh/id_rsa3'))
 
 master_roles = ['master', 'master2', 'conda']
 minion_roles = ['minion2', 'conda']
@@ -58,16 +57,18 @@ def test_roster_item():
     item = salt.roster_item(cluster.master, mine=False)
     assert item == {
         'host': '0.0.0.0',
+        'port': '22',
         'sudo': True,
         'user': 'me',
         'priv': '/home/ubuntu/.ssh/id_rsa'
     }
 
 
-def test_roster_item_roles():
+def test_roster_item_with_roles():
     item = salt.roster_item(cluster.master, roles=['cdh5', 'conda2'], mine=False)
     assert item == {
         'host': '0.0.0.0',
+        'port': '22',
         'sudo': True,
         'user': 'me',
         'priv': '/home/ubuntu/.ssh/id_rsa',
@@ -80,6 +81,7 @@ def test_generate_roster():
     ans = {
         'master': {
             'host': '0.0.0.0',
+            'port': '22',
             'sudo': True,
             'user': 'me',
             'priv': '/home/ubuntu/.ssh/id_rsa',
@@ -87,16 +89,18 @@ def test_generate_roster():
         },
         'minion-1': {
             'host': '1.1.1.1',
+            'port': '2222',
             'sudo': True,
-            'user': 'me',
-            'priv': '/home/ubuntu/.ssh/id_rsa',
+            'user': 'ubuntu',
+            'priv': '/home/ubuntu/.ssh/id_rsa2',
             'grains': {'roles': minion_roles}
         },
         'minion-2': {
             'host': '2.2.2.2',
+            'port': '3333',
             'sudo': True,
-            'user': 'me',
-            'priv': '/home/ubuntu/.ssh/id_rsa',
+            'user': 'centos',
+            'priv': '/home/ubuntu/.ssh/id_rsa3',
             'grains': {'roles': minion_roles}
         },
     }

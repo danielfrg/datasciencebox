@@ -14,7 +14,7 @@ from datasciencebox.core.utils import retry
 
 class Instance(object):
 
-    def __init__(self, settings, cluster=None):
+    def __init__(self, cluster=None, uid=None, ip=None, port=None, username=None, keypair=None, settings=None):
         logger.debug('Initializing Instance')
         self.settings = settings
         self.cluster = cluster
@@ -22,27 +22,31 @@ class Instance(object):
         self._node = None
         self._uid = None
         self._ip = None
+        self._port = '22'
         self._username = None
         self._keypair = None
 
+        self.uid = uid
+        self.ip = ip
+        self.port = port
+        self.username = username
+        self.keypair = keypair
+
     @classmethod
-    def new(cls, settings, cluster=None, uid=None, ip=None):
+    def new(cls, settings, *args, **kwargs):
         """
         Create a new Cloud instance based on the Settings
         """
         logger.debug('Creating new "%s" Instance' % settings['CLOUD'])
         cloud = settings['CLOUD']
         if cloud == 'bare':
-            self = BareInstance(settings, cluster=cluster)
+            self = BareInstance(settings=settings, *args, **kwargs)
         elif cloud == 'aws':
-            self = AWSInstance(settings, cluster=cluster)
+            self = AWSInstance(settings=settings, *args, **kwargs)
         elif cloud == 'gcp':
-            self = GCPInstance(settings, cluster=cluster)
+            self = GCPInstance(settings=settings, *args, **kwargs)
         else:
             raise DSBException('Cloud "%s" not supported' % cloud)
-
-        self.uid = uid
-        self.ip = ip
         return self
 
     def __repr__(self):
@@ -81,9 +85,21 @@ class Instance(object):
         raise NotImplementedError('Subclass of Instance must implement "fetch_ip"')
 
     def set_ip(self, value):
-        self._ip = value
+        if value:
+            try:
+                self._ip, self._port = value.split(":")
+            except ValueError:
+                self._ip = value
 
     ip = property(get_ip, set_ip, None)
+
+    def get_port(self):
+        return self._port
+
+    def set_port(self, value):
+        self._port = value or self.port
+
+    port = property(get_port, set_port, None)
 
     def get_node(self):
         if self._node is None:
@@ -99,9 +115,8 @@ class Instance(object):
     node = property(get_node, set_node, None)
 
     def get_username(self):
-        if self._username is None:
-            self._username = self.settings['USERNAME']
-        return self._username
+        default_username = self.settings['USERNAME'] if self.settings else None
+        return self._username or default_username
 
     def set_username(self, value):
         self._username = value
@@ -109,9 +124,8 @@ class Instance(object):
     username = property(get_username, set_username, None)
 
     def get_keypair(self):
-        if self._keypair is None:
-            self._keypair = os.path.expanduser(self.settings['KEYPAIR'])
-        return self._keypair
+        default_keypair = self.settings['KEYPAIR'] if self.settings else None
+        return self._keypair or default_keypair
 
     def set_keypair(self, value):
         self._keypair = value

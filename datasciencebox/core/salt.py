@@ -45,6 +45,7 @@ def generate_salt_cmd(target, module, args=None, kwargs=None):
 def roster_item(instance, roles=None, mine=True):
     ret = {}
     ret['host'] = instance.ip
+    ret['port'] = instance.port
     ret['user'] = instance.username
     ret['priv'] = instance.keypair
     ret['sudo'] = True
