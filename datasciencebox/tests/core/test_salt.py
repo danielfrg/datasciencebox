@@ -57,7 +57,7 @@ def test_roster_item():
     item = salt.roster_item(cluster.master, mine=False)
     assert item == {
         'host': '0.0.0.0',
-        'port': '22',
+        'port': 22,
         'sudo': True,
         'user': 'me',
         'priv': '/home/ubuntu/.ssh/id_rsa'
@@ -68,7 +68,7 @@ def test_roster_item_with_roles():
     item = salt.roster_item(cluster.master, roles=['cdh5', 'conda2'], mine=False)
     assert item == {
         'host': '0.0.0.0',
-        'port': '22',
+        'port': 22,
         'sudo': True,
         'user': 'me',
         'priv': '/home/ubuntu/.ssh/id_rsa',
@@ -81,7 +81,7 @@ def test_generate_roster():
     ans = {
         'master': {
             'host': '0.0.0.0',
-            'port': '22',
+            'port': 22,
             'sudo': True,
             'user': 'me',
             'priv': '/home/ubuntu/.ssh/id_rsa',
@@ -89,7 +89,7 @@ def test_generate_roster():
         },
         'minion-1': {
             'host': '1.1.1.1',
-            'port': '2222',
+            'port': 2222,
             'sudo': True,
             'user': 'ubuntu',
             'priv': '/home/ubuntu/.ssh/id_rsa2',
@@ -97,7 +97,7 @@ def test_generate_roster():
         },
         'minion-2': {
             'host': '2.2.2.2',
-            'port': '3333',
+            'port': 3333,
             'sudo': True,
             'user': 'centos',
             'priv': '/home/ubuntu/.ssh/id_rsa3',
