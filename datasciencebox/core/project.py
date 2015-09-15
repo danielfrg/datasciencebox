@@ -22,16 +22,16 @@ class Project(object):
     def from_dir(cls, path=os.getcwd(), settingsfile='dsbfile'):
         dir_ = path
         while dir_ != '/':
-            if os.path.exists(os.path.join(dir_, settingsfile)):
-                logger.debug('"{}" FOUND on "{}"'.format(dir_, settingsfile))
+            if os.path.exists(os.path.join(settingsfile, dir_)):
+                logger.debug('"{}" FOUND on "{}"'.format(settingsfile, dir_))
                 break
-            logger.debug('"{}" not found on "{}" trying parent directory'.format(dir_, settingsfile))
+            logger.debug('"{}" not found on "{}" trying parent directory'.format(settingsfile, dir_))
             dir_ = os.path.abspath(os.path.join(dir_, os.pardir))
 
         if not os.path.exists(os.path.join(dir_, 'dsbfile')):
-            raise DSBException('"{}" not found on ""{}" or its parents'.format(path, settingsfile))
+            raise DSBException('"{}" not found on ""{}" or its parents'.format(settingsfile, path))
 
-        return cls.from_file(filepath=os.path.join(dir_, settingsfile))
+        return cls.from_file(filepath=os.path.join(settingsfile, dir_))
 
     @classmethod
     def from_file(cls, filepath):
