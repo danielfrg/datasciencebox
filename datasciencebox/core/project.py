@@ -19,32 +19,40 @@ class Project(object):
     """
 
     @classmethod
-    def from_dir(cls, path=os.getcwd()):
+    def from_dir(cls, path=os.getcwd(), settingsfile='dsbfile'):
         dir_ = path
         while dir_ != '/':
-            if os.path.exists(os.path.join(dir_, 'dsbfile')):
-                logger.debug('"dsbfile" FOUND on "%s"' % dir_)
+            if os.path.exists(os.path.join(dir_, settingsfile)):
+                logger.debug('"{}" FOUND on "{}"'.format(dir_, settingsfile))
                 break
-            logger.debug('"dsbfile" not found on "%s" trying parent directory' % dir_)
+            logger.debug('"{}" not found on "{}" trying parent directory'.format(dir_, settingsfile))
             dir_ = os.path.abspath(os.path.join(dir_, os.pardir))
 
         if not os.path.exists(os.path.join(dir_, 'dsbfile')):
-            raise DSBException('"dsbfile" not found on ""%s" or its parents' % path)
+            raise DSBException('"{}" not found on ""{}" or its parents'.format(path, settingsfile))
 
-        self = cls(path=dir_)
-        logger.debug('Starting project from: %s' % path)
+        return cls.from_file(filepath=os.path.join(dir_, settingsfile))
+
+    @classmethod
+    def from_file(cls, filepath):
+        dir_ = os.path.dirname(filepath)
+        settingsfile = os.path.basename(filepath)
+
+        self = cls(path=dir_, settingsfile=settingsfile)
+        logger.debug('Starting project from: %s' % filepath)
         self.read_settings()
         self.read_instances()
         return self
 
-    def __init__(self, path=None):
+    def __init__(self, path=None, settingsfile='dsbfile'):
         self.dir = path
+        self.settingsfile = settingsfile
         self.cluster = None
         self.settings = None
 
     @property
     def settings_path(self):
-        return os.path.join(self.dir, 'dsbfile')
+        return os.path.join(self.dir, self.settingsfile)
 
     @property
     def settings_dir(self):
@@ -52,6 +60,7 @@ class Project(object):
         Directory that contains the the settings for the project
         """
         path = os.path.join(self.dir, '.dsb')
+        utils.create_dir(path)
         return os.path.realpath(path)
 
     def read_settings(self):

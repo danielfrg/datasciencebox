@@ -6,16 +6,22 @@ import subprocess
 import click
 
 from datasciencebox.cli.main import main, log_option
+from datasciencebox.cli.install import install_salt
 from datasciencebox.core.project import Project
 from datasciencebox.core.sync import RsyncHandler, loop as sync_loop
 
 
 @main.command(short_help='Launch instances')
+@click.option('--file', '-f', 'settingsfile', required=False, help='Path to the file to use as dsbfile', type=click.Path(exists=True, resolve_path=True))
 @click.option('--salt/--no-salt', default=True, required=False, help='Whether to install salt')
 @log_option
 @click.pass_context
-def up(ctx, salt):
-    project = Project.from_dir(path=ctx.obj['cwd'])
+def up(ctx, settingsfile, salt):
+    if settingsfile:
+        project = Project.from_file(settingsfile)
+    else:
+        project = Project.from_dir(path=ctx.obj['cwd'])
+    ctx.obj['project'] = project
 
     click.echo('Creating cluster')
     project.create_cluster()
@@ -37,7 +43,7 @@ def up(ctx, salt):
 
     if salt:
         click.echo('Installing salt (master)')
-        ctx.invoke(main.install_salt)
+        ctx.invoke(install_salt)
 
 
 @main.command(short_help='Destroy instances')

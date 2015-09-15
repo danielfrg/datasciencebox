@@ -4,7 +4,7 @@ import time
 
 import click
 
-from datasciencebox.cli.main import main, sync, log_option
+from datasciencebox.cli.main import main, log_option
 from datasciencebox.core.project import Project
 from datasciencebox.core.salt import master_roles, minion_roles
 
@@ -22,7 +22,7 @@ def install(ctx):
 @log_option
 @click.pass_context
 def install_miniconda(ctx, ssh, target):
-    project = Project.from_dir(path=ctx.obj['cwd'])
+    project = ctx.obj['project'] or Project.from_dir(path=ctx.obj['cwd'])
     project.salt('state.sls', args=['miniconda'], target=target, ssh=ssh)
     if not ssh:
         project.salt('saltutil.sync_all', target=target)
@@ -32,7 +32,7 @@ def install_miniconda(ctx, ssh, target):
 @log_option
 @click.pass_context
 def install_salt(ctx):
-    project = Project.from_dir(path=ctx.obj['cwd'])
+    project = ctx.obj['project'] or Project.from_dir(path=ctx.obj['cwd'])
 
     pillar_template = """pillar='{"salt": {"master": {"ip": "%s"}, "minion": {"roles": %s } } }' """
 
@@ -63,7 +63,7 @@ def install_salt(ctx):
 @log_option
 @click.pass_context
 def install_pkg(ctx, pkg, ssh, target):
-    project = Project.from_dir(path=ctx.obj['cwd'])
+    project = ctx.obj['project'] or Project.from_dir(path=ctx.obj['cwd'])
     args = [pkg]
     project.salt('pkg.install', args=args, target=target, ssh=ssh)
 
@@ -75,7 +75,7 @@ def install_pkg(ctx, pkg, ssh, target):
 @log_option
 @click.pass_context
 def install_conda(ctx, pkg, ssh, target):
-    project = Project.from_dir(path=ctx.obj['cwd'])
+    project = ctx.obj['project'] or Project.from_dir(path=ctx.obj['cwd'])
     project.salt('conda.install',
                  args=[pkg],
                  kwargs={'user': project.settings['USERNAME']},
@@ -88,7 +88,7 @@ def install_conda(ctx, pkg, ssh, target):
 @log_option
 @click.pass_context
 def install_notebook(ctx, ssh):
-    project = Project.from_dir(path=ctx.obj['cwd'])
+    project = ctx.obj['project'] or Project.from_dir(path=ctx.obj['cwd'])
     click.echo('Step 1/2: Conda')
     project.salt('state.sls', args=['miniconda'], target='master', ssh=ssh)
     if not ssh:
@@ -102,7 +102,7 @@ def install_notebook(ctx, ssh):
 @log_option
 @click.pass_context
 def install_hdfs(ctx, ssh):
-    project = Project.from_dir(path=ctx.obj['cwd'])
+    project = ctx.obj['project'] or Project.from_dir(path=ctx.obj['cwd'])
     click.echo('Step 1/1: HDFS')
     project.salt('state.sls', args=['cdh5.hdfs.cluster'], target='*', ssh=ssh)
 
@@ -112,7 +112,7 @@ def install_hdfs(ctx, ssh):
 @log_option
 @click.pass_context
 def install_mesos(ctx, ssh):
-    project = Project.from_dir(path=ctx.obj['cwd'])
+    project = ctx.obj['project'] or Project.from_dir(path=ctx.obj['cwd'])
     click.echo('Step 1/2: Zookeeper')
     project.salt('state.sls', args=['cdh5.zookeeper'], target='master', ssh=ssh)
     click.echo('Step 2/2: Mesos')
@@ -124,7 +124,7 @@ def install_mesos(ctx, ssh):
 @log_option
 @click.pass_context
 def install_marathon(ctx, ssh):
-    project = Project.from_dir(path=ctx.obj['cwd'])
+    project = ctx.obj['project'] or Project.from_dir(path=ctx.obj['cwd'])
     click.echo('Step 1/3: Zookeeper')
     project.salt('state.sls', args=['cdh5.zookeeper'], target='master', ssh=ssh)
     click.echo('Step 2/3: Mesos')
@@ -138,7 +138,7 @@ def install_marathon(ctx, ssh):
 @log_option
 @click.pass_context
 def install_spark(ctx, ssh):
-    project = Project.from_dir(path=ctx.obj['cwd'])
+    project = ctx.obj['project'] or Project.from_dir(path=ctx.obj['cwd'])
     click.echo('Step 1/4: Zookeeper')
     project.salt('state.sls', args=['cdh5.zookeeper'], target='master', ssh=ssh)
     click.echo('Step 2/4: HDFS')
@@ -154,7 +154,7 @@ def install_spark(ctx, ssh):
 @log_option
 @click.pass_context
 def install_impala(ctx, ssh):
-    project = Project.from_dir(path=ctx.obj['cwd'])
+    project = ctx.obj['project'] or Project.from_dir(path=ctx.obj['cwd'])
     click.echo('Step 1/4: Zookeeper')
     project.salt('state.sls', args=['cdh5.zookeeper'], target='master', ssh=ssh)
     click.echo('Step 2/4: HDFS')
