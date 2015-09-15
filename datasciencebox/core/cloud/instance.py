@@ -54,8 +54,9 @@ class Instance(object):
 
     def to_dict(self):
         ret = {}
-        ret['id'] = self.uid
+        ret['uid'] = self.uid
         ret['ip'] = self.ip
+        ret['port'] = self.port
         return ret
 
     def get_driver(self):
