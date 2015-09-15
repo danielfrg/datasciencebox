@@ -1,0 +1,7 @@
+ID = 'vagrant'
+
+CLOUD = 'bare'
+NODES = ['localhost:2022', 'localhost:2023']
+
+USERNAME = 'vagrant'
+KEYPAIR = '/Users/drodriguez/.vagrant.d/insecure_private_key'
