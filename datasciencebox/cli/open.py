@@ -4,48 +4,46 @@ import webbrowser
 
 import click
 
-from datasciencebox.cli.main import main, log_option
-from datasciencebox.core.project import Project
+from datasciencebox.cli.main import main, default_options
 
 
 @main.group('open', short_help='Open an app UI/browser')
-@log_option
 @click.pass_context
 def open_(ctx):
-    ctx.obj = ctx.obj if ctx.obj else {}
+    pass
 
 
 @open_.command('mesos', short_help='Open the mesos UI')
-@log_option
+@default_options
 @click.pass_context
 def open_mesos(ctx):
-    project = Project.from_dir(path=ctx.obj['cwd'])
+    project = ctx.obj['project']
     url = 'http://%s:5050' % project.cluster.master.ip
     webbrowser.open(url, new=2)
 
 
 @open_.command('marathon', short_help='Open the Marathon UI')
-@log_option
+@default_options
 @click.pass_context
 def open_marathon(ctx):
-    project = Project.from_dir(path=ctx.obj['cwd'])
+    project = ctx.obj['project']
     url = 'http://%s:8080' % project.cluster.master.ip
     webbrowser.open(url, new=2)
 
 
 @open_.command('hdfs', short_help='Open the hdfs UI')
-@log_option
+@default_options
 @click.pass_context
 def open_hdfs(ctx):
-    project = Project.from_dir(path=ctx.obj['cwd'])
+    project = ctx.obj['project']
     url = 'http://%s:50070' % project.cluster.master.ip
     webbrowser.open(url, new=2)
 
 
 @open_.command('notebook', short_help='Open the IPython notebook')
-@log_option
+@default_options
 @click.pass_context
 def open_notebook(ctx):
-    project = Project.from_dir(path=ctx.obj['cwd'])
+    project = ctx.obj['project']
     url = 'http://%s:8888' % project.cluster.master.ip
     webbrowser.open(url, new=2)

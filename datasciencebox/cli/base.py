@@ -5,23 +5,16 @@ import subprocess
 
 import click
 
-from datasciencebox.cli.main import main, log_option
-from datasciencebox.cli.install import install_salt
-from datasciencebox.core.project import Project
+from datasciencebox.cli.main import main, default_options
 from datasciencebox.core.sync import RsyncHandler, loop as sync_loop
 
 
 @main.command(short_help='Launch instances')
-@click.option('--file', '-f', 'settingsfile', required=False, help='Path to the file to use as dsbfile', type=click.Path(exists=True, resolve_path=True))
 @click.option('--salt/--no-salt', default=True, required=False, help='Whether to install salt')
-@log_option
+@default_options
 @click.pass_context
-def up(ctx, settingsfile, salt):
-    if settingsfile:
-        project = Project.from_file(settingsfile)
-    else:
-        project = Project.from_dir(path=ctx.obj['cwd'])
-    ctx.obj['project'] = project
+def up(ctx, salt):
+    project = ctx.obj['project']
 
     click.echo('Creating cluster')
     project.create_cluster()
@@ -43,17 +36,18 @@ def up(ctx, settingsfile, salt):
 
     if salt:
         click.echo('Installing salt (master)')
+        from datasciencebox.cli.install import install_salt
         ctx.invoke(install_salt)
 
 
 @main.command(short_help='Destroy instances')
 @click.option('--force', '-f', is_flag=True, default=False, help='Don\'t ask questions, assume yes.')
-@log_option
+@default_options
 @click.pass_context
 def destroy(ctx, force):
     if force or click.confirm('Are you sure you want to destroy the cluster?'):
         click.echo('Destroying cluster')
-        project = Project.from_dir(path=ctx.obj['cwd'])
+        project = ctx.obj['project']
         project.destroy()
         click.echo('Cluster destroyed')
     else:
@@ -65,30 +59,30 @@ def destroy(ctx, force):
 @click.argument('module')
 @click.argument('args', required=False, nargs=-1)
 @click.option('--ssh', is_flag=True, required=False, show_default=True, help='Whether to use ssh')
-@log_option
+@default_options
 @click.pass_context
 def salt(ctx, target, module, args, ssh):
-    project = Project.from_dir(path=ctx.obj['cwd'])
+    project = ctx.obj['project']
     project.salt(module, args=args, target=target, ssh=ssh)
 
 
 @main.command(short_help='Execute a salt module')
 @click.argument('command')
 @click.option('--ssh', is_flag=True, required=False, show_default=True, help='Whether to use ssh')
-@log_option
+@default_options
 @click.pass_context
 def cmd(ctx, command, ssh):
-    project = Project.from_dir(path=ctx.obj['cwd'])
+    project = ctx.obj['project']
     args = ['"' + command + '"']
     project.salt('cmd.run', args=args, ssh=ssh)
 
 
 @main.command(short_help='SSH to the master node')
 @click.argument('node', required=False, default=0)
-@log_option
+@default_options
 @click.pass_context
 def ssh(ctx, node):
-    project = Project.from_dir(path=ctx.obj['cwd'])
+    project = ctx.obj['project']
     node = project.cluster.instances[node]
     ip = node.ip
     username = node.username
@@ -107,10 +101,10 @@ def ssh(ctx, node):
               required=False,
               is_flag=True,
               help='Sync continously based on file system changes')
-@log_option
+@default_options
 @click.pass_context
 def sync(ctx, continuous, skip):
-    project = Project.from_dir(path=ctx.obj['cwd'])
+    project = ctx.obj['project']
 
     handler = RsyncHandler()
     handler.project = project
@@ -123,8 +117,8 @@ def sync(ctx, continuous, skip):
 
 
 @main.command(short_help='Update (overwriting) project settings and salt formulas')
-@log_option
+@default_options
 @click.pass_context
 def update(ctx):
-    project = Project.from_dir(path=ctx.obj['cwd'])
+    project = ctx.obj['project']
     project.update()

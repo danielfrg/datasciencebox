@@ -1,38 +1,34 @@
 from __future__ import absolute_import, unicode_literals
 
-import time
-
 import click
 
-from datasciencebox.cli.main import main, log_option
-from datasciencebox.core.project import Project
+from datasciencebox.cli.main import main, default_options
 from datasciencebox.core.salt import master_roles, minion_roles
 
 
 @main.group(short_help='Install packages, applications and more')
-@log_option
 @click.pass_context
 def install(ctx):
-    ctx.obj = ctx.obj if ctx.obj else {}
+    pass
 
 
 @install.command('miniconda', short_help='Install miniconda in the instances')
 @click.option('--ssh', is_flag=True, required=False, show_default=True, help='Whether to use ssh')
 @click.option('--target', '-t', required=False, help='Wildcard matching salt minions')
-@log_option
+@default_options
 @click.pass_context
 def install_miniconda(ctx, ssh, target):
-    project = ctx.obj['project'] or Project.from_dir(path=ctx.obj['cwd'])
+    project = ctx.obj['project']
     project.salt('state.sls', args=['miniconda'], target=target, ssh=ssh)
     if not ssh:
         project.salt('saltutil.sync_all', target=target)
 
 
 @install.command('salt', short_help='Install salt master and minion(s) via salt-ssh')
-@log_option
+@default_options
 @click.pass_context
 def install_salt(ctx):
-    project = ctx.obj['project'] or Project.from_dir(path=ctx.obj['cwd'])
+    project = ctx.obj['project']
 
     pillar_template = """pillar='{"salt": {"master": {"ip": "%s"}, "minion": {"roles": %s } } }' """
 
@@ -53,6 +49,7 @@ def install_salt(ctx):
         project.salt('state.sls', args=['salt.minion', pillars], target='minion*', ssh=True)
 
     click.echo('Syncing formulas')
+    from datasciencebox.cli.base import sync
     ctx.invoke(sync)
 
 
@@ -60,10 +57,10 @@ def install_salt(ctx):
 @click.argument('pkg', required=True)
 @click.option('--ssh', is_flag=True, required=False, show_default=True, help='Whether to use ssh')
 @click.option('--target', '-t', required=False, help='Wildcard matching salt minions')
-@log_option
+@default_options
 @click.pass_context
 def install_pkg(ctx, pkg, ssh, target):
-    project = ctx.obj['project'] or Project.from_dir(path=ctx.obj['cwd'])
+    project = ctx.obj['project']
     args = [pkg]
     project.salt('pkg.install', args=args, target=target, ssh=ssh)
 
@@ -72,10 +69,10 @@ def install_pkg(ctx, pkg, ssh, target):
 @click.argument('pkg', required=True)
 @click.option('--ssh', is_flag=True, required=False, show_default=True, help='Whether to use ssh')
 @click.option('--target', '-t', required=False, help='Wildcard matching salt minions')
-@log_option
+@default_options
 @click.pass_context
 def install_conda(ctx, pkg, ssh, target):
-    project = ctx.obj['project'] or Project.from_dir(path=ctx.obj['cwd'])
+    project = ctx.obj['project']
     project.salt('conda.install',
                  args=[pkg],
                  kwargs={'user': project.settings['USERNAME']},
@@ -85,10 +82,10 @@ def install_conda(ctx, pkg, ssh, target):
 
 @install.command('notebook', short_help='Install ipython notebook in the master')
 @click.option('--ssh', is_flag=True, required=False, show_default=True, help='Whether to use ssh')
-@log_option
+@default_options
 @click.pass_context
 def install_notebook(ctx, ssh):
-    project = ctx.obj['project'] or Project.from_dir(path=ctx.obj['cwd'])
+    project = ctx.obj['project']
     click.echo('Step 1/2: Conda')
     project.salt('state.sls', args=['miniconda'], target='master', ssh=ssh)
     if not ssh:
@@ -99,20 +96,20 @@ def install_notebook(ctx, ssh):
 
 @install.command('hdfs', short_help='Install hdfs in the cluster')
 @click.option('--ssh', is_flag=True, required=False, show_default=True, help='Whether to use ssh')
-@log_option
+@default_options
 @click.pass_context
 def install_hdfs(ctx, ssh):
-    project = ctx.obj['project'] or Project.from_dir(path=ctx.obj['cwd'])
+    project = ctx.obj['project']
     click.echo('Step 1/1: HDFS')
     project.salt('state.sls', args=['cdh5.hdfs.cluster'], target='*', ssh=ssh)
 
 
 @install.command('mesos', short_help='Install mesos in the cluster')
 @click.option('--ssh', is_flag=True, required=False, show_default=True, help='Whether to use ssh')
-@log_option
+@default_options
 @click.pass_context
 def install_mesos(ctx, ssh):
-    project = ctx.obj['project'] or Project.from_dir(path=ctx.obj['cwd'])
+    project = ctx.obj['project']
     click.echo('Step 1/2: Zookeeper')
     project.salt('state.sls', args=['cdh5.zookeeper'], target='master', ssh=ssh)
     click.echo('Step 2/2: Mesos')
@@ -121,10 +118,10 @@ def install_mesos(ctx, ssh):
 
 @install.command('marathon', short_help='Install mesos in the cluster')
 @click.option('--ssh', is_flag=True, required=False, show_default=True, help='Whether to use ssh')
-@log_option
+@default_options
 @click.pass_context
 def install_marathon(ctx, ssh):
-    project = ctx.obj['project'] or Project.from_dir(path=ctx.obj['cwd'])
+    project = ctx.obj['project']
     click.echo('Step 1/3: Zookeeper')
     project.salt('state.sls', args=['cdh5.zookeeper'], target='master', ssh=ssh)
     click.echo('Step 2/3: Mesos')
@@ -135,10 +132,10 @@ def install_marathon(ctx, ssh):
 
 @install.command('spark', short_help='Install spark in the master')
 @click.option('--ssh', is_flag=True, required=False, show_default=True, help='Whether to use ssh')
-@log_option
+@default_options
 @click.pass_context
 def install_spark(ctx, ssh):
-    project = ctx.obj['project'] or Project.from_dir(path=ctx.obj['cwd'])
+    project = ctx.obj['project']
     click.echo('Step 1/4: Zookeeper')
     project.salt('state.sls', args=['cdh5.zookeeper'], target='master', ssh=ssh)
     click.echo('Step 2/4: HDFS')
@@ -151,10 +148,10 @@ def install_spark(ctx, ssh):
 
 @install.command('impala', short_help='Install Impala in the master')
 @click.option('--ssh', is_flag=True, required=False, show_default=True, help='Whether to use ssh')
-@log_option
+@default_options
 @click.pass_context
 def install_impala(ctx, ssh):
-    project = ctx.obj['project'] or Project.from_dir(path=ctx.obj['cwd'])
+    project = ctx.obj['project']
     click.echo('Step 1/4: Zookeeper')
     project.salt('state.sls', args=['cdh5.zookeeper'], target='master', ssh=ssh)
     click.echo('Step 2/4: HDFS')

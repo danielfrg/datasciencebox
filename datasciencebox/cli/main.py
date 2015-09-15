@@ -8,6 +8,7 @@ from functools import update_wrapper
 
 import click
 
+from datasciencebox.core.project import Project
 from datasciencebox.core.exceptions import DSBException
 
 from datasciencebox.core.logger import setup_logging
@@ -28,8 +29,9 @@ def start():
         sys.exit(1)
 
 
-def log_option(func):
+def default_options(func):
 
+    @click.option('--file', '-f', 'settingsfile', required=False, help='Path to the file to use as dsbfile', type=click.Path(exists=True, resolve_path=True))
     @click.option('--log-level',
                   '-l',
                   required=False,
@@ -38,18 +40,25 @@ def log_option(func):
                   show_default=True,
                   help='Logging level')
     @click.pass_context
-    def new_func(ctx, log_level, *args, **kwargs):
-        if log_level == 'info':
-            log_level = logging.INFO
-        elif log_level == 'debug':
-            log_level = logging.DEBUG
-        elif log_level == 'error':
-            log_level = logging.ERROR
-        setup_logging(log_level)
+    def new_func(ctx, settingsfile, log_level, *args, **kwargs):
+        if 'project' not in ctx.obj:
+            if settingsfile:
+                project = Project.from_file(settingsfile)
+            else:
+                project = Project.from_dir(path=ctx.obj['cwd'])
+            ctx.obj['project'] = project
 
-        ctx.obj['log_level'] = log_level
+        if 'log_level' not in ctx.obj:
+            if log_level == 'info':
+                log_level = logging.INFO
+            elif log_level == 'debug':
+                log_level = logging.DEBUG
+            elif log_level == 'error':
+                log_level = logging.ERROR
+            setup_logging(log_level)
+            ctx.obj['log_level'] = log_level
+
         return ctx.invoke(func, *args, **kwargs)
-
     return update_wrapper(new_func, func)
 
 
