@@ -90,6 +90,7 @@ def ssh(ctx, node):
     cmd = ['ssh', username + '@' + ip]
     cmd = cmd + ['-i', keypair]
     cmd = cmd + ['-oStrictHostKeyChecking=no']
+    cmd = cmd + ['-p %i' % node.port]
     click.echo(' '.join(cmd))
     subprocess.call(cmd)
 
