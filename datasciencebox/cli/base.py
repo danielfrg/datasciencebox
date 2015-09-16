@@ -63,7 +63,8 @@ def destroy(ctx, force):
 @click.pass_context
 def salt(ctx, target, module, args, ssh):
     project = ctx.obj['project']
-    project.salt(module, args=args, target=target, ssh=ssh)
+    out = project.salt(module, args=args, target=target, ssh=ssh)
+    click.echo(out)
 
 
 @cli.command(short_help='Execute a salt module')
@@ -74,7 +75,8 @@ def salt(ctx, target, module, args, ssh):
 def cmd(ctx, command, ssh):
     project = ctx.obj['project']
     args = ['"' + command + '"']
-    project.salt('cmd.run', args=args, ssh=ssh)
+    out = project.salt('cmd.run', args=args, ssh=ssh)
+    click.echo(out)
 
 
 @cli.command(short_help='SSH to the master node')

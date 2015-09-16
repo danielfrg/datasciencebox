@@ -93,7 +93,6 @@ def salt_ssh(project, target, module, args=None, kwargs=None):
     out, err = proc.communicate()
     if proc.returncode != 0 or err:
         raise Exception(err)
-    print(out + err)
     return out + err
 
 
@@ -116,5 +115,4 @@ def salt_master(project, target, module, args=None, kwargs=None):
             logger.debug('salt cmd: %s' % cmd)
 
             out = sudo(cmd)
-            print(out)
             return out
