@@ -1,5 +1,6 @@
 import os
 import pwd
+import json
 
 import salt.utils
 
@@ -50,40 +51,71 @@ def create(name, packages=None, user=None):
     return ret
 
 
-def install(package, env=None, user=None):
+def install(packages, env=None, user=None):
     """
-    Install a single package in a conda env
-    If package is not found in the default conda channel it defaults to pip (pypi)
-    """
-    if package.startswith('git'):
-        return _install_pip(package, env=env, user=user)
+    Install conda packages in a conda env
 
-    ret = _install_conda(package, env=env, user=user)
-    if ret['retcode'] == 0:
-        return ret
-    elif 'Error: No packages found in current' in ret['stderr']:
-        ret = _install_pip(package, env=env, user=user)
-        return ret
+    Attributes
+    ----------
+        packages: list of packages comma delimited
+    """
+    packages = ' '.join(packages.split(','))
+    cmd = _create_conda_cmd('install', args=[packages, '--yes', '-q'], env=env, user=user)
+    return _execcmd(cmd, user=user)
 
 
 def list_(env=None, user=None):
     """
-    List the installed packages on an environment (big string)
+    List the installed packages on an environment
+
+    Returns
+    -------
+        Dictionary: {package: {version: 1.0.0, build: 1 } ... }
     """
-    cmd = _create_conda_cmd('list', env=env, user=user)
+    cmd = _create_conda_cmd('list', args=['--json'], env=env, user=user)
     ret = _execcmd(cmd, user=user)
     if ret['retcode'] == 0:
-        return ret['stdout']
+        pkg_list = json.loads(ret['stdout'])
+        packages = {}
+        for pkg in pkg_list:
+            pkg_info = pkg.split('-')
+            name, version, build = '-'.join(pkg_info[:-2]), pkg_info[-2], pkg_info[-1]
+            packages[name] = {'version': version, 'build': build}
+        return packages
     else:
-        raise Exception(ret['stderr'])
+        return ret
 
 
-def _install_conda(package, env=None, user=None):
-    cmd = _create_conda_cmd('install', args=[package, '--yes', '-q'], env=env, user=user)
+def update(packages, env=None, user=None):
+    """
+    Update conda packages in a conda env
+
+    Attributes
+    ----------
+        packages: list of packages comma delimited
+    """
+    packages = ' '.join(packages.split(','))
+    cmd = _create_conda_cmd('update', args=[packages, '--yes', '-q'], env=env, user=user)
     return _execcmd(cmd, user=user)
 
 
+def remove(packages, env=None, user=None):
+    """
+    Remove conda packages in a conda env
+
+    Attributes
+    ----------
+        packages: list of packages comma delimited
+    """
+    packages = ' '.join(packages.split(','))
+    cmd = _create_conda_cmd('remove', args=[packages, '--yes', '-q'], env=env, user=user)
+    return _execcmd(cmd, user=user, return0=True)
+
+
 def _create_conda_cmd(conda_cmd, args=None, env=None, user=None):
+    """
+    Utility to create a valid conda command
+    """
     cmd = [_get_conda_path(user=user), conda_cmd]
     if env:
         cmd.extend(['-n', env])
@@ -93,16 +125,10 @@ def _create_conda_cmd(conda_cmd, args=None, env=None, user=None):
 
 
 def _get_conda_path(user=None):
+    """
+    Get the path to the conda exec
+    """
     return os.path.join(conda_prefix(user=user), 'bin', 'conda')
-
-
-def _install_pip(package, env=None, user=None):
-    cmd = [_get_pip_path(env=env, user=user), 'install', '-q', package]
-    return _execcmd(cmd, user=user)
-
-
-def _get_pip_path(env=None, user=None):
-    return os.path.join(_get_env_path(env=env, user=user), 'bin', 'pip')
 
 
 def _get_env_path(env=None, user=None):
