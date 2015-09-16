@@ -31,7 +31,7 @@ class Project(object):
         if not os.path.exists(os.path.join(dir_, 'dsbfile')):
             raise DSBException('"{}" not found on ""{}" or its parents'.format(settingsfile, path))
 
-        return cls.from_file(filepath=os.path.join(settingsfile, dir_))
+        return cls.from_file(filepath=os.path.join(dir_, settingsfile))
 
     @classmethod
     def from_file(cls, filepath):
