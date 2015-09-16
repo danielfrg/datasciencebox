@@ -111,9 +111,9 @@ class Project(object):
         Execute a salt (or salt-ssh) command
         """
         if ssh:
-            salt.salt_ssh(self, target, module, args, kwargs)
+            return salt.salt_ssh(self, target, module, args, kwargs)
         else:
-            salt.salt_master(self, target, module, args, kwargs)
+            return salt.salt_master(self, target, module, args, kwargs)
 
     @property
     def roster_path(self):
