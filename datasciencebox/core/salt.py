@@ -102,8 +102,9 @@ def salt_master(project, target, module, args=None, kwargs=None):
     Execute a `salt` command in the head node
     """
     ip = project.cluster.master.ip
+    port = project.cluster.master.port
     username = project.settings['USERNAME']
-    host_string = username + '@' + ip
+    host_string = username + '@' + ip + ':' + str(port)
     key_filename = project.settings['KEYPAIR']
     with hide('running', 'stdout', 'stderr'):
         with settings(host_string=host_string, key_filename=key_filename):
