@@ -16,7 +16,7 @@ from datasciencebox.core.logger import setup_logging
 
 def start():
     try:
-        main(obj={})
+        cli(obj={})
     except DSBException as e:
         click.echo('ERROR: %s' % e, err=True)
         sys.exit(1)
@@ -67,7 +67,7 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 
 @click.group(context_settings=CONTEXT_SETTINGS)
 @click.pass_context
-def main(ctx):
+def cli(ctx):
     ctx.obj = {}
     ctx.obj['cwd'] = os.getcwd()
 

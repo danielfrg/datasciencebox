@@ -4,10 +4,10 @@ import webbrowser
 
 import click
 
-from datasciencebox.cli.main import main, default_options
+from datasciencebox.cli.main import cli, default_options
 
 
-@main.group('open', short_help='Open an app UI/browser')
+@cli.group('open', short_help='Open an app UI/browser')
 @click.pass_context
 def open_(ctx):
     pass

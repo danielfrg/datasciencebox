@@ -5,11 +5,11 @@ import subprocess
 
 import click
 
-from datasciencebox.cli.main import main, default_options
+from datasciencebox.cli.main import cli, default_options
 from datasciencebox.core.sync import RsyncHandler, loop as sync_loop
 
 
-@main.command(short_help='Launch instances')
+@cli.command(short_help='Launch instances')
 @click.option('--salt/--no-salt', default=True, required=False, help='Whether to install salt')
 @default_options
 @click.pass_context
@@ -40,7 +40,7 @@ def up(ctx, salt):
         ctx.invoke(install_salt)
 
 
-@main.command(short_help='Destroy instances')
+@cli.command(short_help='Destroy instances')
 @click.option('--force', '-f', is_flag=True, default=False, help='Don\'t ask questions, assume yes.')
 @default_options
 @click.pass_context
@@ -54,7 +54,7 @@ def destroy(ctx, force):
         click.echo('Nothing happened')
 
 
-@main.command(short_help='Execute a salt module')
+@cli.command(short_help='Execute a salt module')
 @click.argument('target')
 @click.argument('module')
 @click.argument('args', required=False, nargs=-1)
@@ -66,7 +66,7 @@ def salt(ctx, target, module, args, ssh):
     project.salt(module, args=args, target=target, ssh=ssh)
 
 
-@main.command(short_help='Execute a salt module')
+@cli.command(short_help='Execute a salt module')
 @click.argument('command')
 @click.option('--ssh', is_flag=True, required=False, show_default=True, help='Whether to use ssh')
 @default_options
@@ -77,7 +77,7 @@ def cmd(ctx, command, ssh):
     project.salt('cmd.run', args=args, ssh=ssh)
 
 
-@main.command(short_help='SSH to the master node')
+@cli.command(short_help='SSH to the master node')
 @click.argument('node', required=False, default=0)
 @default_options
 @click.pass_context
@@ -95,7 +95,7 @@ def ssh(ctx, node):
     subprocess.call(cmd)
 
 
-@main.command(short_help='Sync salt states and pillar to master')
+@cli.command(short_help='Sync salt states and pillar to master')
 @click.option('--skip', '-s', required=False, is_flag=True, help='Skip initial sync')
 @click.option('--continuous',
               '-c',
@@ -117,7 +117,7 @@ def sync(ctx, continuous, skip):
         sync_loop(project, handler)
 
 
-@main.command(short_help='Update (overwriting) project settings and salt formulas')
+@cli.command(short_help='Update (overwriting) project settings and salt formulas')
 @default_options
 @click.pass_context
 def update(ctx):

@@ -2,11 +2,11 @@ from __future__ import absolute_import, unicode_literals
 
 import click
 
-from datasciencebox.cli.main import main, default_options
+from datasciencebox.cli.main import cli, default_options
 from datasciencebox.core.salt import master_roles, minion_roles
 
 
-@main.group(short_help='Install packages, applications and more')
+@cli.group(short_help='Install packages, applications and more')
 @click.pass_context
 def install(ctx):
     pass
