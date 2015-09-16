@@ -17,6 +17,8 @@ def test_new_bare():
     assert instance.ip == '1.1.1.1'
     assert instance.port == 22
 
+    assert instance.to_dict() == {'ip': '1.1.1.1', 'port': 22, 'uid': 'myid'}
+
 
 def test_new_bare_ssh_port():
     instance = Instance.new(settings=settings, uid='myid', ip='1.1.1.1:2022')
