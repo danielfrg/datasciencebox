@@ -35,3 +35,13 @@ def check_all_true(salt_output):
         minion_values = minion.values()[0]
         for id_, value in minion_values.items():
             assert value['result'] == True, (id_, value)
+
+
+def check_all_cmd_retcode0(salt_output):
+    out = []
+    for minion_output in salt_output.split('\n'):
+        out.append(json.loads(minion_output))
+
+    for minion in out:
+        minion_output = minion.values()[0]
+        assert minion_output['retcode'] == 0, (id_, value)
