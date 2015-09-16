@@ -4,8 +4,9 @@ python:
 
 install:
   - python setup.py install
+  - pip install pytest-cov
 
 script:
   - pwd
   - cd datasciencebox/tests
-  - py.test -s -vv
+  - py.test -s -vv --cov=datasciencebox

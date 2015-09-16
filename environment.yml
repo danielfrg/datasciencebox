@@ -9,6 +9,7 @@ dependencies:
   - pylint
   - pip:
     - apache-libcloud
+    - pytest-cov
     - salt-ssh
     - watchdog
     - yapf
