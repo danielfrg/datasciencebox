@@ -127,7 +127,8 @@ class Instance(object):
 
     def get_keypair(self):
         default_keypair = self.settings['KEYPAIR'] if self.settings else None
-        return self._keypair or default_keypair
+        key = self._keypair or default_keypair
+        return os.path.expanduser(key)
 
     def set_keypair(self, value):
         self._keypair = value
