@@ -16,7 +16,7 @@ class Cluster(object):
     @classmethod
     def from_list(cls, values, settings):
         """
-        From a list of dicts (each dict is an instances)
+        From a list of dicts (each dict is an `Instance.to_dict`)
         """
         logger.debug('Creating Cluster from list')
         self = cls()
@@ -57,7 +57,7 @@ class Cluster(object):
         return self._driver
 
     def set_driver(self, value):
-        self._uid = value
+        self._driver = value
 
     driver = property(get_driver, set_driver, None)
 

@@ -14,7 +14,7 @@ from datasciencebox.core.utils import retry
 
 class Instance(object):
 
-    def __init__(self, cluster=None, uid=None, ip=None, port=None, username=None, keypair=None, settings=None):
+    def __init__(self, uid=None, ip=None, port=None, username=None, keypair=None, settings=None, cluster=None):
         logger.debug('Initializing Instance')
         self.settings = settings
         self.cluster = cluster
