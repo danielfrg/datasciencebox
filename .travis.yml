@@ -8,4 +8,4 @@ install:
 script:
   - pwd
   - cd datasciencebox/tests
-  - py.test
+  - py.test -s -vv
