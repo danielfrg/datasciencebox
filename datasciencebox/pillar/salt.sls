@@ -1,6 +1,6 @@
 salt:
   master:
-    ip: salt-master
+    ip: localhost
 
   minion:
     roles:

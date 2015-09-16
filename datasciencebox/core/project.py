@@ -180,8 +180,8 @@ class Project(object):
         shutil.copytree(pillar_roots_src, self.pillar_dir)
 
         ip = self.cluster.master.ip
-        utils.replace_all(os.path.join(self.pillar_dir, 'salt.sls'), 'salt-master', ip)
-        utils.replace_all(os.path.join(self.pillar_dir, 'system.sls'), 'ubuntu',
+        utils.replace_all(os.path.join(self.pillar_dir, 'salt.sls'), 'localhost', ip)
+        utils.replace_all(os.path.join(self.pillar_dir, 'system.sls'), 'vagrant',
                           self.settings['USERNAME'])
 
 

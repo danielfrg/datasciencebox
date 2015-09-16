@@ -1,2 +1,2 @@
 system:
-  user: 'ubuntu'
+  user: 'vagrant'
