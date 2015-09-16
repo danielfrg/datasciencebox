@@ -69,10 +69,7 @@ class Project(object):
         Populates `self.settings`
         """
         logger.debug('Reading settings from: %s' % self.settings_path)
-        if os.path.exists(self.settings_path):
-            self.settings = Settings.from_dsbfile(self.settings_path)
-        else:
-            pass    # TODO: do something?
+        self.settings = Settings.from_dsbfile(self.settings_path)
 
     def read_instances(self):
         """
