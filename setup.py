@@ -6,7 +6,7 @@ import versioneer
 """
 To upload a new version:
 0. rm -rf *.egg-info
-1. change version
+1. Git tag a new version
 2. python setup.py sdist register upload
 """
 
