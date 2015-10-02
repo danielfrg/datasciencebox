@@ -1,7 +1,8 @@
 {%- from 'cdh5/zookeeper/settings.sls' import zk with context %}
 
 include:
-  - cdh5
+  - java
+  - cdh5.repo
 
 zookeeper-pkg:
   pkg.installed:
@@ -37,12 +38,3 @@ zk-myid:
     - require:
       - pkg: zookeeper-pkg
       - cmd: zookeeper-server-init
-
-zookeeper-server:
-  service.running:
-    - name: zookeeper-server
-    - enable: true
-    - watch:
-      - cmd: zookeeper-server-init
-      - file: {{ zk['data_dir'] }}/myid
-      - file: /etc/zookeeper/conf/zoo.cfg

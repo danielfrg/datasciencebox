@@ -3,7 +3,7 @@ Vagrant.configure("2") do |config|
   config.vm.box_url = "ubuntu/trusty64"
 
   config.ssh.insert_key = false
-  
+
   # Manage /etc/hosts on host and VMs
   config.hostmanager.enabled = false
   config.hostmanager.manage_host = true
@@ -24,10 +24,11 @@ Vagrant.configure("2") do |config|
     machine.vm.network :private_network, ip: "10.10.10.100"
     machine.vm.network :forwarded_port, guest: 22, host: 2222, id: "ssh", disabled: true
     machine.vm.network :forwarded_port, guest: 22, host: 2022
-    machine.vm.network :forwarded_port, guest: 50070, host: 50070  # Namenode
-    machine.vm.network :forwarded_port, guest: 5050, host: 5050    # Mesos
+    machine.vm.network :forwarded_port, guest: 2181, host: 2181     # Zookeeper
+    machine.vm.network :forwarded_port, guest: 50070, host: 50070   # Namenode
+    machine.vm.network :forwarded_port, guest: 5050, host: 5050     # Mesos
     machine.vm.network :forwarded_port, guest: 8080, host: 18080    # Marathon
-    machine.vm.network :forwarded_port, guest: 8888, host: 8888    # IPython Notebook
+    machine.vm.network :forwarded_port, guest: 8888, host: 8888     # IPython Notebook
 
     machine.vm.provision :hostmanager
 

@@ -9,7 +9,7 @@ mine_interval: 2
 
 grains:
   roles:
-    - zookeeper
+    - zookeeper.server
     - mesos.master
     - hdfs.namenode
     - hive.metastore

@@ -122,7 +122,7 @@ def install_hdfs(ctx, ssh):
 def install_mesos(ctx, ssh):
     project = ctx.obj['project']
     click.echo('Step 1/2: Zookeeper')
-    out = project.salt('state.sls', args=['cdh5.zookeeper'], target='master', ssh=ssh)
+    out = project.salt('state.sls', args=['cdh5.zookeeper.cluster'], target='master', ssh=ssh)
     click.echo(out)
     click.echo('Step 2/2: Mesos')
     out = project.salt('state.sls', args=['mesos.cluster'], target='*', ssh=ssh)
@@ -136,7 +136,7 @@ def install_mesos(ctx, ssh):
 def install_marathon(ctx, ssh):
     project = ctx.obj['project']
     click.echo('Step 1/3: Zookeeper')
-    out = project.salt('state.sls', args=['cdh5.zookeeper'], target='master', ssh=ssh)
+    out = project.salt('state.sls', args=['cdh5.zookeeper.cluster'], target='master', ssh=ssh)
     click.echo(out)
     click.echo('Step 2/3: Mesos')
     out = project.salt('state.sls', args=['mesos.cluster'], target='*', ssh=ssh)
@@ -153,7 +153,7 @@ def install_marathon(ctx, ssh):
 def install_spark(ctx, ssh):
     project = ctx.obj['project']
     click.echo('Step 1/4: Zookeeper')
-    out = project.salt('state.sls', args=['cdh5.zookeeper'], target='master', ssh=ssh)
+    out = project.salt('state.sls', args=['cdh5.zookeeper.cluster'], target='master', ssh=ssh)
     click.echo(out)
     click.echo('Step 2/4: HDFS')
     out = project.salt('state.sls', args=['cdh5.hdfs.cluster'], target='*', ssh=ssh)
@@ -173,7 +173,7 @@ def install_spark(ctx, ssh):
 def install_impala(ctx, ssh):
     project = ctx.obj['project']
     click.echo('Step 1/4: Zookeeper')
-    out = project.salt('state.sls', args=['cdh5.zookeeper'], target='master', ssh=ssh)
+    out = project.salt('state.sls', args=['cdh5.zookeeper.cluster'], target='master', ssh=ssh)
     click.echo(out)
     click.echo('Step 2/4: HDFS')
     out = project.salt('state.sls', args=['cdh5.hdfs.cluster'], target='*', ssh=ssh)
