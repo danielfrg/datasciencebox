@@ -39,7 +39,7 @@ def install_salt(ctx):
     click.echo(out)
 
     click.echo('Installing salt minion in the head')
-    roles_txt = ['"%s"' % role for role in master_roles]
+    roles_txt = ['"%s"' % role for role in MASTER_ROLES]
     roles_txt = '[%s]' % ', '.join(roles_txt)
     pillars = pillar_template % (project.cluster.master.ip, roles_txt)
     out = project.salt('state.sls', args=['salt.minion', pillars], target='master', ssh=True)
@@ -47,7 +47,7 @@ def install_salt(ctx):
 
     if len(project.cluster) > 1:
         click.echo('Installing salt minion in the compute nodes')
-        roles_txt = ['"%s"' % role for role in minion_roles]
+        roles_txt = ['"%s"' % role for role in MINION_ROLES]
         roles_txt = '[%s]' % ', '.join(roles_txt)
         pillars = pillar_template % (project.cluster.master.ip, roles_txt)
         out = project.salt('state.sls', args=['salt.minion', pillars], target='minion*', ssh=True)
