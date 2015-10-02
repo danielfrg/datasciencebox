@@ -1,18 +1,27 @@
 import pytest
 
+import requests
 from hdfs.client import Client
 
 import utils
 
 
+def setup_module(module):
+    utils.invoke('install', 'hdfs')
+
+
 @utils.vagranttest
-def test_namenode():
+def test_salt_formulas():
     project = utils.get_test_project()
 
-    kwargs = {'--out': 'json', '--out-indent': '-1'}
+    kwargs = {'test': 'true', '--out': 'json', '--out-indent': '-1'}
     out = project.salt('state.sls', args=['cdh5.hdfs.cluster'], kwargs=kwargs)
-    utils.check_all_true(out)
+    utils.check_all_true(out, none_is_ok=True)
 
+
+@utils.vagranttest
+def test_hdfs_dirs():
+    project = utils.get_test_project()
     nn_ip = project.cluster.master.ip
 
     hdfs = Client('http://%s:50070' % nn_ip)
@@ -24,3 +33,15 @@ def test_namenode():
 
     users_dirs = hdfs.list('/user')
     assert 'vagrant' in users_dirs
+
+
+@utils.vagranttest
+def test_namenode_ui():
+    '''
+    Note: Namenode webpage uses a lot of javascript requests alone is not good enough
+    '''
+    project = utils.get_test_project()
+    nn_ip = project.cluster.master.ip
+
+    r = requests.get('http://%s:50070/dfshealth.html#tab-overview' % nn_ip)
+    assert r.status_code == 200

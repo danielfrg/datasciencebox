@@ -4,6 +4,7 @@ dependencies:
   - click
   - ipython
   - fabric
+  - requests
   - pyyaml
   - pandas
   - pylint

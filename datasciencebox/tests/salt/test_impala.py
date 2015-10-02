@@ -14,6 +14,7 @@ def setup_module(module):
 @utils.vagranttest
 def test_salt_formulas():
     project = utils.get_test_project()
+    
     kwargs = {'test': 'true', '--out': 'json', '--out-indent': '-1'}
     out = project.salt('state.sls', args=['cdh5.hdfs.cluster'], kwargs=kwargs)
     utils.check_all_true(out, none_is_ok=True)
