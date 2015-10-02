@@ -1,5 +1,4 @@
 {%- from 'mesos/settings.sls' import mesos with context -%}
-{%- from 'supervisor/settings.sls' import conf_d with context -%}
 
 include:
   - mesos
@@ -12,6 +11,7 @@ marathon-pkg:
       - sls: mesos
 
 # For some reason the service is not showing up the UI but supervisor does
+{%- from 'supervisor/settings.sls' import conf_d with context -%}
 marathon-service:
   service.dead:
     - name: marathon
