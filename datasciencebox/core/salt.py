@@ -12,9 +12,9 @@ from fabric.api import settings, sudo, hide
 from datasciencebox.core.logger import getLogger
 logger = getLogger()
 
-master_roles = ['miniconda', 'zookeeper', 'mesos.master', 'hdfs.namenode', 'ipython.notebook',
+MASTER_ROLES = ['miniconda', 'zookeeper.server', 'mesos.master', 'hdfs.namenode', 'ipython.notebook',
                 'spark', 'hive.metastore', 'impala.state-store']
-minion_roles = ['miniconda', 'mesos.slave', 'hdfs.datanode', 'impala.server']
+MINION_ROLES = ['miniconda', 'mesos.slave', 'hdfs.datanode', 'impala.server']
 
 
 def generate_salt_ssh_master_conf(project):
@@ -69,7 +69,7 @@ def roster_item(instance, roles=None, mine=True):
 
 def generate_roster(cluster, mine=True):
     ret = {}
-    ret['master'] = roster_item(cluster.instances[0], roles=master_roles, mine=mine)
+    ret['master'] = roster_item(cluster.instances[0], roles=MASTER_ROLES, mine=mine)
     for i, instance in enumerate(cluster.instances[1:]):
         ret['minion-%i' % (i + 1)] = roster_item(instance, roles=minion_roles, mine=mine)
     return ret
