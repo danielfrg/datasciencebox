@@ -2,6 +2,7 @@
 
 include:
   - miniconda
+  - supervisor
 
 /home/{{ user }}/notebooks:
   file.directory:
@@ -20,15 +21,13 @@ ipython-notebook:
       - sls: miniconda
 
 notebook.conf:
-  pkg.installed:
-    - name: supervisor
   file.managed:
     - name: /etc/supervisor/conf.d/notebook.conf
     - source: salt://ipython/templates/notebook.conf
     - template: jinja
     - makedirs: true
     - require:
-      - pkg: notebook.conf
+      - sls: supervisor
 
 notebook-update-supervisor:
   module.run:
