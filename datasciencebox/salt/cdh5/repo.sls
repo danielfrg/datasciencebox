@@ -1,6 +1,3 @@
-include:
-  - java
-
 cdh5-repository_1.0_all.deb:
   file.managed:
     - name: /tmp/cdh5-repository_1.0_all.deb

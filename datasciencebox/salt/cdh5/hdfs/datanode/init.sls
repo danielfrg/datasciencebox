@@ -1,8 +1,9 @@
 {%- from 'cdh5/hdfs/settings.sls' import datanode_dirs with context %}
 
 include:
-  - cdh5
-  - cdh5.hdfs.conf
+  - java
+  - cdh5.repo
+  - cdh5.hdfs
 
 hadoop-hdfs-datanode:
   pkg.installed:

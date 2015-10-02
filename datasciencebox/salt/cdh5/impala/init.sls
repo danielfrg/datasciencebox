@@ -1,5 +1,5 @@
 include:
-  - cdh5
+  - cdh5.repo
 
 impala:
   pkg.installed:

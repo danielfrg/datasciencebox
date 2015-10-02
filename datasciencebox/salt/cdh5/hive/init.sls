@@ -1,5 +1,6 @@
 include:
-  - cdh5
+  - java
+  - cdh5.repo
 
 hive:
   pkg.installed:
