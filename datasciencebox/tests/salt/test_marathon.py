@@ -18,11 +18,11 @@ def test_salt_formulas():
     utils.check_all_true(out, none_is_ok=True)
 
     kwargs = {'test': 'true', '--out': 'json', '--out-indent': '-1'}
-    out = project.salt('state.sls', args=['cdh5.mesos.cluster'], kwargs=kwargs)
+    out = project.salt('state.sls', args=['mesos.cluster'], kwargs=kwargs)
     utils.check_all_true(out, none_is_ok=True)
 
     kwargs = {'test': 'true', '--out': 'json', '--out-indent': '-1'}
-    out = project.salt('state.sls', args=['cdh5.marathon'], target='master', kwargs=kwargs)
+    out = project.salt('state.sls', args=['mesos.marathon'], target='master', kwargs=kwargs)
     utils.check_all_true(out, none_is_ok=True)
 
 
