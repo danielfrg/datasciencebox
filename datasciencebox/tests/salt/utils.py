@@ -44,4 +44,4 @@ def check_all_cmd_retcode0(salt_output):
 
     for minion in minions:
         minion_output = minion.values()[0]
-        assert minion_output['retcode'] == 0, (id_, value)
+        assert minion_output['retcode'] == 0, (minion_output)
