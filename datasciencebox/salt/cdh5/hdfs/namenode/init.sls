@@ -8,7 +8,7 @@ include:
 hadoop-hdfs-namenode:
   pkg.installed:
     - require:
-      - sls: cdh5
+      - sls: cdh5.repo
 
 {% for dir in namenode_dirs %}
 {{ dir }}:
@@ -25,7 +25,7 @@ format-hdfs:
     - unless: test -e /etc/hadoop/conf/hdfs-format-check-dont-delele.log
     - require:
       - pkg: hadoop-hdfs-namenode
-      - sls: cdh5.hdfs.conf
+      - sls: cdh5.hdfs
       {% for dir in namenode_dirs %}
       - file: {{ dir }}
       {% endfor %}
@@ -36,7 +36,7 @@ start-hadoop-hdfs-namenode:
     - enable: true
     - watch:
       - cmd: format-hdfs
-      - sls: cdh5.hdfs.conf
+      - sls: cdh5.hdfs
       {% for dir in namenode_dirs %}
       - file: {{ dir }}
       {% endfor %}

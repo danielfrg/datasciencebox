@@ -1,28 +1,35 @@
-{%- from 'cdh5/hdfs/settings.sls' import namenode_dirs, datanode_dirs with context -%}
+{%- from 'cdh5/hdfs/settings.sls' import is_namenode, is_datanode, namenode_dirs, datanode_dirs with context -%}
 
 <?xml version="1.0"?>
 <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
 
-{%- set namenodes = [] -%}
-{%- for dir in namenode_dirs -%}
-{%- do namenodes.append("file://" + dir) -%}
-{%- endfor -%}
-
-{%- set datanodes = [] -%}
-{%- for dir in datanode_dirs -%}
-{%- do datanodes.append("file://" + dir) -%}
-{%- endfor -%}
-
 <configuration>
 
-    <property>
-      <name>dfs.namenode.name.dir</name>
-      <value>{{ namenodes | join(',') }}</value>
-    </property>
+{% if is_namenode -%}
+    {%- set namenodes = [] -%}
+    {%- for dir in namenode_dirs -%}
+    {%- do namenodes.append("file://" + dir) -%}
+    {%- endfor -%}
+<property>
+  <name>dfs.namenode.name.dir</name>
+  <value>{{ namenodes | join(',') }}</value>
+</property>
+{%- endif %}
 
-    <property>
-      <name>dfs.datanode.data.dir</name>
-      <value>{{ datanodes | join(',') }}</value>
-    </property>
+{% if is_datanode -%}
+    {%- set datanodes = [] -%}
+    {%- for dir in datanode_dirs -%}
+    {%- do datanodes.append("file://" + dir) -%}
+    {%- endfor -%}
+<property>
+  <name>dfs.datanode.data.dir</name>
+  <value>{{ datanodes | join(',') }}</value>
+</property>
+{%- endif %}
+
+<property>
+  <name>dfs.namenode.rpc-bind-host</name>
+  <value>0.0.0.0</value>
+</property>
 
 </configuration>

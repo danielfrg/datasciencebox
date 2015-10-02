@@ -8,7 +8,7 @@ include:
 hadoop-hdfs-datanode:
   pkg.installed:
     - require:
-      - sls: cdh5
+      - sls: cdh5.repo
 
 {% for dir in datanode_dirs %}
 {{ dir }}:
@@ -23,7 +23,7 @@ start-hadoop-hdfs-datanode:
     - name: hadoop-hdfs-datanode
     - enable: true
     - watch:
-      - sls: cdh5.hdfs.conf
+      - sls: cdh5.hdfs
       - pkg: hadoop-hdfs-datanode
       {% for dir in datanode_dirs %}
       - file: {{ dir }}

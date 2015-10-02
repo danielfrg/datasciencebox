@@ -4,14 +4,15 @@ dependencies:
   - click
   - ipython
   - fabric
-  - pytest
   - pyyaml
   - pylint
+  - pytest
   - pip:
     - apache-libcloud
-    - pytest-cov
     - salt-ssh
     - watchdog
     - yapf
     - versioneer
+    - pytest-cov
     - kazoo
+    - hdfs

@@ -1,5 +1,4 @@
-{% set is_namenode = 'hdfs.namenode' in grains['roles'] %}
-{% set is_datanode = 'hdfs.datanode' in grains['roles'] %}
+{%- from 'cdh5/hdfs/settings.sls' import is_namenode, is_datanode with context %}
 
 {% if is_namenode or is_datanode %}
 include:
