@@ -3,6 +3,7 @@ from __future__ import absolute_import, unicode_literals
 import click
 
 from datasciencebox.cli.main import cli, default_options
+from datasciencebox.core.salt import MASTER_ROLES, MINION_ROLES
 
 
 @cli.group(short_help='Install packages, applications and more')
