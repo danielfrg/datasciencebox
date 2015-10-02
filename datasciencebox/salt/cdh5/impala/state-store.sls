@@ -19,7 +19,7 @@ hdfs-impala-create:
     - name: hadoop fs -mkdir -p /user/impala
     - user: hdfs
     - require:
-      - sls: cdh5.impala.conf
+      - sls: cdh5.impala
 
 hdfs-impala-owner:
   cmd.run:

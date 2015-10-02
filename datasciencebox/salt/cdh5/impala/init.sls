@@ -4,7 +4,7 @@ include:
 impala:
   pkg.installed:
     - require:
-      - sls: cdh5
+      - sls: cdh5.repo
 
 /etc/default/impala:
   file.managed:

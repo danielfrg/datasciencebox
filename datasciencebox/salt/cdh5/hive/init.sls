@@ -5,7 +5,7 @@ include:
 hive:
   pkg.installed:
     - require:
-      - sls: cdh5
+      - sls: cdh5.repo
 
 /etc/hive/conf/hive-site.xml:
   file.managed:

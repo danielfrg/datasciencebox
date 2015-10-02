@@ -27,9 +27,9 @@ Vagrant.configure("2") do |config|
     machine.vm.network :forwarded_port, guest: 2181, host: 2181     # Zookeeper
     machine.vm.network :forwarded_port, guest: 8020, host: 8020     # HDFS
     machine.vm.network :forwarded_port, guest: 50070, host: 50070   # Namenode UI
-    machine.vm.network :forwarded_port, guest: 5050, host: 5050     # Mesos
-    machine.vm.network :forwarded_port, guest: 8080, host: 18080    # Marathon
-    machine.vm.network :forwarded_port, guest: 8888, host: 8888     # IPython Notebook
+    machine.vm.network :forwarded_port, guest: 5050, host: 5050     # Mesos UI
+    machine.vm.network :forwarded_port, guest: 8080, host: 18080    # Marathon UI
+    machine.vm.network :forwarded_port, guest: 8888, host: 8888     # Jupyter Notebook
 
     machine.vm.provision :hostmanager
 
@@ -60,6 +60,7 @@ Vagrant.configure("2") do |config|
     machine.vm.network :private_network, ip: "10.10.10.101"
     machine.vm.network :forwarded_port, guest: 22, host: 2222, id: "ssh", disabled: true
     machine.vm.network :forwarded_port, guest: 22, host: 2023
+    machine.vm.network :forwarded_port, guest: 21050, host: 21050   # Impala Thrift server
 
     machine.vm.provision :hostmanager
 

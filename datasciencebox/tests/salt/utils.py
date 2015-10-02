@@ -26,7 +26,7 @@ def invoke(*args):
     return runner.invoke(cli, args, catch_exceptions=False, input=sys.stdin)
 
 
-def check_all_true(salt_output):
+def check_all_true(salt_output, none_is_ok=False):
     minions = []
     for minion_output in salt_output.split('\n'):
         minions.append(json.loads(minion_output))
@@ -34,7 +34,10 @@ def check_all_true(salt_output):
     for minion in minions:
         minion_values = minion.values()[0]
         for id_, value in minion_values.items():
-            assert value['result'] == True, (id_, value)
+            if none_is_ok:
+                assert value['result'] is not False, (id_, value)
+            else:
+                assert value['result'] is True, (id_, value)
 
 
 def check_all_cmd_retcode0(salt_output):

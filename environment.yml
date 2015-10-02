@@ -5,6 +5,7 @@ dependencies:
   - ipython
   - fabric
   - pyyaml
+  - pandas
   - pylint
   - pytest
   - pip:
@@ -16,3 +17,4 @@ dependencies:
     - pytest-cov
     - kazoo
     - hdfs
+    - ibis-framework
