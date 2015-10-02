@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 import pytest
 
 import os
@@ -15,8 +17,8 @@ cluster.instances.append(Instance(ip='2.2.2.2', port='3333', username='centos', 
 
 master_roles = ['master', 'master2', 'conda']
 minion_roles = ['minion2', 'conda']
-salt.master_roles = master_roles
-salt.minion_roles = minion_roles
+salt.MASTER_ROLES = master_roles
+salt.MINION_ROLES = minion_roles
 
 
 def test_generate_salt_ssh_master_conf(tmpdir):

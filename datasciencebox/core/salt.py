@@ -71,7 +71,7 @@ def generate_roster(cluster, mine=True):
     ret = {}
     ret['master'] = roster_item(cluster.instances[0], roles=MASTER_ROLES, mine=mine)
     for i, instance in enumerate(cluster.instances[1:]):
-        ret['minion-%i' % (i + 1)] = roster_item(instance, roles=minion_roles, mine=mine)
+        ret['minion-%i' % (i + 1)] = roster_item(instance, roles=MINION_ROLES, mine=mine)
     return ret
 
 
