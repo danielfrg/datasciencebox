@@ -38,7 +38,7 @@ def test_hdfs_dirs():
 @utils.vagranttest
 def test_namenode_ui():
     '''
-    Note: Namenode webpage uses a lot of javascript requests alone is not good enough
+    Note: Namenode UI uses a lot of javascript requests alone is not good enough
     '''
     project = utils.get_test_project()
     nn_ip = project.cluster.master.ip

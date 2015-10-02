@@ -14,7 +14,7 @@ def test_salt_formulas():
     project = utils.get_test_project()
 
     kwargs = {'test': 'true', '--out': 'json', '--out-indent': '-1'}
-    out = project.salt('state.sls', args=['cdh5.zookeeper'], kwargs=kwargs)
+    out = project.salt('state.sls', args=['cdh5.zookeeper.cluster'], target='master', kwargs=kwargs)
     utils.check_all_true(out, none_is_ok=True)
 
     kwargs = {'test': 'true', '--out': 'json', '--out-indent': '-1'}
