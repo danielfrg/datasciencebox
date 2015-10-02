@@ -27,7 +27,7 @@ def test_salt_formulas():
 
 
 @utils.vagranttest
-def test_namenode_ui():
+def test_marathon_ui():
     '''
     Note 1: Marathon UI uses a lot of javascript requests alone is not good enough
     Note 2: Marathon UI does not bing to 0.0.0.0 so need explicit vagrant IP
