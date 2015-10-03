@@ -87,7 +87,7 @@ def salt_ssh(project, target, module, args=None, kwargs=None):
     cmd.append('--ignore-host-keys')
     cmd.append('--force-color')
     cmd = ' '.join(cmd)
-    logger.debug('salt-ssh cmd: %s' % cmd)
+    logger.debug('salt-ssh cmd: %s', cmd)
 
     proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     out, err = proc.communicate()
@@ -112,7 +112,7 @@ def salt_master(project, target, module, args=None, kwargs=None):
             cmd.append('--timeout=300')
             cmd.append('--state-output=mixed')
             cmd = ' '.join(cmd)
-            logger.debug('salt cmd: %s' % cmd)
+            logger.debug('salt cmd: %s', cmd)
 
             out = sudo(cmd)
             return out

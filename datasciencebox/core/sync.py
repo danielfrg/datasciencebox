@@ -54,7 +54,6 @@ class RsyncHandler(FileSystemEventHandler):
                                   default_opts='-pthrz')
 
     def sync_all(self):
-        this_dir = os.path.dirname(os.path.realpath(__file__))
         salt_root = self.project.salt_dir
         pillar_root = self.project.pillar_dir
 
@@ -63,8 +62,6 @@ class RsyncHandler(FileSystemEventHandler):
 
 
 def loop(project, handler):
-    this_dir = os.path.dirname(os.path.realpath(__file__))
-
     salt_root = project.salt_dir
     pillar_root = project.pillar_dir
 

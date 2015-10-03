@@ -2,7 +2,6 @@ from datasciencebox.core.logger import getLogger
 logger = getLogger()
 from datasciencebox.core.cloud.driver import Driver
 from datasciencebox.core.cloud.instance import Instance
-from datasciencebox.core.exceptions import DSBException, DSBWarning
 
 
 class Cluster(object):
@@ -45,12 +44,6 @@ class Cluster(object):
     def master(self):
         return self.instances[0]
 
-    @property
-    def driver(self):
-        if self._driver is None:
-            self._driver = Driver.new(self.settings)
-        return self._driver
-
     def get_driver(self):
         if self._driver is None:
             self._driver = Driver.new(self.settings)
@@ -68,6 +61,9 @@ class Cluster(object):
             self.create_cloud()
 
     def create_bare(self):
+        """
+        Create instances for the Bare provider
+        """
         self.instances = []
         for ip in self.settings['NODES']:
             new_instance = Instance.new(settings=self.settings, cluster=self)
@@ -75,6 +71,9 @@ class Cluster(object):
             self.instances.append(new_instance)
 
     def create_cloud(self):
+        """
+        Create instances for the cloud providers
+        """
         instances = []
         for i in range(self.settings['NUMBER_NODES']):
             new_instance = Instance.new(settings=self.settings, cluster=self)

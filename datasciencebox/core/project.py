@@ -23,9 +23,9 @@ class Project(object):
         dir_ = path
         while dir_ != '/':
             if os.path.exists(os.path.join(settingsfile, dir_)):
-                logger.debug('"{}" FOUND on "{}"'.format(settingsfile, dir_))
+                logger.debug('"%s" FOUND on "%s"', settingsfile, dir_)
                 break
-            logger.debug('"{}" not found on "{}" trying parent directory'.format(settingsfile, dir_))
+            logger.debug('"%s" not found on "%s" trying parent directory', settingsfile, dir_)
             dir_ = os.path.abspath(os.path.join(dir_, os.pardir))
 
         if not os.path.exists(os.path.join(dir_, 'dsbfile')):
@@ -39,7 +39,7 @@ class Project(object):
         settingsfile = os.path.basename(filepath)
 
         self = cls(path=dir_, settingsfile=settingsfile)
-        logger.debug('Starting project from: %s' % filepath)
+        logger.debug('Starting project from: %s', filepath)
         self.read_settings()
         self.read_instances()
         return self
@@ -68,7 +68,7 @@ class Project(object):
         Read the "dsbfile" file
         Populates `self.settings`
         """
-        logger.debug('Reading settings from: %s' % self.settings_path)
+        logger.debug('Reading settings from: %s', self.settings_path)
         self.settings = Settings.from_dsbfile(self.settings_path)
 
     def read_instances(self):
@@ -76,14 +76,14 @@ class Project(object):
         Read `.dsb/instances.yaml`
         Populates `self.cluster`
         """
-        logger.debug('Reading instances from: %s' % self.instances_path)
+        logger.debug('Reading instances from: %s', self.instances_path)
         if os.path.exists(self.instances_path):
             with open(self.instances_path, 'r') as f:
                 list_ = yaml.load(f.read())
                 self.cluster = Cluster.from_list(list_, settings=self.settings)
 
     def save_instances(self):
-        logger.debug('Saving instances file to: %s' % self.instances_path)
+        logger.debug('Saving instances file to: %s', self.instances_path)
         with open(self.instances_path, 'w') as f:
             yaml.safe_dump(self.cluster.to_list(), f, default_flow_style=False)
 
@@ -99,8 +99,8 @@ class Project(object):
         self.cluster.fetch_nodes()
         self.cluster.destroy()
 
-    def update(self, force=False):
-        self.salt_ssh()
+    def update(self):
+        self.setup_salt_ssh()
 
     # --------------------------------------------------------------------------
     # Salt
@@ -131,7 +131,7 @@ class Project(object):
     def salt_ssh_config_dir(self):
         return os.path.join(self.settings_dir, 'etc', 'salt')
 
-    def salt_ssh(self):
+    def setup_salt_ssh(self):
         """
         Setup `salt-ssh`
         """
@@ -141,7 +141,7 @@ class Project(object):
         self.copy_salt_and_pillar()
 
     def create_roster_file(self):
-        logger.debug('Creating roster file to: %s' % self.roster_path)
+        logger.debug('Creating roster file to: %s', self.roster_path)
         with open(self.roster_path, 'w') as f:
             dict_ = salt.generate_roster(self.cluster)
             yaml.safe_dump(dict_, f, default_flow_style=False)
@@ -150,7 +150,7 @@ class Project(object):
         """
         Creates the `salt-ssh` required directory structure
         """
-        logger.debug('Creating salt-ssh dirs into: %s' % self.settings_dir)
+        logger.debug('Creating salt-ssh dirs into: %s', self.settings_dir)
         utils.create_dir(os.path.join(self.settings_dir, 'salt'))
         utils.create_dir(os.path.join(self.settings_dir, 'pillar'))
         utils.create_dir(os.path.join(self.settings_dir, 'etc', 'salt'))
@@ -183,9 +183,3 @@ class Project(object):
         utils.replace_all(os.path.join(self.pillar_dir, 'salt.sls'), 'localhost', ip)
         utils.replace_all(os.path.join(self.pillar_dir, 'system.sls'), 'vagrant',
                           self.settings['USERNAME'])
-
-
-if __name__ == '__main__':
-    p = Project.from_dir('../../')
-    p.create_cluster()
-    p.save_instances()

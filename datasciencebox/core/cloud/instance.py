@@ -135,7 +135,7 @@ class Instance(object):
 
     keypair = property(get_keypair, set_keypair, None)
 
-    def create(self):
+    def create(self, suffix=None):
         raise NotImplementedError('Subclass of Instance must implement "create"')
 
     def destroy(self):
@@ -160,7 +160,7 @@ class BareInstance(Instance):
     def fetch_node(self):
         warnings.warn('Bare Metal instance cannot fetch a node', DSBWarning)
 
-    def create(self):
+    def create(self, suffix=None):
         warnings.warn('Bare Metal instance cannot be created', DSBWarning)
 
     def destroy(self):
@@ -176,11 +176,13 @@ class AWSInstance(Instance):
         return self.node.public_ips[0]
 
     def fetch_node(self):
-        logger.debug('Fetching aws Instance: %s' % self.uid)
+        logger.debug('Fetching aws Instance: %s', self.uid)
         return self.driver.list_nodes(ex_node_ids=[self.uid])[0]
 
     def create(self, suffix=None):
-        name = self.settings['ID']
+        suffix = '-%s' % suffix if suffix is not None else ''
+        name = '%s%s' % (self.settings['ID'], suffix)
+
         ami_id = self.settings['AWS_IMAGE']
         image = NodeImage(id=ami_id, name=None, driver=self.driver)
         root_size = self.settings['AWS_ROOT_SIZE']
@@ -208,7 +210,7 @@ class AWSInstance(Instance):
                                                 ex_keyname=ex_keyname,
                                                 ex_securitygroup=ex_securitygroup,
                                                 ex_blockdevicemappings=ebs_mapping)
-        except Exception, e:
+        except Exception as e:
             if 'EBS block device mappings not supported for instance-store AMIs' in str(e):
                 self.node = self.driver.create_node(name=name,
                                                     size=size,
@@ -233,7 +235,7 @@ class GCPInstance(Instance):
         return self.node.public_ips[0]
 
     def fetch_node(self):
-        logger.debug('Fetching aws Instance: %s' % self.uid)
+        logger.debug('Fetching aws Instance: %s', self.uid)
         all_nodes = self.driver.list_nodes()
         node = [node for node in all_nodes if node.id == self.uid]
         return node[0]

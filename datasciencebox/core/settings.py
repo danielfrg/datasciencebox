@@ -1,6 +1,3 @@
-import os
-import importlib
-
 from datasciencebox.core.logger import getLogger
 logger = getLogger()
 from datasciencebox.core.exceptions import DSBException
@@ -36,7 +33,7 @@ class Settings(dict):
 
     @classmethod
     def from_dsbfile(cls, filepath):
-        logger.debug('Creating settings from: %s' % filepath)
+        logger.debug('Creating settings from: %s', filepath)
         all_values = {}
         execfile(filepath, all_values)
 

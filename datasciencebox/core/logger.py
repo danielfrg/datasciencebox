@@ -29,12 +29,3 @@ def setup_logging(log_level=logging.DEBUG):
             break
     if add_handler:
         logger.addHandler(console_handler)
-
-
-if __name__ == "__main__":
-    setup_logging()
-    setup_logging()
-    logger = getLogger()
-
-    logger.debug("First log message.")
-    logger.debug("Second log message.")

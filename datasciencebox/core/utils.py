@@ -20,7 +20,7 @@ def retry(retries=10, wait=5, catch=None):
     def real_retry(function):
 
         def wrapper(*args, **kwargs):
-            for i in range(retries):
+            for _ in range(retries):
                 try:
                     ret = function(*args, **kwargs)
                     return ret
@@ -36,11 +36,11 @@ def retry(retries=10, wait=5, catch=None):
     return real_retry
 
 
-def replace_all(file, searchExp, replaceExp):
+def replace_all(filepath, searchExp, replaceExp):
     """
     Replace all the ocurrences (in a file) of a string with another value.
     """
-    for line in fileinput.input(file, inplace=1):
+    for line in fileinput.input(filepath, inplace=1):
         if searchExp in line:
             line = line.replace(searchExp, replaceExp)
         sys.stdout.write(line)
