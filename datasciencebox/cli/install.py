@@ -80,10 +80,10 @@ def install_pkg(ctx, pkg, ssh, target):
 def install_conda(ctx, pkg, ssh, target):
     project = ctx.obj['project']
     out = project.salt('conda.install',
-                 args=[pkg],
-                 kwargs={'user': project.settings['USERNAME']},
-                 target=target,
-                 ssh=ssh)
+                       args=[pkg],
+                       kwargs={'user': project.settings['USERNAME']},
+                       target=target,
+                       ssh=ssh)
     click.echo(out)
 
 

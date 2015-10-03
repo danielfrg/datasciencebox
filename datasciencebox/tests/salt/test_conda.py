@@ -5,6 +5,7 @@ from distutils.version import StrictVersion
 
 import utils
 
+
 def setup_module(module):
     result = utils.invoke('install', 'miniconda')
     assert result.exit_code == 0
@@ -136,7 +137,10 @@ def test_conda_install_update_remove():
     out = project.salt('conda.list', kwargs=kwargs)
     check_pkg(out, 'scikit-learn')
 
-    out = project.salt('conda.remove', args=['scikit-learn'], kwargs={'env': env}, target='minion-0')
+    out = project.salt('conda.remove',
+                       args=['scikit-learn'],
+                       kwargs={'env': env},
+                       target='minion-0')
     out = project.salt('conda.list', kwargs=kwargs)
     check_pkg(out, 'scikit-learn', minion='master')
     with pytest.raises(AssertionError):

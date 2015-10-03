@@ -9,9 +9,12 @@ settings = Settings()
 
 def test_cluster_from_to_list():
     input_dict = [{'uid': 0,
-                   'ip': '0.0.0.0', 'port': 11}, {'uid': 1,
-                                      'ip': '1.1.1.1', 'port': 22}, {'uid': 2,
-                                                         'ip': '2.2.2.2', 'port': 33}]
+                   'ip': '0.0.0.0',
+                   'port': 11}, {'uid': 1,
+                                 'ip': '1.1.1.1',
+                                 'port': 22}, {'uid': 2,
+                                               'ip': '2.2.2.2',
+                                               'port': 33}]
     cluster = Cluster.from_list(input_dict, settings)
 
     exported = cluster.to_list()

@@ -2,7 +2,6 @@ from distutils.core import setup
 from setuptools import find_packages
 
 import versioneer
-
 """
 To upload a new version:
 0. rm -rf *.egg-info

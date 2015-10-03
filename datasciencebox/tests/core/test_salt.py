@@ -9,11 +9,15 @@ from datasciencebox.core.project import Project
 from datasciencebox.core.cloud.cluster import Cluster
 from datasciencebox.core.cloud.instance import Instance
 
-
 cluster = Cluster()
 cluster.instances.append(Instance(ip='0.0.0.0', username='me', keypair='/home/ubuntu/.ssh/id_rsa'))
-cluster.instances.append(Instance(ip='1.1.1.1:2222', username='ubuntu', keypair='/home/ubuntu/.ssh/id_rsa2'))
-cluster.instances.append(Instance(ip='2.2.2.2', port='3333', username='centos', keypair='/home/ubuntu/.ssh/id_rsa3'))
+cluster.instances.append(Instance(ip='1.1.1.1:2222',
+                                  username='ubuntu',
+                                  keypair='/home/ubuntu/.ssh/id_rsa2'))
+cluster.instances.append(Instance(ip='2.2.2.2',
+                                  port='3333',
+                                  username='centos',
+                                  keypair='/home/ubuntu/.ssh/id_rsa3'))
 
 master_roles = ['master', 'master2', 'conda']
 minion_roles = ['minion2', 'conda']

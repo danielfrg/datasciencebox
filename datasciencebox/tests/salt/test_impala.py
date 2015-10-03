@@ -8,7 +8,6 @@ except ImportError:
 
 ibis = pytest.importorskip("ibis")
 
-
 import utils
 
 

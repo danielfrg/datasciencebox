@@ -31,7 +31,13 @@ def start():
 
 def default_options(func):
 
-    @click.option('--file', '-f', 'settingsfile', required=False, help='Path to the file to use as dsbfile', type=click.Path(exists=True, resolve_path=True))
+    @click.option('--file',
+                  '-f',
+                  'settingsfile',
+                  required=False,
+                  help='Path to the file to use as dsbfile',
+                  type=click.Path(exists=True,
+                                  resolve_path=True))
     @click.option('--log-level',
                   '-l',
                   required=False,
@@ -59,6 +65,7 @@ def default_options(func):
             ctx.obj['log_level'] = log_level
 
         return ctx.invoke(func, *args, **kwargs)
+
     return update_wrapper(new_func, func)
 
 

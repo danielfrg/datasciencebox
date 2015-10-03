@@ -41,7 +41,11 @@ def up(ctx, salt):
 
 
 @cli.command(short_help='Destroy instances')
-@click.option('--force', '-f', is_flag=True, default=False, help='Don\'t ask questions, assume yes.')
+@click.option('--force',
+              '-f',
+              is_flag=True,
+              default=False,
+              help='Don\'t ask questions, assume yes.')
 @default_options
 @click.pass_context
 def destroy(ctx, force):

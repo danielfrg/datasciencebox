@@ -21,7 +21,12 @@ def test_new_bare():
     assert instance.username == default_username
     assert instance.keypair == default_keypair
 
-    instance = Instance.new(settings=settings, uid='myid', ip='1.1.1.1', port=33, username='me', keypair='mykey')
+    instance = Instance.new(settings=settings,
+                            uid='myid',
+                            ip='1.1.1.1',
+                            port=33,
+                            username='me',
+                            keypair='mykey')
     assert instance.ip == '1.1.1.1'
     assert instance.port == 33
     assert instance.username == 'me'

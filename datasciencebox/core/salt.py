@@ -12,8 +12,8 @@ from fabric.api import settings, sudo, hide
 from datasciencebox.core.logger import getLogger
 logger = getLogger()
 
-MASTER_ROLES = ['miniconda', 'zookeeper.server', 'mesos.master', 'hdfs.namenode', 'ipython.notebook',
-                'spark', 'hive.metastore', 'impala.state-store']
+MASTER_ROLES = ['miniconda', 'zookeeper.server', 'mesos.master', 'hdfs.namenode',
+                'ipython.notebook', 'spark', 'hive.metastore', 'impala.state-store']
 MINION_ROLES = ['miniconda', 'mesos.slave', 'hdfs.datanode', 'impala.server']
 
 
