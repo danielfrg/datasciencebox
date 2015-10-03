@@ -100,7 +100,7 @@ Everything in the DSB is based on [Salt](https://github.com/saltstack/salt) and 
 
 The recommended (and default) way is using salt via ZMQ which requires the salt master
 and minion to be installed in the nodes. This is done by default with `dsb up` but
-can be omitted with the `--no-salt` flag. If you want to just use salt-ssh
+can be omitted with the `--no-salt` flag in case you want to just use salt-ssh
 or just create the cloud instances.
 
 If you want to use salt ssh only you need to add the `--ssh` flag to all the commands.
@@ -109,7 +109,7 @@ but might not works as expected for the distributed frameworks like zookeeper an
 
 ## General management
 
-### General commands
+### Remote commands
 
 ```bash
 $ dsb cmd <CMD>
@@ -129,7 +129,7 @@ $ dsb install pkg build-essential --ssh
 
 ### General salt module
 
-Note that the commands before (and basically any other command) is just an alias for a general salt command.
+Note that the commands above (and basically all of them) is just an alias for a general salt command.
 
 ```bash
 $ dsb salt '*' network.ipaddrs
@@ -140,14 +140,14 @@ $ dsb salt '*' network.ipaddrs --ssh
 
 ## Conda management
 
-Conda package management is done for the `dsb` user in all the nodes.
-
 First, you need to install miniconda in all the nodes:
 
 ```bash
 $ dsb install miniconda
 $ dsb install miniconda --shh
 ```
+
+**Note**: This will install anaconda under: `/home/{{ USERNAME }}/anaconda`
 
 Then you can install conda packages:
 
@@ -197,9 +197,9 @@ Spark is available using Mesos as scheduler
 $ dsb install spark
 ```
 
-To test the easier way it to intall the Jupyter notebook and use use spark there,
+To use Spark the easiest way is it to install the Jupyter notebook and use use spark there,
 note that if you already installed the notebook you have to run `dsb install notebook`
-again.
+again to include the spark env variables, see examples.
 
 ### Marathon
 
