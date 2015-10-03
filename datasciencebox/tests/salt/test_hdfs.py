@@ -1,7 +1,12 @@
 import pytest
 
-import requests
-from hdfs.client import Client
+requests = pytest.importorskip("requests")
+hdfs = pytest.importorskip("hdfs")
+
+try:
+    from hdfs.client import Client
+except ImportError:
+    pass
 
 import utils
 

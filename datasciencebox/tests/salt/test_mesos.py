@@ -1,6 +1,6 @@
 import pytest
 
-import requests
+requests = pytest.importorskip("requests")
 
 import utils
 

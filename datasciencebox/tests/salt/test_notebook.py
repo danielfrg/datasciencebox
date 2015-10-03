@@ -1,8 +1,9 @@
 import pytest
 
-import requests
+requests = pytest.importorskip("requests")
 
 import utils
+
 
 def setup_module(module):
     utils.invoke('install', 'notebook')
@@ -22,7 +23,7 @@ def test_notebook_ui():
     project = utils.get_test_project()
 
     project = utils.get_test_project()
-    nn_ip = project.cluster.master.ip
+    master_ip = project.cluster.master.ip
 
-    r = requests.get('http://%s:8888/' % nn_ip)
+    r = requests.get('http://%s:8888/' % master_ip)
     assert r.status_code == 200

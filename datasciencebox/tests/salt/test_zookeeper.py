@@ -1,8 +1,13 @@
 import pytest
 
-from kazoo.client import KazooClient
+kazoo = pytest.importorskip("kazoo")
+try:
+    from kazoo.client import KazooClient
+except ImportError:
+    pass
 
 import utils
+
 
 def setup_module(module):
     utils.invoke('install', 'zookeeper')
