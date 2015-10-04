@@ -41,7 +41,7 @@ class Cluster(object):
         return len(self.instances)
 
     @property
-    def master(self):
+    def head(self):
         return self.instances[0]
 
     def get_driver(self):

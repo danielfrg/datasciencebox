@@ -24,7 +24,7 @@ def test_salt_formulas():
     utils.check_all_true(out, none_is_ok=True)
 
     kwargs = {'test': 'true', '--out': 'json', '--out-indent': '-1'}
-    out = project.salt('state.sls', args=['cdh5.hive.metastore'], target='master', kwargs=kwargs)
+    out = project.salt('state.sls', args=['cdh5.hive.metastore'], target='head', kwargs=kwargs)
     utils.check_all_true(out, none_is_ok=True)
     #
     kwargs = {'test': 'true', '--out': 'json', '--out-indent': '-1'}
@@ -35,8 +35,8 @@ def test_salt_formulas():
 @utils.vagranttest
 def test_hdfs_dirs():
     project = utils.get_test_project()
-    master_ip = project.cluster.master.ip
-    hdfs = Client('http://%s:50070' % master_ip)
+    head_ip = project.cluster.head.ip
+    hdfs = Client('http://%s:50070' % head_ip)
 
     users_dirs = hdfs.list('/user')
     assert 'hive' in users_dirs
@@ -50,8 +50,8 @@ def test_hdfs_dirs():
 def test_ibis_conn():
     project = utils.get_test_project()
 
-    master_ip = project.cluster.master.ip
+    head_ip = project.cluster.head.ip
     compute_ip = project.cluster.instances[1].ip
 
-    hdfs = ibis.hdfs_connect(host=master_ip, port=50070)
+    hdfs = ibis.hdfs_connect(host=head_ip, port=50070)
     impala = ibis.impala.connect(compute_ip, hdfs_client=hdfs)

@@ -12,9 +12,9 @@ from fabric.api import settings, sudo, hide
 from datasciencebox.core.logger import getLogger
 logger = getLogger()
 
-MASTER_ROLES = ['miniconda', 'zookeeper.server', 'mesos.master', 'hdfs.namenode',
+HEAD_ROLES = ['miniconda', 'zookeeper.server', 'mesos.master', 'hdfs.namenode',
                 'ipython.notebook', 'spark', 'hive.metastore', 'impala.state-store']
-MINION_ROLES = ['miniconda', 'mesos.slave', 'hdfs.datanode', 'impala.server']
+COMPUTE_ROLES = ['miniconda', 'mesos.slave', 'hdfs.datanode', 'impala.server']
 
 
 def generate_salt_ssh_master_conf(project):
@@ -69,9 +69,9 @@ def roster_item(instance, roles=None, mine=True):
 
 def generate_roster(cluster, mine=True):
     ret = {}
-    ret['master'] = roster_item(cluster.instances[0], roles=MASTER_ROLES, mine=mine)
+    ret['head'] = roster_item(cluster.head, roles=HEAD_ROLES, mine=mine)
     for i, instance in enumerate(cluster.instances[1:]):
-        ret['minion-%i' % (i + 1)] = roster_item(instance, roles=MINION_ROLES, mine=mine)
+        ret['compute-%i' % (i + 1)] = roster_item(instance, roles=COMPUTE_ROLES, mine=mine)
     return ret
 
 
@@ -100,8 +100,8 @@ def salt_master(project, target, module, args=None, kwargs=None):
     """
     Execute a `salt` command in the head node
     """
-    ip = project.cluster.master.ip
-    port = project.cluster.master.port
+    ip = project.cluster.head.ip
+    port = project.cluster.head.port
     username = project.settings['USERNAME']
     host_string = username + '@' + ip + ':' + str(port)
     key_filename = project.settings['KEYPAIR']

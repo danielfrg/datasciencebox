@@ -38,8 +38,8 @@ class RsyncHandler(FileSystemEventHandler):
         dst = os.path.realpath(dst)
         if os.path.exists(src):
             username = self.project.settings['USERNAME']
-            ip = self.project.cluster.master.ip
-            port = self.project.cluster.master.port
+            ip = self.project.cluster.head.ip
+            port = self.project.cluster.head.port
             host_string = '{0}@{1}'.format(username, ip)
             key_filename = self.project.settings['KEYPAIR']
             with hide('running', 'stdout', 'stderr'):

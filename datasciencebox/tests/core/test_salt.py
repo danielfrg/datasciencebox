@@ -19,10 +19,10 @@ cluster.instances.append(Instance(ip='2.2.2.2',
                                   username='centos',
                                   keypair='/home/ubuntu/.ssh/id_rsa3'))
 
-master_roles = ['master', 'master2', 'conda']
-minion_roles = ['minion2', 'conda']
-salt.MASTER_ROLES = master_roles
-salt.MINION_ROLES = minion_roles
+head_roles = ['head', 'head2', 'conda']
+compute_roles = ['minion2', 'conda']
+salt.HEAD_ROLES = head_roles
+salt.COMPUTE_ROLES = compute_roles
 
 
 def test_generate_salt_ssh_master_conf(tmpdir):
@@ -60,7 +60,7 @@ def test_generate_salt_cmd():
 
 
 def test_roster_item():
-    item = salt.roster_item(cluster.master, mine=False)
+    item = salt.roster_item(cluster.head, mine=False)
     assert item == {
         'host': '0.0.0.0',
         'port': 22,
@@ -71,7 +71,7 @@ def test_roster_item():
 
 
 def test_roster_item_with_roles():
-    item = salt.roster_item(cluster.master, roles=['cdh5', 'conda2'], mine=False)
+    item = salt.roster_item(cluster.head, roles=['cdh5', 'conda2'], mine=False)
     assert item == {
         'host': '0.0.0.0',
         'port': 22,
@@ -85,29 +85,29 @@ def test_roster_item_with_roles():
 def test_generate_roster():
     roster = salt.generate_roster(cluster, mine=False)
     ans = {
-        'master': {
+        'head': {
             'host': '0.0.0.0',
             'port': 22,
             'sudo': True,
             'user': 'me',
             'priv': '/home/ubuntu/.ssh/id_rsa',
-            'grains': {'roles': master_roles}
+            'grains': {'roles': head_roles}
         },
-        'minion-1': {
+        'compute-1': {
             'host': '1.1.1.1',
             'port': 2222,
             'sudo': True,
             'user': 'ubuntu',
             'priv': '/home/ubuntu/.ssh/id_rsa2',
-            'grains': {'roles': minion_roles}
+            'grains': {'roles': compute_roles}
         },
-        'minion-2': {
+        'compute-2': {
             'host': '2.2.2.2',
             'port': 3333,
             'sudo': True,
             'user': 'centos',
             'priv': '/home/ubuntu/.ssh/id_rsa3',
-            'grains': {'roles': minion_roles}
+            'grains': {'roles': compute_roles}
         },
     }
     assert roster == ans

@@ -35,7 +35,7 @@ def up(ctx, salt):
         sys.exit(1)
 
     if salt:
-        click.echo('Installing salt (master)')
+        click.echo('Installing salt (master mode)')
         from datasciencebox.cli.install import install_salt
         ctx.invoke(install_salt)
 
@@ -83,7 +83,7 @@ def cmd(ctx, command, ssh):
     click.echo(out)
 
 
-@cli.command(short_help='SSH to the master node')
+@cli.command(short_help='SSH to the head node')
 @click.argument('node', required=False, default=0)
 @default_options
 @click.pass_context
@@ -101,7 +101,7 @@ def ssh(ctx, node):
     subprocess.call(cmd)
 
 
-@cli.command(short_help='Sync salt states and pillar to master')
+@cli.command(short_help='Sync salt states and pillar to the head node')
 @click.option('--skip', '-s', required=False, is_flag=True, help='Skip initial sync')
 @click.option('--continuous',
               '-c',

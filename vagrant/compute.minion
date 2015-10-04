@@ -1,4 +1,4 @@
-id: minion-0
+id: compute-0
 master: head
 
 mine_functions:

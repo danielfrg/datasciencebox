@@ -176,7 +176,7 @@ $ dsb open hdfs
 
 ### Impala
 
-Using Postgres as Hive Metastore. Impala shell is available in all the compute nodes (no master).
+Using Postgres as Hive Metastore. Impala shell is available in all the compute nodes (no head).
 
 ```bash
 $ dsb install impala

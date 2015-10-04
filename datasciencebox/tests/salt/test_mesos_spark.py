@@ -18,7 +18,7 @@ def test_salt_formulas():
     project = utils.get_test_project()
 
     kwargs = {'test': 'true', '--out': 'json', '--out-indent': '-1'}
-    out = project.salt('state.sls', args=['cdh5.zookeeper.cluster'], target='master', kwargs=kwargs)
+    out = project.salt('state.sls', args=['cdh5.zookeeper.cluster'], target='head', kwargs=kwargs)
     utils.check_all_true(out, none_is_ok=True)
 
     kwargs = {'test': 'true', '--out': 'json', '--out-indent': '-1'}
@@ -37,8 +37,8 @@ def test_salt_formulas():
 @utils.vagranttest
 def test_hdfs_files():
     project = utils.get_test_project()
-    master_ip = project.cluster.master.ip
-    hdfs = Client('http://%s:50070' % master_ip)
+    head_ip = project.cluster.head.ip
+    hdfs = Client('http://%s:50070' % head_ip)
 
     root_dirs = hdfs.list('/')
     assert 'spark' in root_dirs

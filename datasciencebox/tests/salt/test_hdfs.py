@@ -27,7 +27,7 @@ def test_salt_formulas():
 @utils.vagranttest
 def test_hdfs_dirs():
     project = utils.get_test_project()
-    nn_ip = project.cluster.master.ip
+    nn_ip = project.cluster.head.ip
 
     hdfs = Client('http://%s:50070' % nn_ip)
     assert hdfs
@@ -46,7 +46,7 @@ def test_namenode_ui():
     Note: Namenode UI uses a lot of javascript requests alone is not good enough
     '''
     project = utils.get_test_project()
-    nn_ip = project.cluster.master.ip
+    nn_ip = project.cluster.head.ip
 
     r = requests.get('http://%s:50070/dfshealth.html#tab-overview' % nn_ip)
     assert r.status_code == 200

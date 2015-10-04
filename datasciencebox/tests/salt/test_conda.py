@@ -55,7 +55,7 @@ def test_conda_create_w_pkgs():
     kwargs = {'env': env, '--out': 'json', '--out-indent': '-1'}
     out = project.salt('conda.list', kwargs=kwargs)
     check_pkg(out, 'numpy')
-    check_pkg(out, 'numpy', minion='master')
+    check_pkg(out, 'numpy', minion='head')
     check_pkg(out, 'numpy', minion='compute')
     check_pkg(out, 'scipy')
     check_pkg(out, 'pandas')
@@ -86,10 +86,10 @@ def test_conda_install():
     with pytest.raises(AssertionError):
         check_pkg(out, 'pandas')
 
-    out = project.salt('conda.install', args=['scipy'], kwargs={'env': env}, target='master')
+    out = project.salt('conda.install', args=['scipy'], kwargs={'env': env}, target='head')
     out = project.salt('conda.list', kwargs=kwargs)
     check_pkg(out, 'numpy')
-    check_pkg(out, 'scipy', minion='master')
+    check_pkg(out, 'scipy', minion='head')
     with pytest.raises(AssertionError):
         check_pkg(out, 'scipy', minion='minion-0')
     with pytest.raises(AssertionError):
@@ -98,7 +98,7 @@ def test_conda_install():
     out = project.salt('conda.install', args=['scipy'], kwargs={'env': env})
     out = project.salt('conda.list', kwargs=kwargs)
     check_pkg(out, 'numpy')
-    check_pkg(out, 'scipy', minion='master')
+    check_pkg(out, 'scipy', minion='head')
     check_pkg(out, 'scipy', minion='minion-0')
     with pytest.raises(AssertionError):
         check_pkg(out, 'pandas')
@@ -142,14 +142,14 @@ def test_conda_install_update_remove():
                        kwargs={'env': env},
                        target='minion-0')
     out = project.salt('conda.list', kwargs=kwargs)
-    check_pkg(out, 'scikit-learn', minion='master')
+    check_pkg(out, 'scikit-learn', minion='head')
     with pytest.raises(AssertionError):
         check_pkg(out, 'scikit-learn', minion='minion-0')
 
     out = project.salt('conda.remove', args=['scikit-learn'], kwargs={'env': env})
     out = project.salt('conda.list', kwargs=kwargs)
     with pytest.raises(AssertionError):
-        check_pkg(out, 'scikit-learn', minion='master')
+        check_pkg(out, 'scikit-learn', minion='head')
     with pytest.raises(AssertionError):
         check_pkg(out, 'scikit-learn', minion='minion-0')
 
