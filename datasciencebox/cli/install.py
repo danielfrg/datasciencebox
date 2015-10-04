@@ -3,7 +3,6 @@ from __future__ import absolute_import, unicode_literals
 import click
 
 from datasciencebox.cli.main import cli, default_options
-from datasciencebox.core.salt import HEAD_ROLES, COMPUTE_ROLES
 
 
 @cli.group(short_help='Install packages, applications and more')
@@ -32,26 +31,9 @@ def install_miniconda(ctx, ssh, target):
 def install_salt(ctx):
     project = ctx.obj['project']
 
-    pillar_template = """pillar='{"salt": {"master": {"ip": "%s"}, "minion": {"roles": %s } } }' """
-
-    click.echo('Installing salt-master in the head')
-    out = project.salt('state.sls', args=['salt.master'], target='head', ssh=True)
+    click.echo('Installing salt (master mode)')
+    out = project.salt('state.sls', args=['salt.cluster'], target='*', ssh=True)
     click.echo(out)
-
-    click.echo('Installing salt-minion in the head')
-    roles_txt = ['"%s"' % role for role in HEAD_ROLES]
-    roles_txt = '[%s]' % ', '.join(roles_txt)
-    pillars = pillar_template % (project.cluster.head.ip, roles_txt)
-    out = project.salt('state.sls', args=['salt.minion', pillars], target='head', ssh=True)
-    click.echo(out)
-
-    if len(project.cluster) > 1:
-        click.echo('Installing salt-minion in the compute nodes')
-        roles_txt = ['"%s"' % role for role in COMPUTE_ROLES]
-        roles_txt = '[%s]' % ', '.join(roles_txt)
-        pillars = pillar_template % (project.cluster.head.ip, roles_txt)
-        out = project.salt('state.sls', args=['salt.minion', pillars], target='compute-*', ssh=True)
-        click.echo(out)
 
     click.echo('Syncing formulas')
     from datasciencebox.cli.base import sync

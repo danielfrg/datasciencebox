@@ -1,7 +1,20 @@
 salt:
   master:
-    ip: localhost
+    ip: 'head'
 
   minion:
-    roles:
-      - miniconda
+    head:
+      roles:
+        - salt.master
+        - salt.minion
+        - zookeeper.server
+        - mesos.master
+        - hdfs.namenode
+        - hive.metastore
+        - impala.state-store
+    compute:
+      roles:
+        - salt.minion
+        - mesos.slave
+        - hdfs.datanode
+        - impala.server

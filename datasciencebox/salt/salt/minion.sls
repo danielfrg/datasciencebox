@@ -1,14 +1,17 @@
 {% from "salt/package-map.jinja" import pkgs with context %}
+{% from "salt/settings.sls" import my_roles with context %}
 
 include:
   - salt.pkgrepo
 
-{% if pillar['salt']['minion']['roles'] is defined %}
+{% if my_roles is defined %}
 /etc/salt/grains:
   file.managed:
-    - makedirs: true
-    - template: jinja
     - source: salt://salt/templates/grains
+    - template: jinja
+    - makedirs: true
+    - context:
+      roles: {{ my_roles }}
 {% endif %}
 
 salt-minion:

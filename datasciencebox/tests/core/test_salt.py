@@ -19,6 +19,9 @@ cluster.instances.append(Instance(ip='2.2.2.2',
                                   username='centos',
                                   keypair='/home/ubuntu/.ssh/id_rsa3'))
 
+project = Project()
+project.cluster = cluster
+
 head_roles = ['head', 'head2', 'conda']
 compute_roles = ['minion2', 'conda']
 salt.HEAD_ROLES = head_roles
@@ -83,7 +86,7 @@ def test_roster_item_with_roles():
 
 
 def test_generate_roster():
-    roster = salt.generate_roster(cluster, mine=False)
+    roster = salt.generate_roster(project, mine=False)
     ans = {
         'head': {
             'host': '0.0.0.0',

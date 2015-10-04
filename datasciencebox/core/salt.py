@@ -7,14 +7,40 @@ from __future__ import absolute_import, unicode_literals
 import os
 import subprocess
 
+import yaml
 from fabric.api import settings, sudo, hide
 
 from datasciencebox.core.logger import getLogger
 logger = getLogger()
 
-HEAD_ROLES = ['miniconda', 'zookeeper.server', 'mesos.master', 'hdfs.namenode',
-                'ipython.notebook', 'spark', 'hive.metastore', 'impala.state-store']
-COMPUTE_ROLES = ['miniconda', 'mesos.slave', 'hdfs.datanode', 'impala.server']
+
+def get_pillar(project, filename, pillar=None):
+    filepath = os.path.join(project.pillar_dir, filename)
+    with open(filepath, 'r') as f:
+        ret = yaml.load(f)
+        if pillar:
+            iters = pillar.split(':')
+            for name in iters:
+                ret = ret[name]
+    return ret
+
+
+HEAD_ROLES = None
+COMPUTE_ROLES = None
+
+
+def head_roles(project):
+    global HEAD_ROLES
+    if not HEAD_ROLES:
+        HEAD_ROLES = get_pillar(project, 'salt.sls', 'salt:minion:head:roles')
+    return HEAD_ROLES
+
+
+def compute_roles(project):
+    global COMPUTE_ROLES
+    if not COMPUTE_ROLES:
+        COMPUTE_ROLES = get_pillar(project, 'salt.sls', 'salt:minion:compute:roles')
+    return COMPUTE_ROLES
 
 
 def generate_salt_ssh_master_conf(project):
@@ -67,11 +93,11 @@ def roster_item(instance, roles=None, mine=True):
     return ret
 
 
-def generate_roster(cluster, mine=True):
+def generate_roster(project, mine=True):
     ret = {}
-    ret['head'] = roster_item(cluster.head, roles=HEAD_ROLES, mine=mine)
-    for i, instance in enumerate(cluster.instances[1:]):
-        ret['compute-%i' % (i + 1)] = roster_item(instance, roles=COMPUTE_ROLES, mine=mine)
+    ret['head'] = roster_item(project.cluster.head, roles=head_roles(project), mine=mine)
+    for i, instance in enumerate(project.cluster.instances[1:]):
+        ret['compute-%i' % (i + 1)] = roster_item(instance, roles=compute_roles(project), mine=mine)
     return ret
 
 

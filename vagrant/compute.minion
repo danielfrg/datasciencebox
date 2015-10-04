@@ -9,6 +9,7 @@ mine_interval: 2
 
 grains:
   roles:
+    - salt.minion
     - mesos.slave
     - hdfs.datanode
     - impala.server

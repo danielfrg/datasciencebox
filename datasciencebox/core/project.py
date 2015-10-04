@@ -135,15 +135,15 @@ class Project(object):
         """
         Setup `salt-ssh`
         """
+        self.copy_salt_and_pillar()
         self.create_roster_file()
         self.salt_ssh_create_dirs()
         self.salt_ssh_create_master_file()
-        self.copy_salt_and_pillar()
 
     def create_roster_file(self):
         logger.debug('Creating roster file to: %s', self.roster_path)
         with open(self.roster_path, 'w') as f:
-            dict_ = salt.generate_roster(self.cluster)
+            dict_ = salt.generate_roster(self)
             yaml.safe_dump(dict_, f, default_flow_style=False)
 
     def salt_ssh_create_dirs(self):
@@ -180,6 +180,6 @@ class Project(object):
         shutil.copytree(pillar_roots_src, self.pillar_dir)
 
         ip = self.cluster.head.ip
-        utils.replace_all(os.path.join(self.pillar_dir, 'salt.sls'), 'localhost', ip)
-        utils.replace_all(os.path.join(self.pillar_dir, 'system.sls'), 'vagrant',
+        utils.replace_all(os.path.join(self.pillar_dir, 'salt.sls'), "'head'", ip)
+        utils.replace_all(os.path.join(self.pillar_dir, 'system.sls'), "'vagrant'",
                           self.settings['USERNAME'])

@@ -35,7 +35,6 @@ def up(ctx, salt):
         sys.exit(1)
 
     if salt:
-        click.echo('Installing salt (master mode)')
         from datasciencebox.cli.install import install_salt
         ctx.invoke(install_salt)
 

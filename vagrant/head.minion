@@ -9,6 +9,8 @@ mine_interval: 2
 
 grains:
   roles:
+    - salt.master
+    - salt.minion
     - zookeeper.server
     - mesos.master
     - hdfs.namenode

@@ -1,4 +1,4 @@
 roles:
-{% for role in pillar['salt']['minion']['roles'] %}
+{%- for role in roles %}
   - {{ role }}
-{% endfor %}
+{%- endfor %}
