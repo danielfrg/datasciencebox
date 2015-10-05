@@ -91,7 +91,7 @@ def test_conda_install():
     check_pkg(out, 'numpy')
     check_pkg(out, 'scipy', minion='head')
     with pytest.raises(AssertionError):
-        check_pkg(out, 'scipy', minion='minion-0')
+        check_pkg(out, 'scipy', minion='compute-0')
     with pytest.raises(AssertionError):
         check_pkg(out, 'pandas')
 
@@ -99,7 +99,7 @@ def test_conda_install():
     out = project.salt('conda.list', kwargs=kwargs)
     check_pkg(out, 'numpy')
     check_pkg(out, 'scipy', minion='head')
-    check_pkg(out, 'scipy', minion='minion-0')
+    check_pkg(out, 'scipy', minion='compute-0')
     with pytest.raises(AssertionError):
         check_pkg(out, 'pandas')
 
@@ -140,18 +140,18 @@ def test_conda_install_update_remove():
     out = project.salt('conda.remove',
                        args=['scikit-learn'],
                        kwargs={'env': env},
-                       target='minion-0')
+                       target='compute-0')
     out = project.salt('conda.list', kwargs=kwargs)
     check_pkg(out, 'scikit-learn', minion='head')
     with pytest.raises(AssertionError):
-        check_pkg(out, 'scikit-learn', minion='minion-0')
+        check_pkg(out, 'scikit-learn', minion='compute-0')
 
     out = project.salt('conda.remove', args=['scikit-learn'], kwargs={'env': env})
     out = project.salt('conda.list', kwargs=kwargs)
     with pytest.raises(AssertionError):
         check_pkg(out, 'scikit-learn', minion='head')
     with pytest.raises(AssertionError):
-        check_pkg(out, 'scikit-learn', minion='minion-0')
+        check_pkg(out, 'scikit-learn', minion='compute-0')
 
 
 def check_pkg(conda_list, package, minion=None, version=None, version_greater_than=None):
