@@ -24,13 +24,14 @@ def test_salt_formulas():
 def test_conda_create():
     env = 'test_conda_create'
     project = utils.get_test_project()
-    out = project.salt('cmd.run', args=['"rm -rf /home/vagrant/anaconda/envs/%s"' % env])
+    home_dir = '/home/%s' % project.settings['USERNAME']
+    out = project.salt('cmd.run', args=['"rm -rf {}/anaconda/envs/{}"'.format(home_dir, env)])
 
     out = project.salt('conda.create', args=[env])
 
     # Test env dir
     kwargs = {'test': 'true', '--out': 'json', '--out-indent': '-1'}
-    test = '"test -e /home/vagrant/anaconda/envs/%s"' % env
+    test = '"test -e {}/anaconda/envs/{}"'.format(home_dir, env)
     out = project.salt('cmd.run_all', args=[test], kwargs=kwargs)
     utils.check_all_cmd_retcode0(out)
 
@@ -41,14 +42,15 @@ def test_conda_create_w_pkgs():
     from collections import Counter
     env = 'test_conda_create_w_pkgs'
     project = utils.get_test_project()
-    out = project.salt('cmd.run', args=['"rm -rf /home/vagrant/anaconda/envs/%s"' % env])
+    home_dir = '/home/%s' % project.settings['USERNAME']
+    out = project.salt('cmd.run', args=['"rm -rf {}/anaconda/envs/{}"'.format(home_dir, env)])
 
     kwargs = {'packages': 'numpy,scipy,pandas'}
     out = project.salt('conda.create', args=[env], kwargs=kwargs)
 
     # Test env dir
     kwargs = {'test': 'true', '--out': 'json', '--out-indent': '-1'}
-    test = '"test -e /home/vagrant/anaconda/envs/%s"' % env
+    test = '"test -e {}/anaconda/envs/{}"'.format(home_dir, env)
     out = project.salt('cmd.run_all', args=[test], kwargs=kwargs)
     utils.check_all_cmd_retcode0(out)
 
@@ -65,7 +67,8 @@ def test_conda_create_w_pkgs():
 def test_conda_install():
     env = 'test_conda_install'
     project = utils.get_test_project()
-    out = project.salt('cmd.run', args=['"rm -rf /home/vagrant/anaconda/envs/%s"' % env])
+    home_dir = '/home/%s' % project.settings['USERNAME']
+    out = project.salt('cmd.run', args=['"rm -rf {}/anaconda/envs/{}"'.format(home_dir, env)])
 
     out = project.salt('conda.create', args=[env])
 
@@ -91,7 +94,7 @@ def test_conda_install():
     check_pkg(out, 'numpy')
     check_pkg(out, 'scipy', minion='head')
     with pytest.raises(AssertionError):
-        check_pkg(out, 'scipy', minion='compute-0')
+        check_pkg(out, 'scipy', minion='compute-1')
     with pytest.raises(AssertionError):
         check_pkg(out, 'pandas')
 
@@ -99,7 +102,7 @@ def test_conda_install():
     out = project.salt('conda.list', kwargs=kwargs)
     check_pkg(out, 'numpy')
     check_pkg(out, 'scipy', minion='head')
-    check_pkg(out, 'scipy', minion='compute-0')
+    check_pkg(out, 'scipy', minion='compute-1')
     with pytest.raises(AssertionError):
         check_pkg(out, 'pandas')
 
@@ -114,7 +117,8 @@ def test_conda_install():
 def test_conda_install_update_remove():
     env = 'test_conda_install_update_remove'
     project = utils.get_test_project()
-    out = project.salt('cmd.run', args=['"rm -rf /home/vagrant/anaconda/envs/%s"' % env])
+    home_dir = '/home/%s' % project.settings['USERNAME']
+    out = project.salt('cmd.run', args=['"rm -rf {}/anaconda/envs/{}"'.format(home_dir, env)])
 
     out = project.salt('conda.create', args=[env])
 
@@ -140,18 +144,18 @@ def test_conda_install_update_remove():
     out = project.salt('conda.remove',
                        args=['scikit-learn'],
                        kwargs={'env': env},
-                       target='compute-0')
+                       target='compute-1')
     out = project.salt('conda.list', kwargs=kwargs)
     check_pkg(out, 'scikit-learn', minion='head')
     with pytest.raises(AssertionError):
-        check_pkg(out, 'scikit-learn', minion='compute-0')
+        check_pkg(out, 'scikit-learn', minion='compute-1')
 
     out = project.salt('conda.remove', args=['scikit-learn'], kwargs={'env': env})
     out = project.salt('conda.list', kwargs=kwargs)
     with pytest.raises(AssertionError):
         check_pkg(out, 'scikit-learn', minion='head')
     with pytest.raises(AssertionError):
-        check_pkg(out, 'scikit-learn', minion='compute-0')
+        check_pkg(out, 'scikit-learn', minion='compute-1')
 
 
 def check_pkg(conda_list, package, minion=None, version=None, version_greater_than=None):

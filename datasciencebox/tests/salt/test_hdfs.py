@@ -37,7 +37,7 @@ def test_hdfs_dirs():
     assert 'user' in root_dirs
 
     users_dirs = hdfs.list('/user')
-    assert 'vagrant' in users_dirs
+    assert project.settings['USERNAME'] in users_dirs
 
 
 @utils.remotetest
