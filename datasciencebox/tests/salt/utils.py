@@ -9,17 +9,17 @@ from click.testing import CliRunner
 from ...cli.main import cli
 from ...core.project import Project
 
-vagranttest = pytest.mark.skipif('VAGRANT_DSBFILE' not in os.environ,
-                                 reason="Environment variable 'VAGRANT_DSBFILE' is required")
+vagranttest = pytest.mark.skipif('TEST_DSBFILE' not in os.environ,
+                                 reason="Environment variable 'TEST_DSBFILE' is required")
 
 
 def get_test_project():
-    dsbfile = os.environ['VAGRANT_DSBFILE']
+    dsbfile = os.environ['TEST_DSBFILE']
     return Project.from_file(dsbfile)
 
 
 def invoke(*args):
-    dsbfile = os.environ['VAGRANT_DSBFILE']
+    dsbfile = os.environ['TEST_DSBFILE']
     args = list(args)
     args.extend(['--file', dsbfile])
     runner = CliRunner()
