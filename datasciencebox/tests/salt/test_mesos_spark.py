@@ -13,7 +13,7 @@ def setup_module(module):
     utils.invoke('install', 'spark')
 
 
-@utils.vagranttest
+@utils.remotetest
 def test_salt_formulas():
     project = utils.get_test_project()
 
@@ -34,7 +34,7 @@ def test_salt_formulas():
     utils.check_all_true(out, none_is_ok=True)
 
 
-@utils.vagranttest
+@utils.remotetest
 def test_hdfs_files():
     project = utils.get_test_project()
     head_ip = project.cluster.head.ip

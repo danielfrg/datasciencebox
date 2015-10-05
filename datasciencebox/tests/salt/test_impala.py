@@ -15,7 +15,7 @@ def setup_module(module):
     utils.invoke('install', 'impala')
 
 
-@utils.vagranttest
+@utils.remotetest
 def test_salt_formulas():
     project = utils.get_test_project()
 
@@ -32,7 +32,7 @@ def test_salt_formulas():
     utils.check_all_true(out, none_is_ok=True)
 
 
-@utils.vagranttest
+@utils.remotetest
 def test_hdfs_dirs():
     project = utils.get_test_project()
     head_ip = project.cluster.head.ip
@@ -46,7 +46,7 @@ def test_hdfs_dirs():
     assert 'warehouse' in users_dirs
 
 
-@utils.vagranttest
+@utils.remotetest
 def test_ibis_conn():
     project = utils.get_test_project()
 

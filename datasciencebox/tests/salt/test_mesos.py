@@ -9,7 +9,7 @@ def setup_module(module):
     utils.invoke('install', 'mesos')
 
 
-@utils.vagranttest
+@utils.remotetest
 def test_salt_formulas():
     project = utils.get_test_project()
 
@@ -22,7 +22,7 @@ def test_salt_formulas():
     utils.check_all_true(out, none_is_ok=True)
 
 
-@utils.vagranttest
+@utils.remotetest
 def test_mesos_ui():
     '''
     Note 1: Mesos UI uses a lot of javascript requests alone is not good enough

@@ -11,7 +11,7 @@ def setup_module(module):
     assert result.exit_code == 0
 
 
-@utils.vagranttest
+@utils.remotetest
 def test_salt_formulas():
     project = utils.get_test_project()
 
@@ -20,7 +20,7 @@ def test_salt_formulas():
     utils.check_all_true(out)
 
 
-@utils.vagranttest
+@utils.remotetest
 def test_conda_create():
     env = 'test_conda_create'
     project = utils.get_test_project()
@@ -35,7 +35,7 @@ def test_conda_create():
     utils.check_all_cmd_retcode0(out)
 
 
-@utils.vagranttest
+@utils.remotetest
 def test_conda_create_w_pkgs():
     import re
     from collections import Counter
@@ -61,7 +61,7 @@ def test_conda_create_w_pkgs():
     check_pkg(out, 'pandas')
 
 
-@utils.vagranttest
+@utils.remotetest
 def test_conda_install():
     env = 'test_conda_install'
     project = utils.get_test_project()
@@ -110,7 +110,7 @@ def test_conda_install():
     check_pkg(out, 'pandas')
 
 
-@utils.vagranttest
+@utils.remotetest
 def test_conda_install_update_remove():
     env = 'test_conda_install_update_remove'
     project = utils.get_test_project()

@@ -13,7 +13,7 @@ def setup_module(module):
     utils.invoke('install', 'zookeeper')
 
 
-@utils.vagranttest
+@utils.remotetest
 def test_salt_formulas():
     project = utils.get_test_project()
 
@@ -22,7 +22,7 @@ def test_salt_formulas():
     utils.check_all_true(out, none_is_ok=True)
 
 
-@utils.vagranttest
+@utils.remotetest
 def test_zk_conn():
     project = utils.get_test_project()
 

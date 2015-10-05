@@ -9,7 +9,7 @@ from click.testing import CliRunner
 from ...cli.main import cli
 from ...core.project import Project
 
-vagranttest = pytest.mark.skipif('TEST_DSBFILE' not in os.environ,
+remotetest = pytest.mark.skipif('TEST_DSBFILE' not in os.environ,
                                  reason="Environment variable 'TEST_DSBFILE' is required")
 
 

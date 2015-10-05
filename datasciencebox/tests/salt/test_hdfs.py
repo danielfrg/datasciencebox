@@ -15,7 +15,7 @@ def setup_module(module):
     utils.invoke('install', 'hdfs')
 
 
-@utils.vagranttest
+@utils.remotetest
 def test_salt_formulas():
     project = utils.get_test_project()
 
@@ -24,7 +24,7 @@ def test_salt_formulas():
     utils.check_all_true(out, none_is_ok=True)
 
 
-@utils.vagranttest
+@utils.remotetest
 def test_hdfs_dirs():
     project = utils.get_test_project()
     nn_ip = project.cluster.head.ip
@@ -40,7 +40,7 @@ def test_hdfs_dirs():
     assert 'vagrant' in users_dirs
 
 
-@utils.vagranttest
+@utils.remotetest
 def test_namenode_ui():
     '''
     Note: Namenode UI uses a lot of javascript requests alone is not good enough
