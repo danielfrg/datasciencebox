@@ -1,0 +1,9 @@
+{%- from 'cdh5/kudu/settings.sls' import master_ips with context %}
+
+# Do not modify these two lines. If you wish to change these variables,
+# modify them in /etc/default/kudu-master.
+--fromenv=rpc_bind_addresses
+--fromenv=log_dir
+
+--fs_wal_dir=/var/lib/kudu/master
+--fs_data_dirs=/var/lib/kudu/master

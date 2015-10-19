@@ -16,3 +16,4 @@ grains:
     - hdfs.namenode
     - hive.metastore
     - impala.state-store
+    - kudu.master

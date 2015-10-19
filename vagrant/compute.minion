@@ -13,3 +13,4 @@ grains:
     - mesos.slave
     - hdfs.datanode
     - impala.server
+    - kudu.tserver
