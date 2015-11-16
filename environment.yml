@@ -2,19 +2,22 @@ name: dsb-dev
 dependencies:
   - python=2.7
   - click
-  - ipython
-  - fabric
-  - requests
   - pyyaml
+  # Utils
+  - ipython
+  - jupyter
   - pandas
+  # Tests
   - pylint
   - pytest
   - pip:
     - apache-libcloud
     - salt-ssh
     - watchdog
+    # Utils
     - yapf
     - versioneer
+    # Tests
     - pytest-cov
     - kazoo
     - hdfs
