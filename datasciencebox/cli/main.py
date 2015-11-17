@@ -41,8 +41,8 @@ def default_options(func):
     @click.option('--log-level',
                   '-l',
                   required=False,
-                  default='error',
-                  type=click.Choice(['debug', 'error']),
+                  default='warning',
+                  type=click.Choice(['debug', 'warning', 'error']),
                   show_default=True,
                   help='Logging level')
     @click.pass_context
@@ -59,6 +59,8 @@ def default_options(func):
                 log_level = logging.INFO
             elif log_level == 'debug':
                 log_level = logging.DEBUG
+            elif log_level == 'warning':
+                log_level = logging.WARNING
             elif log_level == 'error':
                 log_level = logging.ERROR
             setup_logging(log_level)
