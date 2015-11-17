@@ -37,7 +37,7 @@ class Instance(object):
         """
         Create a new Cloud instance based on the Settings
         """
-        logger.debug('Creating new "%s" Instance' % settings['CLOUD'])
+        logger.debug('Initializing new "%s" Instance object' % settings['CLOUD'])
         cloud = settings['CLOUD']
         if cloud == 'bare':
             self = BareInstance(settings=settings, *args, **kwargs)
@@ -143,6 +143,7 @@ class Instance(object):
 
     @retry(catch=(BadHostKeyException, AuthenticationException, SSHException, socket.error))
     def check_ssh(self):
+        logger.debug('Checking ssh connection of %s', self.ip)
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         ssh.connect(self.ip, port=self.port, username=self.username, key_filename=self.keypair)
