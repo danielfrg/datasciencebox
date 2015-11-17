@@ -7,6 +7,8 @@ import logging.handlers
 # Hide messages if we log before setting up handler
 logging.root.manager.emittedNoHandlerWarning = True
 
+logging.getLogger("paramiko").setLevel(logging.WARNING)
+
 
 def getLogger():
     return logging.getLogger("datasciencebox")
