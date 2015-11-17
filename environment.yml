@@ -3,6 +3,7 @@ dependencies:
   - python=2.7
   - click
   - pyyaml
+  - paramiko
   # Utils
   - ipython
   - jupyter
