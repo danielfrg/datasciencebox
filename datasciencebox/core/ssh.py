@@ -108,12 +108,13 @@ class SSHClient(object):
             self.mkdir(directory)
 
         try:
+            logger.debug('Uploading file %s to %s', local, remote)
             self.sftp.put(local, remote)
         except Exception, error:
             logger.error("Error occured copying file %s to remote destination %s:%s - %s",
                          local, self.host, remote, error)
         else:
-            logger.info("Copied local file %s to remote destination %s:%s",
+            logger.debug("Copied local file %s to remote destination %s:%s",
                         local, self.host, remote)
 
     def _put_dir(self, local_dir, remote_dir):
@@ -131,7 +132,7 @@ class SSHClient(object):
         Change `sftp` to this directory.
         Returns True if any folders were created
         """
-        logger.info("Creating remote dir %s", directory)
+        logger.debug("Creating remote dir %s", directory)
 
         if directory == '/':
             # absolute path so change directory to root
