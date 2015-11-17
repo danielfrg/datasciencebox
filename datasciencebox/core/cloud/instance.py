@@ -10,7 +10,7 @@ from datasciencebox.core.logger import getLogger
 logger = getLogger()
 from datasciencebox.core.exceptions import DSBException, DSBWarning
 from datasciencebox.core.utils import retry
-
+from datasciencebox.core.ssh import SSHClient
 
 class Instance(object):
 
@@ -148,6 +148,15 @@ class Instance(object):
         ssh.connect(self.ip, port=self.port, username=self.username, key_filename=self.keypair)
         return True
 
+    def get_ssh_client(self):
+        host = self.ip
+        username = self.username
+        pkey = self.keypair
+        port = self.port
+        client = SSHClient(host, username=username, pkey=pkey, port=port)
+        return client
+
+    ssh_client = property(get_ssh_client, None, None)
 
 class BareInstance(Instance):
 
