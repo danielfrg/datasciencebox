@@ -14,7 +14,7 @@ def getLogger():
     return logging.getLogger("datasciencebox")
 
 
-def setup_logging(log_level=logging.DEBUG):
+def setup_logging(log_level=logging.WARNING):
     logger = logging.getLogger("datasciencebox")
     logger.setLevel(log_level)
     logger.propagate = False
