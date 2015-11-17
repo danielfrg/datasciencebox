@@ -47,13 +47,6 @@ def default_options(func):
                   help='Logging level')
     @click.pass_context
     def new_func(ctx, settingsfile, log_level, *args, **kwargs):
-        if 'project' not in ctx.obj:
-            if settingsfile:
-                project = Project.from_file(settingsfile)
-            else:
-                project = Project.from_dir(path=ctx.obj['cwd'])
-            ctx.obj['project'] = project
-
         if 'log_level' not in ctx.obj:
             if log_level == 'info':
                 log_level = logging.INFO
@@ -65,6 +58,13 @@ def default_options(func):
                 log_level = logging.ERROR
             setup_logging(log_level)
             ctx.obj['log_level'] = log_level
+
+        if 'project' not in ctx.obj:
+            if settingsfile:
+                project = Project.from_file(settingsfile)
+            else:
+                project = Project.from_dir(path=ctx.obj['cwd'])
+            ctx.obj['project'] = project
 
         return ctx.invoke(func, *args, **kwargs)
 
