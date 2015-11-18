@@ -3,8 +3,6 @@ import time
 
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
-from fabric.api import settings, hide
-from fabric.contrib.project import rsync_project
 
 
 class RsyncHandler(FileSystemEventHandler):
@@ -37,21 +35,8 @@ class RsyncHandler(FileSystemEventHandler):
         src = os.path.realpath(src) + '/'
         dst = os.path.realpath(dst)
         if os.path.exists(src):
-            username = self.project.settings['USERNAME']
-            ip = self.project.cluster.head.ip
-            port = self.project.cluster.head.port
-            host_string = '{0}@{1}'.format(username, ip)
-            key_filename = self.project.settings['KEYPAIR']
-            with hide('running', 'stdout', 'stderr'):
-                with settings(host_string=host_string, key_filename=key_filename):
-                    print(src + ' -> ' + dst)
-                    rsync_project(dst,
-                                  src,
-                                  delete=True,
-                                  extra_opts='--rsync-path="sudo rsync"',
-                                  ssh_opts='-oStrictHostKeyChecking=no -p %i' % port,
-                                  exclude='.DS_Store',
-                                  default_opts='-pthrz')
+            client = self.project.cluster.head.ssh_client
+            client.put(src, dst, sudo=True)
 
     def sync_all(self):
         salt_root = self.project.salt_dir
