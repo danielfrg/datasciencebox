@@ -26,11 +26,10 @@ def test_salt_formulas():
 def test_mesos_ui():
     '''
     Note 1: Mesos UI uses a lot of javascript requests alone is not good enough
-    Note 2: Mesos UI does not bing to 0.0.0.0 so need explicit vagrant IP
+    Note 2: Mesos UI does not bing to 0.0.0.0 so need explicit IP if using vagrant 
     '''
     project = utils.get_test_project()
     nn_ip = project.cluster.head.ip
-    nn_ip = '10.10.10.100'
 
     r = requests.get('http://%s:5050/' % nn_ip)
     assert r.status_code == 200
