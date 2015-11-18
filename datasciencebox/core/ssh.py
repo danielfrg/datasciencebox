@@ -73,7 +73,7 @@ class SSHClient(object):
                    channel.exit_status_ready()):
             time.sleep(.2)
 
-        ret = {'stdout': stdout.read(), 'stderr': stderr.read(),
+        ret = {'stdout': stdout.read().strip(), 'stderr': stderr.read().strip(),
                'exit_code': channel.recv_exit_status()}
         return ret
 
