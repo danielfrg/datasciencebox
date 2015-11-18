@@ -5,7 +5,7 @@ requests = pytest.importorskip("requests")
 import utils
 
 
-pytestmark = pytest.mark.skipif(True, 'Marathon is currently broken')
+pytestmark = pytest.mark.skipif(True, reason='Marathon is currently broken')
 
 
 def setup_module(module):
