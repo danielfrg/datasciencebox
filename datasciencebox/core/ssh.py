@@ -131,7 +131,7 @@ class SSHClient(object):
         self.sftp.put(local, remote)
 
         if sudo:
-            cmd = 'cp -r {} {}'.format(remote, real_remote)
+            cmd = 'cp -rf {}/* {}'.format(remote, real_remote)
             output = self.exec_command(cmd, sudo=True)
             cmd = 'rm -rf {}'.format(remote)
             output = self.exec_command(cmd, sudo=True)
@@ -152,7 +152,7 @@ class SSHClient(object):
                 self.put_dir(os.path.join(local, item), '%s/%s' % (remote, item))
 
         if sudo:
-            cmd = 'cp -r {} {}'.format(remote, real_remote)
+            cmd = 'cp -rf {}/* {}'.format(remote, real_remote)
             output = self.exec_command(cmd, sudo=True)
             cmd = 'rm -rf {}'.format(remote)
             output = self.exec_command(cmd, sudo=True)
