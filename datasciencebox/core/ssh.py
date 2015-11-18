@@ -113,11 +113,10 @@ class SSHClient(object):
             self.sftp.chdir(path)
         except IOError, error:
             dirname, basename = posixpath.split(path)
-            logger.debug("Creating directory %s mode=%s", dirname, mode)
             self.mkdir(dirname) # make parent directories
+            logger.debug("Creating directory %s mode=%s", dirname, mode)
             self.sftp.mkdir(basename, mode=mode) # sub-directory missing, so created it
             self.sftp.chdir(basename)
-            # self.sftp.mkdir(path, mode=mode)
         return True
 
     def put_dir(self, local, remote):
