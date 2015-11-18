@@ -96,17 +96,6 @@ class SSHClient(object):
         Copy is done natively using SFTP/SCP version 2 protocol, no scp command
         is used or required.
         """
-        if os.path.isdir(local):
-            return self._put_dir(local, remote)
-
-        directory = posixpath.dirname(remote)
-
-        try:
-            self.sftp.stat(directory)
-            self.sftp.chdir(directory)
-        except IOError:
-            self.mkdir(directory)
-
         try:
             logger.debug('Uploading file %s to %s', local, remote)
             self.sftp.put(local, remote)
@@ -117,36 +106,26 @@ class SSHClient(object):
             logger.debug("Copied local file %s to remote destination %s:%s",
                         local, self.host, remote)
 
-    def _put_dir(self, local_dir, remote_dir):
-        """Utility that calls `put` on every file in the specified directory
-        copying them to the specified remote directory
-        """
-        file_list = os.listdir(local_dir)
-        for file_name in file_list:
-            local_path = os.path.join(local_dir, file_name)
-            remote_path = os.path.join(remote_dir, file_name)
-            self.put(local_path, remote_path)
+    def mkdir(self, path, mode=511):
 
-    def mkdir(self, directory):
-        """Create (recursively) directories emulating `mkdir -p`.
-        Change `sftp` to this directory.
-        Returns True if any folders were created
-        """
-        logger.debug("Creating remote dir %s", directory)
-
-        if directory == '/':
-            # absolute path so change directory to root
-            self.sftp.chdir('/')
-            return
-        if directory == '':
-            # top-level relative directory must exist
-            return
         try:
-            self.sftp.chdir(directory)
-        except IOError:
-            # sub-directories do not exist
-            dirname, basename = posixpath.split(directory.rstrip('/'))
-            self.mkdir(dirname) # Make parent directories
-            self.sftp.mkdir(basename)
+            # If chdir works then path exists
+            self.sftp.chdir(path)
+        except IOError, error:
+            dirname, basename = posixpath.split(path)
+            logger.debug("Creating directory %s mode=%s", dirname, mode)
+            self.mkdir(dirname) # make parent directories
+            self.sftp.mkdir(basename, mode=mode) # sub-directory missing, so created it
             self.sftp.chdir(basename)
-            return True
+            # self.sftp.mkdir(path, mode=mode)
+        return True
+
+    def put_dir(self, local, remote):
+        logger.debug("Uploading directory %s to %s", local, remote)
+
+        for item in os.listdir(local):
+            if os.path.isfile(os.path.join(local, item)):
+                self.put(os.path.join(local, item), '%s/%s' % (remote, item))
+            else:
+                self.mkdir('%s/%s' % (remote, item))
+                self.put_dir(os.path.join(local, item), '%s/%s' % (remote, item))
