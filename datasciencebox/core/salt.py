@@ -8,7 +8,6 @@ import os
 import subprocess
 
 import yaml
-from fabric.api import settings, sudo, hide
 
 from datasciencebox.core.logger import getLogger
 logger = getLogger()
@@ -126,19 +125,16 @@ def salt_master(project, target, module, args=None, kwargs=None):
     """
     Execute a `salt` command in the head node
     """
-    ip = project.cluster.head.ip
-    port = project.cluster.head.port
-    username = project.settings['USERNAME']
-    host_string = username + '@' + ip + ':' + str(port)
-    key_filename = project.settings['KEYPAIR']
-    with hide('running', 'stdout', 'stderr'):
-        with settings(host_string=host_string, key_filename=key_filename):
-            cmd = ['salt']
-            cmd.extend(generate_salt_cmd(target, module, args, kwargs))
-            cmd.append('--timeout=300')
-            cmd.append('--state-output=mixed')
-            cmd = ' '.join(cmd)
-            logger.debug('salt cmd: %s', cmd)
+    client = project.cluster.head.ssh_client
 
-            out = sudo(cmd)
-            return out
+    cmd = ['salt']
+    cmd.extend(generate_salt_cmd(target, module, args, kwargs))
+    cmd.append('--timeout=300')
+    cmd.append('--state-output=mixed')
+    cmd = ' '.join(cmd)
+
+    output = client.exec_command(cmd, sudo=True)
+    if output['exit_code'] == 0:
+        return output['stdout']
+    else:
+        return output['stderr']
