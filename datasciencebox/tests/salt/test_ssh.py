@@ -27,12 +27,10 @@ def test_mkdir():
 
     dir_name = '/tmp/{}.txt'.format(unicode(int(math.floor(random.random() * 1000))))
     output = client.exec_command('test -d %s' % dir_name)
-    print(output)
     assert output['exit_code'] == 1
 
     client.mkdir(dir_name)
     output = client.exec_command('test -d %s' % dir_name)
-    print(output)
     assert output['exit_code'] == 0
 
 
