@@ -90,41 +90,69 @@ class SSHClient(object):
 
     sftp = property(get_sftp, None, None)
 
-    def put(self, local, remote):
+    def mkdir(self, path, mode=511):
+        if self.check_dir(path):
+            return True
+        else:
+            dirname, basename = posixpath.split(path)
+            if self.check_dir(dirname):
+                logger.debug("Creating directory %s mode=%s", path, mode)
+                self.sftp.mkdir(basename, mode=mode) # sub-directory missing, so created it
+                self.sftp.chdir(basename)
+            else:
+                # Make parent directories:
+                self.mkdir(dirname)
+        return True
+
+    def check_dir(self, path):
+        try:
+            self.sftp.chdir(path)
+            return True
+        except IOError, error:
+            return False
+
+    def put(self, local, remote, sudo=False):
         """Copy local file to host via SFTP/SCP
 
         Copy is done natively using SFTP/SCP version 2 protocol, no scp command
         is used or required.
         """
-        try:
-            logger.debug('Uploading file %s to %s', local, remote)
-            self.sftp.put(local, remote)
-        except Exception, error:
-            logger.error("Error occured copying file %s to remote destination %s:%s - %s",
-                         local, self.host, remote, error)
+        if(os.path.isdir(local)):
+            self.put_dir(local, remote, sudo=sudo)
         else:
-            logger.debug("Copied local file %s to remote destination %s:%s",
-                        local, self.host, remote)
+            self.put_single(local, remote, sudo=sudo)
 
-    def mkdir(self, path, mode=511):
+    def put_single(self, local, remote, sudo=False):
+        if sudo:
+            real_remote = remote
+            remote = '/tmp/.dsb_tmp_copy'
 
-        try:
-            # If chdir works then path exists
-            self.sftp.chdir(path)
-        except IOError, error:
-            dirname, basename = posixpath.split(path)
-            self.mkdir(dirname) # make parent directories
-            logger.debug("Creating directory %s mode=%s", dirname, mode)
-            self.sftp.mkdir(basename, mode=mode) # sub-directory missing, so created it
-            self.sftp.chdir(basename)
-        return True
+        logger.debug('Uploading file %s to %s', local, remote)
+        self.sftp.put(local, remote)
 
-    def put_dir(self, local, remote):
+        if sudo:
+            cmd = 'cp -r {} {}'.format(remote, real_remote)
+            output = self.exec_command(cmd, sudo=True)
+            cmd = 'rm -rf {}'.format(remote)
+            output = self.exec_command(cmd, sudo=True)
+
+    def put_dir(self, local, remote, sudo=False):
         logger.debug("Uploading directory %s to %s", local, remote)
 
+        if sudo:
+            real_remote = remote
+            remote = '/tmp/.dsb_tmp_copy'
+
+        self.mkdir(remote)
         for item in os.listdir(local):
             if os.path.isfile(os.path.join(local, item)):
                 self.put(os.path.join(local, item), '%s/%s' % (remote, item))
             else:
                 self.mkdir('%s/%s' % (remote, item))
                 self.put_dir(os.path.join(local, item), '%s/%s' % (remote, item))
+
+        if sudo:
+            cmd = 'cp -r {} {}'.format(remote, real_remote)
+            output = self.exec_command(cmd, sudo=True)
+            cmd = 'rm -rf {}'.format(remote)
+            output = self.exec_command(cmd, sudo=True)
