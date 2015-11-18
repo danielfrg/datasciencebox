@@ -5,61 +5,61 @@ import pytest
 from ..salt import utils
 
 
-# @utils.remotetest
-# def test_echo_user():
-#     project = utils.get_test_project()
-#     node = project.cluster.head
-#     client = node.ssh_client
+@utils.remotetest
+def test_echo_user():
+    project = utils.get_test_project()
+    node = project.cluster.head
+    client = node.ssh_client
 
-#     output = client.exec_command('echo $USER')
-#     assert output['exit_code'] == 0
-#     assert output['stdout'].strip() == node.username
-
-
-# @utils.remotetest
-# def test_mkdir():
-#     import math
-#     import random
-#
-#     project = utils.get_test_project()
-#     node = project.cluster.head
-#     client = node.ssh_client
-#
-#     dir_name = '/tmp/{}.txt'.format(unicode(int(math.floor(random.random() * 1000))))
-#     output = client.exec_command('test -d %s' % dir_name)
-#     print(output)
-#     assert output['exit_code'] == 1
-#
-#     client.mkdir(dir_name)
-#     output = client.exec_command('test -d %s' % dir_name)
-#     print(output)
-#     assert output['exit_code'] == 0
+    output = client.exec_command('echo $USER')
+    assert output['exit_code'] == 0
+    assert output['stdout'].strip() == node.username
 
 
-# @utils.remotetest
-# def test_put_file(tmpdir):
-#     import math
-#     import random
-#
-#     project = utils.get_test_project()
-#     node = project.cluster.head
-#     client = node.ssh_client
-#
-#     file_name = '{}.txt'.format(unicode(int(math.floor(random.random() * 1000))))
-#     content = unicode(int(math.floor(random.random() * 100000000)))
-#     tfile = tmpdir.join(file_name)
-#     tfile.write(content)
-#
-#     local = tfile.realpath().strpath
-#     remote = '/tmp/{}'.format(file_name)
-#
-#     client.put(local, remote)
-#
-#     output = client.exec_command('test -e %s' % remote)
-#     assert output['exit_code'] == 0
-#
-#     output = client.exec_command('cat %s' % remote)
-#     assert output['stdout'] == content
+@utils.remotetest
+def test_mkdir():
+    import math
+    import random
+
+    project = utils.get_test_project()
+    node = project.cluster.head
+    client = node.ssh_client
+
+    dir_name = '/tmp/{}.txt'.format(unicode(int(math.floor(random.random() * 1000))))
+    output = client.exec_command('test -d %s' % dir_name)
+    print(output)
+    assert output['exit_code'] == 1
+
+    client.mkdir(dir_name)
+    output = client.exec_command('test -d %s' % dir_name)
+    print(output)
+    assert output['exit_code'] == 0
+
+
+@utils.remotetest
+def test_put_file(tmpdir):
+    import math
+    import random
+
+    project = utils.get_test_project()
+    node = project.cluster.head
+    client = node.ssh_client
+
+    file_name = '{}.txt'.format(unicode(int(math.floor(random.random() * 1000))))
+    content = unicode(int(math.floor(random.random() * 100000000)))
+    tfile = tmpdir.join(file_name)
+    tfile.write(content)
+
+    local = tfile.realpath().strpath
+    remote = '/tmp/{}'.format(file_name)
+
+    client.put(local, remote)
+
+    output = client.exec_command('test -e %s' % remote)
+    assert output['exit_code'] == 0
+
+    output = client.exec_command('cat %s' % remote)
+    assert output['stdout'] == content
 
 
 @utils.remotetest
@@ -93,7 +93,7 @@ def test_put_dir(tmpdir):
     local = root_tdir.realpath().strpath
     remote = '/tmp/{}'.format(rnd)
 
-    client.put(local, remote)
+    client.put_dir(local, remote)
 
     output = client.exec_command('test -d %s' % remote)
     assert output['exit_code'] == 0
