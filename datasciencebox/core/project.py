@@ -98,6 +98,10 @@ class Project(object):
     def destroy(self):
         self.cluster.fetch_nodes()
         self.cluster.destroy()
+        self.delete()
+
+    def delete(self):
+        shutil.rmtree(self.settings_dir)
 
     def update(self):
         self.setup_salt_ssh()
