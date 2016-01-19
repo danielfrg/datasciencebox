@@ -13,6 +13,7 @@ grains:
     - salt.minion
     - zookeeper.server
     - mesos.master
+    - cloudera.manager.server
     - hdfs.namenode
     - hive.metastore
     - impala.state-store

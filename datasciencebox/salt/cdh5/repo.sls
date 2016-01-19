@@ -1,27 +1,38 @@
-cdh5-repository_1.0_all.deb:
+cdh5-apt:
   file.managed:
-    - name: /tmp/cdh5-repository_1.0_all.deb
-    - source: http://archive.cloudera.com/cdh5/one-click-install/{{ grains["lsb_distrib_codename"] }}/amd64/cdh5-repository_1.0_all.deb
-    - source_hash: md5=9b389af68827bfd704739796e7044961
-    - unless: 'apt-key list | grep "Cloudera Apt Repository"'
+    - name: /etc/apt/sources.list.d/cloudera.list
+    - source: salt://cdh5/etc/apt/sources.list.d/cloudera.list
+    - template: jinja
 
-cdh5_gpg:
+cdh5-apt-key:
   cmd.run:
-    - name: dpkg -i /tmp/cdh5-repository_1.0_all.deb
-    - unless: 'apt-key list | grep "Cloudera Apt Repository"'
-    - require:
-      - file: cdh5-repository_1.0_all.deb
+    - name: curl -s https://archive.cloudera.com/cdh5/ubuntu/{{ grains["oscodename"] }}/amd64/cdh/archive.key | sudo apt-key add -
+    - unless: apt-key list | grep "Cloudera Apt Repository"
+
+cm5-apt:
+  file.managed:
+    - name: /etc/apt/sources.list.d/cloudera.list
+    - source: salt://cdh5/etc/apt/sources.list.d/cloudera.list
+    - template: jinja
+
+cm5-apt-key:
+  cmd.run:
+    - name: curl -s https://archive.cloudera.com/cm5/ubuntu/{{ grains["oscodename"] }}/amd64/cdh/archive.key | sudo apt-key add -
+    - unless: apt-key list | grep "Cloudera Apt Repository"
 
 cdh5_refresh_db:
   module.wait:
     - name: pkg.refresh_db
     - watch:
-      - cmd: cdh5_gpg
+      - file: cm5-apt
+      - file: cdh5-apt
+      - cmd: cm5-apt-key
+      - cmd: cdh5-apt-key
 
 {% if grains["oscodename"] == 'trusty' %}
 cloudera-pref:
   file.managed:
     - name: /etc/apt/preferences.d/cloudera.pref
-    - source: salt://cdh5//etc/apt/preferences.d/cloudera.pref
+    - source: salt://cdh5/etc/apt/preferences.d/cloudera.pref
     - template: jinja
 {% endif %}

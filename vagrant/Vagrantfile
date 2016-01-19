@@ -24,6 +24,7 @@ Vagrant.configure("2") do |config|
     machine.vm.network :private_network, ip: "10.10.10.100"
     machine.vm.network :forwarded_port, guest: 22, host: 2222, id: "ssh", disabled: true
     machine.vm.network :forwarded_port, guest: 22, host: 2022
+    machine.vm.network :forwarded_port, guest: 7180, host: 7180     # Manager
     machine.vm.network :forwarded_port, guest: 2181, host: 2181     # Zookeeper
     machine.vm.network :forwarded_port, guest: 8020, host: 8020     # HDFS
     machine.vm.network :forwarded_port, guest: 50070, host: 50070   # Namenode UI

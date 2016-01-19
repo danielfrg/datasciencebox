@@ -11,5 +11,6 @@ grains:
   roles:
     - salt.minion
     - mesos.slave
+    - cloudera.manager.agent
     - hdfs.datanode
     - impala.server
