@@ -5,6 +5,7 @@
 include:
   {% if is_server %}
   - cdh5.manager.server
+  - cdh5.manager.agent
   {% endif %}
 
   {% if is_agent %}

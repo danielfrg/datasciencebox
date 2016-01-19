@@ -1,29 +1,19 @@
 include:
   - cdh5.manager
 
-cloudera-manager-daemons:
+server-packages:
   pkg.installed:
+    - names:
+      - cloudera-manager-daemons
+      - cloudera-manager-server-db-2
+      - cloudera-manager-server
     - requires:
       - cdh5.manager
 
-cloudera-manager-server:
-  pkg.installed:
-    - requires:
-      - cdh5.manager
-
-cloudera-manager-server-db-2:
-  pkg.installed:
-    - requires:
-      - cdh5.manager
-
-cloudera-scm-server-db:
+server-services:
   service.running:
+    - names:
+      - cloudera-scm-server-db
+      - cloudera-scm-server
     - require:
-      - pkg: cloudera-manager-server-db-2
-
-cloudera-scm-server:
-  service.running:
-    - require:
-      - pkg: cloudera-manager-server
-      - pkg: cloudera-manager-daemons
-      - service: cloudera-scm-server-db
+      - pkg: server-packages

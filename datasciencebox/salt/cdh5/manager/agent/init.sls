@@ -1,13 +1,11 @@
 include:
   - cdh5.manager
 
-cloudera-manager-daemons:
+agent-packages:
   pkg.installed:
-    - requires:
-      - cdh5.manager
-
-cloudera-manager-agent:
-  pkg.installed:
+    - names:
+      - cloudera-manager-daemons
+      - cloudera-manager-agent
     - requires:
       - cdh5.manager
 
@@ -16,7 +14,9 @@ cloudera-manager-agent:
     - source: salt://cdh5/etc/cloudera-scm-agent/config.ini
     - template: jinja
 
-cloudera-scm-agent:
+agent-services:
   service.running:
+    - names:
+      - cloudera-scm-agent
     - require:
-      - pkg: cloudera-manager-agent
+      - pkg: agent-packages
