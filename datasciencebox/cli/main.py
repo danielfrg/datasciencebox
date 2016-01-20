@@ -8,6 +8,7 @@ from functools import update_wrapper
 
 import click
 
+import datasciencebox
 from datasciencebox.core.project import Project
 from datasciencebox.core.exceptions import DSBException
 
@@ -75,6 +76,7 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 
 
 @click.group(context_settings=CONTEXT_SETTINGS)
+@click.version_option(prog_name='DataScienceBox', version=datasciencebox.__version__)
 @click.pass_context
 def cli(ctx):
     ctx.obj = {}
