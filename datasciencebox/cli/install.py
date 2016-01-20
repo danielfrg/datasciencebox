@@ -69,6 +69,17 @@ def install_conda(ctx, pkg, ssh, target):
     click.echo(out)
 
 
+@install.command('cloudera-manager', short_help='Install Cloudera Manager in the cluster')
+@click.option('--ssh', is_flag=True, required=False, show_default=True, help='Whether to use ssh')
+@default_options
+@click.pass_context
+def install_hdfs(ctx, ssh):
+    project = ctx.obj['project']
+    click.echo('Step 1/1: Cloudera Manager')
+    out = project.salt('state.sls', args=['cdh5.manager.cluster'], target='*', ssh=ssh)
+    click.echo(out)
+
+
 @install.command('notebook', short_help='Install Jupyter notebook in the head node')
 @click.option('--ssh', is_flag=True, required=False, show_default=True, help='Whether to use ssh')
 @default_options

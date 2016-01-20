@@ -12,6 +12,14 @@ from datasciencebox.cli.main import cli, default_options
 def open_(ctx):
     pass
 
+@open_.command('cloudera-manager', short_help='Open the Cloudera Manager UI')
+@default_options
+@click.pass_context
+def open_cloudera_manager(ctx):
+    project = ctx.obj['project']
+    url = 'http://%s:7180' % project.cluster.head.ip
+    webbrowser.open(url, new=2)
+
 
 @open_.command('mesos', short_help='Open the mesos UI')
 @default_options

@@ -9,6 +9,8 @@ salt:
         - salt.minion
         - zookeeper.server
         - mesos.master
+        - cloudera.manager.server
+        - cloudera.manager.agent
         - hdfs.namenode
         - hive.metastore
         - impala.state-store
@@ -16,5 +18,6 @@ salt:
       roles:
         - salt.minion
         - mesos.slave
+        - cloudera.manager.agent
         - hdfs.datanode
         - impala.server
