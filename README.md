@@ -167,7 +167,24 @@ $ dsb open notebook
 
 ## Cloudera
 
+Install Cloudera Manager
+
+```bash
+$ dsb install cloudera-manager
+$ dsb open cloudera-manager
+```
+
+Once on the Cloudera Manager UI just follow the instructions, when it asks to
+list the nodes to manager just click on the "Managed Nodes" tab and all the Nodes
+in the cluster should be there already.
+
+Then just install the frameworks that you want, Impala, Spark, etc.
+
+Look at the example on for how to use Spark inside the cluster.
+
 ### HDFS
+
+`deprecated`: Use Cloudera Manager
 
 ```bash
 $ dsb install hdfs
@@ -175,6 +192,8 @@ $ dsb open hdfs
 ```
 
 ### Impala
+
+`deprecated`: Use Cloudera Manager
 
 Using Postgres as Hive Metastore. Impala shell is available in all the compute nodes (no head).
 
@@ -191,7 +210,7 @@ $ dsb open mesos
 
 ### Spark
 
-Spark is available using Mesos as scheduler
+Spark using Mesos as scheduler
 
 ```bash
 $ dsb install spark
