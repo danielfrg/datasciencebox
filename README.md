@@ -174,13 +174,15 @@ $ dsb install cloudera-manager
 $ dsb open cloudera-manager
 ```
 
-Once on the Cloudera Manager UI just follow the instructions, when it asks to
-list the nodes to manager just click on the "Managed Nodes" tab and all the Nodes
-in the cluster should be there already.
+Once on the Cloudera Manager UI just follow the instructions.
 
-Then just install the frameworks that you want, Impala, Spark, etc.
+- In the "Specify hosts for your CDH cluster installation" section
+just click on the "Currently Managed Hosts" tab and all the Nodes
+in the cluster should be there already, select all of them and click "Continue"
+- Select the frameworks that you want: Impala, Spark, etc.
+- On the "Database Setup" section click "Test connection" and then "Continue"
 
-Look at the example on for how to use Spark inside the cluster.
+Look at the example on for how to use Spark on YARN.
 
 ### HDFS
 
