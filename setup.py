@@ -9,9 +9,6 @@ To upload a new version:
 2. python setup.py sdist register upload
 """
 
-with open('requirements.txt') as f:
-    required = f.read().splitlines()
-
 setup(name='datasciencebox',
       version=versioneer.get_version(),
       cmdclass=versioneer.get_cmdclass(),
@@ -28,4 +25,5 @@ setup(name='datasciencebox',
         dsb=datasciencebox.cli.main:start
         datasciencebox=datasciencebox.cli.main:start
       """,
-      install_requires=required)
+      install_requires=["click", "paramiko", "apache-libcloud", "salt-ssh", "watchdog", "certifi"]
+      )

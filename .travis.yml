@@ -7,7 +7,7 @@ sudo: false
 
 install:
   - python setup.py install
-  - pip install pytest-cov
+  - pip install -r requirements.txt
 
 script:
   - pwd
